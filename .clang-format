@@ -5,19 +5,19 @@ TabWidth: 4
 UseTab: Never
 ColumnLimit: 120
 
-# Klammern / Braces
+# Braces
 BraceWrapping:
-  AfterClass: true          # Klassen-Klammern in neuer Zeile
-  AfterFunction: true       # Funktionen in neuer Zeile
-  AfterNamespace: true      # Namespaces in neuer Zeile
-  AfterControlStatement: true  # if/for/while in neuer Zeile
-  AfterStruct: true         # struct-Klammern in neuer Zeile
-  AfterEnum: true           # enum-Klammern in neuer Zeile
+  AfterClass: true            # Place class braces on a new line
+  AfterFunction: true         # Place function braces on a new line
+  AfterNamespace: true        # Place namespace braces on a new line
+  AfterControlStatement: true # Place if/for/while braces on a new line
+  AfterStruct: true           # Place struct braces on a new line
+  AfterEnum: true             # Place enum braces on a new line
   BeforeCatch: true
   BeforeElse: true
 
-# Sonstige Stil-Regeln
-BreakBeforeBraces: Allman    # Safety: stellt sicher, alles in neuer Zeile
+# Additional style rules
+BreakBeforeBraces: Allman
 AllowShortFunctionsOnASingleLine: false
 AllowShortIfStatementsOnASingleLine: false
 IndentPPDirectives: None
@@ -26,7 +26,7 @@ AlignTrailingComments: false
 IndentWrappedFunctionNames: false
 ReflowComments: false
 
-# Argumente NICHT unter der öffnenden Klammer ausrichten
+# Do not align arguments under the opening bracket
 AlignAfterOpenBracket: DontAlign
 BinPackArguments: false
 BinPackParameters: false
