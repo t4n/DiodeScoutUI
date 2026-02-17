@@ -1,0 +1,1 @@
+windeployqt --release --compiler-runtime DiodeScoutUI.exe

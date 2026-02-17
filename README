@@ -1,0 +1,24 @@
+# DiodeScoutUI
+
+DiodeScoutUI is a Qt 6 application for visualizing diode I‑V characteristics. It communicates with an external DiodeScout measurement device via a serial interface.
+
+Features:
+- Plotting with QtCharts
+- Serial data acquisition
+- Export to PNG, CSV, and Python script
+
+Build:
+mkdir build && cd build
+cmake ..
+cmake --build .
+
+Structure:
+src/     → C++ source code
+icons/   → SVG icons
+docs/    → Documentation and notes
+
+License:
+This project is released under the MIT License (see the LICENSE file).
+
+Third‑Party Notices:
+This application uses the Qt 6 framework, including QtCore, QtWidgets, QtSerialPort, and QtCharts. These components are licensed under the GNU Lesser General Public License version 3 (LGPLv3). The corresponding Qt license texts are included in the licenses/ directory. Users are permitted to replace the Qt libraries with their own compatible builds, as required by the LGPLv3.

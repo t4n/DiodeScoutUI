@@ -1,0 +1,33 @@
+# QtCreator / ClangFormat
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 120
+
+# Klammern / Braces
+BraceWrapping:
+  AfterClass: true          # Klassen-Klammern in neuer Zeile
+  AfterFunction: true       # Funktionen in neuer Zeile
+  AfterNamespace: true      # Namespaces in neuer Zeile
+  AfterControlStatement: true  # if/for/while in neuer Zeile
+  AfterStruct: true         # struct-Klammern in neuer Zeile
+  AfterEnum: true           # enum-Klammern in neuer Zeile
+  BeforeCatch: true
+  BeforeElse: true
+
+# Sonstige Stil-Regeln
+BreakBeforeBraces: Allman    # Safety: stellt sicher, alles in neuer Zeile
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+IndentPPDirectives: None
+IndentExternBlock: false
+AlignTrailingComments: false
+IndentWrappedFunctionNames: false
+ReflowComments: false
+
+# Argumente NICHT unter der öffnenden Klammer ausrichten
+AlignAfterOpenBracket: DontAlign
+BinPackArguments: false
+BinPackParameters: false
+AllowAllArgumentsOnNextLine: false
