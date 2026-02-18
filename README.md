@@ -25,9 +25,14 @@ This project is released under the GNU General Public License version 3
 (GPLv3). See the LICENSE file for details.
 
 ## Third‑Party Notices
-This project uses the Qt 6 framework, including QtCore, QtWidgets, 
+This project uses the Qt 6 framework, including QtCore, QtWidgets,
 QtSerialPort (LGPLv3) and QtCharts (GPLv3). Corresponding Qt license texts
 are included in the licenses/ directory.
+
+Qt includes third-party libraries licensed under various open-source licenses.
+For a full list of third-party licenses included in Qt, please refer to the
+documentation at:
+https://doc.qt.io/qt-6/licensing.html
 
 ## Source Code
 Binary releases of DiodeScoutUI are provided under the terms of the GPLv3.
@@ -39,3 +44,4 @@ with the LGPLv3, users are permitted to replace the Qt libraries with their
 own compatible builds. The Qt source code is available from the official Qt
 download site:
 https://download.qt.io/official_releases/qt/
+
