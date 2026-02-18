@@ -19,22 +19,24 @@ interface.
 - docs/    → Documentation and notes
 
 ## License
-This project is released under the GNU General Public License version 3 (GPLv3).
-See the LICENSE file for details.
+Copyright (C) 2026 Tilman Küpper
+
+This project is released under the GNU General Public License version 3
+(GPLv3). See the LICENSE file for details.
 
 ## Third‑Party Notices
-This application uses the Qt 6 framework, including QtCore, QtWidgets,
-QtSerialPort, and QtCharts. These components are licensed under the GNU Lesser
-General Public License version 3 (LGPLv3) or, in the case of QtCharts, under the
-GNU General Public License version 3 (GPLv3).
+This project uses the Qt 6 framework, including QtCore, QtWidgets, 
+QtSerialPort (LGPLv3) and QtCharts (GPLv3). The corresponding Qt license
+texts are included in the licenses/ directory.
 
-The corresponding Qt license texts are included in the licenses/ directory.
-Users are permitted to replace the Qt libraries with their own compatible builds,
-as required by the LGPLv3/GPLv3.
+This application dynamically links against the Qt 6 libraries. In accordance
+with the LGPLv3, users are permitted to replace the Qt libraries with their
+own compatible builds.
 
 ## Source Code
+Binary releases of DiodeScoutUI are provided under the terms of the GNU
+GPLv3. The corresponding source code is available at:
+https://github.com/t4n/DiodeScoutUI
+
 The Qt source code is available from the official Qt download site:
 https://download.qt.io/official_releases/qt/
-
-The DiodeScoutUI source code is available at:
-https://github.com/t4n/DiodeScoutUI
