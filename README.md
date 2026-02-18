@@ -9,14 +9,14 @@ interface.
 - Export to PNG, CSV, and Python script
 
 ## Build
-mkdir build && cd build
-cmake ..
-cmake --build .
+- mkdir build && cd build
+- cmake ..
+- cmake --build .
 
 ## Structure
-src/     → C++ source code
-icons/   → SVG icons
-docs/    → Documentation and notes
+- src/     → C++ source code
+- icons/   → SVG icons
+- docs/    → Documentation and notes
 
 ## License
 This project is released under the GNU General Public License version 3 (GPLv3).
@@ -33,8 +33,8 @@ Users are permitted to replace the Qt libraries with their own compatible builds
 as required by the LGPLv3/GPLv3.
 
 ## Source Code
-The complete Qt source code is available from the official Qt download site:
+The Qt source code is available from the official Qt download site:
 https://download.qt.io/official_releases/qt/
 
-The complete source code for DiodeScoutUI is available at:
+The DiodeScoutUI source code is available at:
 https://github.com/t4n/DiodeScoutUI
