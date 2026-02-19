@@ -283,7 +283,7 @@ void MainWindow::rebuildChart()
     chart->setTitle(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
     chart->createDefaultAxes();
     chart->legend()->hide();
-    chart->setAnimationOptions(QChart::SeriesAnimations);
+    chart->setAnimationOptions(QChart::AllAnimations);
 
     auto axesX = chart->axes(Qt::Horizontal);
     if (!axesX.isEmpty())
