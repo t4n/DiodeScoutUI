@@ -34,14 +34,16 @@ For a full list of third-party licenses included in Qt, please refer to the
 documentation at:
 https://doc.qt.io/qt-6/licensing.html
 
-## Source Code
+## Binary releases
 Binary releases of DiodeScoutUI are provided under the terms of the GPLv3.
 The corresponding source code is available at:
 https://github.com/t4n/DiodeScoutUI
+
+Binary releases include third-party libraries (Qt, MinGW-w64, GCC runtime).
+See the licenses/ directory for details.
 
 This application dynamically links against the Qt 6 libraries. In accordance
 with the LGPLv3, users are permitted to replace the Qt libraries with their
 own compatible builds. The Qt source code is available from the official Qt
 download site:
 https://download.qt.io/official_releases/qt/
-
