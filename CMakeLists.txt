@@ -41,20 +41,3 @@ target_link_libraries(DiodeScoutUI PRIVATE
     Qt::SerialPort
     Qt::Charts
 )
-
-# Installation rules
-include(GNUInstallDirs)
-
-install(TARGETS DiodeScoutUI
-    BUNDLE  DESTINATION .
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-
-# Deployment script (Qt deployment)
-qt_generate_deploy_app_script(
-    TARGET DiodeScoutUI
-    OUTPUT_SCRIPT deploy_script
-    NO_UNSUPPORTED_PLATFORM_ERROR
-)
-install(SCRIPT ${deploy_script})

@@ -9,13 +9,16 @@
 // ---------------------------------------------------------------------------
 
 #include "mainwindow.h"
+#include <QChartView>
 #include <QDateTime>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QMouseEvent>
 #include <QStatusBar>
 #include <QTimer>
 #include <QToolBar>
+#include <QToolTip>
 #include <QValueAxis>
 
 // Rounds a value up to the next 0.5 step.
@@ -23,6 +26,62 @@ inline double roundUpToHalf(double value)
 {
     return std::ceil(value * 2.0) / 2.0;
 }
+
+// Custom QChartView providing mouse-position tooltips and interactive zooming.
+class MyChartView : public QChartView
+{
+  public:
+    using QChartView::QChartView; // Inherit constructors
+
+  protected:
+    // Update tooltip with mouse position in chart coordinates.
+    void mouseMoveEvent(QMouseEvent *event) override
+    {
+        bool showTip = false;
+        QString text;
+
+        if (chart())
+        {
+            QPointF value = chart()->mapToValue(event->position());
+            auto *axisX = qobject_cast<QValueAxis *>(chart()->axes(Qt::Horizontal).value(0));
+            auto *axisY = qobject_cast<QValueAxis *>(chart()->axes(Qt::Vertical).value(0));
+
+            if (axisX && axisY && value.x() >= axisX->min() && value.x() <= axisX->max() && value.y() >= axisY->min() &&
+                value.y() <= axisY->max())
+            {
+                text = QString("%1 V, %2 mA").arg(value.x(), 0, 'f', 3).arg(value.y(), 0, 'f', 3);
+                showTip = true;
+            }
+        }
+
+        if (showTip)
+            QToolTip::showText(event->globalPosition().toPoint(), text, this);
+        else
+            QToolTip::hideText();
+
+        QChartView::mouseMoveEvent(event);
+    }
+
+    // Cleans up tooltip state when the cursor leaves the widget.
+    void leaveEvent(QEvent *event) override
+    {
+        QToolTip::hideText();
+        QChartView::leaveEvent(event);
+    }
+
+    // Handles mouse‑wheel input to zoom the chart view.
+    void wheelEvent(QWheelEvent *event) override
+    {
+        const double factor = 1.1;
+
+        if (event->angleDelta().y() > 0)
+            chart()->zoom(factor); // zoom in
+        else
+            chart()->zoom(1.0 / factor); // zoom out
+
+        event->accept();
+    }
+};
 
 // Constructs the main window and initializes UI components.
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
@@ -66,7 +125,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     chart->setTitleFont(titleFont);
     chart->setTitle("Press the button on the DiodeScout ...");
 
-    chartView = new QChartView(chart);
+    chartView = new MyChartView(chart);
+    chartView->setMouseTracking(true);
     chartView->setRenderHint(QPainter::Antialiasing);
     chartView->setRubberBand(QChartView::RectangleRubberBand);
     setCentralWidget(chartView);
@@ -327,8 +387,6 @@ void MainWindow::resetChartToEmpty()
     chart->setAnimationOptions(QChart::NoAnimation);
     chart->setTitle("Press the button on the DiodeScout ...");
 
-    for (auto *axis : chart->axes(Qt::Horizontal))
-        chart->removeAxis(axis);
-    for (auto *axis : chart->axes(Qt::Vertical))
+    for (auto *axis : chart->axes())
         chart->removeAxis(axis);
 }
