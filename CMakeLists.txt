@@ -24,10 +24,11 @@ qt_add_executable(DiodeScoutUI
 
 # Application icon (macOS bundle)
 if(APPLE)
+    target_sources(DiodeScoutUI PRIVATE icons/appicon.icns)
     set_source_files_properties(icons/appicon.icns PROPERTIES
-        MACOSX_PACKAGE_LOCATION "Resources" )
+        MACOSX_PACKAGE_LOCATION "Resources")
     set_target_properties(DiodeScoutUI PROPERTIES
-        MACOSX_BUNDLE_ICON_FILE "appicon.icns" )
+        MACOSX_BUNDLE_ICON_FILE "appicon.icns")
 endif()
 
 # Qt UI resources (embedded icons)
