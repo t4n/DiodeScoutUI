@@ -1,0 +1,20 @@
+#!/bin/bash
+SRC="appicon.svg"
+OUTDIR="MyIcon.iconset"
+rm -rf "$OUTDIR"
+mkdir "$OUTDIR"
+
+# Generate required PNG sizes (ImageMagick convert)
+convert -background none -density 512 "$SRC" -resize 16x16  "$OUTDIR/icon_16x16.png"
+convert -background none -density 512 "$SRC" -resize 32x32  "$OUTDIR/icon_16x16@2x.png"
+convert -background none -density 512 "$SRC" -resize 32x32  "$OUTDIR/icon_32x32.png"
+convert -background none -density 512 "$SRC" -resize 64x64  "$OUTDIR/icon_32x32@2x.png"
+convert -background none -density 512 "$SRC" -resize 128x128 "$OUTDIR/icon_128x128.png"
+convert -background none -density 512 "$SRC" -resize 256x256 "$OUTDIR/icon_128x128@2x.png"
+convert -background none -density 512 "$SRC" -resize 256x256 "$OUTDIR/icon_256x256.png"
+convert -background none -density 512 "$SRC" -resize 512x512 "$OUTDIR/icon_256x256@2x.png"
+convert -background none -density 512 "$SRC" -resize 512x512 "$OUTDIR/icon_512x512.png"
+convert -background none -density 512 "$SRC" -resize 1024x1024 "$OUTDIR/icon_512x512@2x.png"
+
+# Create .icns
+iconutil -c icns "$OUTDIR" -o appicon.icns
