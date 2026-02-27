@@ -12,6 +12,7 @@
 #include <QLocale> // exportToCsv
 #include <fstream>
 #include <sstream>
+#include <cctype>
 
 // ---------------------------------------------------------------------------
 //  MeasurementSeries – Implementation
@@ -49,12 +50,6 @@ bool MeasurementSeries::empty() const noexcept
 std::size_t MeasurementDataManager::seriesCount() const noexcept
 {
     return series_.size();
-}
-
-// Returns a specific measurement series by index.
-const MeasurementSeries &MeasurementDataManager::series(std::size_t index) const
-{
-    return series_.at(index);
 }
 
 // Returns all measurement series.
@@ -239,41 +234,32 @@ std::string MeasurementDataManager::trim(const std::string &s)
 // Processes a fully received line.
 ParseResult MeasurementDataManager::handleCompletedLine(const std::string &rawLine)
 {
+    auto result = ParseResult::Nothing; // default
     std::string line = trim(rawLine);
-    if (line.empty())
-        return ParseResult::Nothing;
-
-    if (line.rfind("REM", 0) == 0 || line.rfind("AVCC", 0) == 0)
-        return ParseResult::Nothing;
 
     if (line == "BEGIN")
     {
         tempSeries_ = MeasurementSeries{};
         state_ = ParserState::ReceivingSeries;
-        return ParseResult::Nothing;
     }
-
-    if (line == "END")
+    else if (line == "END")
     {
         if (state_ == ParserState::ReceivingSeries && !tempSeries_.empty())
         {
             series_.push_back(tempSeries_);
             tempSeries_ = MeasurementSeries{};
             state_ = ParserState::Idle;
-            return ParseResult::SeriesCompleted;
+            result = ParseResult::SeriesCompleted;
         }
-        return ParseResult::Nothing;
     }
-
-    if (line.size() > 4 && line.rfind("DATA", 0) == 0 && std::isspace(static_cast<unsigned char>(line[4])) &&
-        state_ == ParserState::ReceivingSeries)
+    else if (line.rfind("DATA ", 0) == 0 && state_ == ParserState::ReceivingSeries)
     {
-        std::string payload = trim(line.substr(5)); // skip "DATA "
+        std::string payload = line.substr(5); // skip "DATA "
         std::replace(payload.begin(), payload.end(), ',', '.');
         parseDataLine(payload);
     }
 
-    return ParseResult::Nothing;
+    return result;
 }
 
 // Parses a data line in the format "<x> <y>".

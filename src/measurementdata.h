@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <cctype>
 #include <cstddef>
 #include <string>
 #include <vector>
@@ -76,9 +75,6 @@ class MeasurementDataManager
 
     // Returns the number of stored measurement series.
     std::size_t seriesCount() const noexcept;
-
-    // Returns a specific measurement series by index.
-    const MeasurementSeries &series(std::size_t index) const;
 
     // Returns all measurement series.
     const std::vector<MeasurementSeries> &allSeries() const noexcept;
