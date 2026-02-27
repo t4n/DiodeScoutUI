@@ -243,20 +243,17 @@ ParseResult MeasurementDataManager::handleCompletedLine(const std::string &rawLi
     if (line.empty())
         return ParseResult::Nothing;
 
-    // Start of a new measurement series
-    if (line == "*")
+    if (line.rfind("REM", 0) == 0 || line.rfind("AVCC", 0) == 0)
+        return ParseResult::Nothing;
+
+    if (line == "BEGIN")
     {
         tempSeries_ = MeasurementSeries{};
         state_ = ParserState::ReceivingSeries;
         return ParseResult::Nothing;
     }
 
-    // Ignore lines like "* AVCC = ..."
-    if (line[0] == '*' && line != "*")
-        return ParseResult::Nothing;
-
-    // End of a measurement series
-    if (line == "#")
+    if (line == "END")
     {
         if (state_ == ParserState::ReceivingSeries && !tempSeries_.empty())
         {
@@ -268,9 +265,13 @@ ParseResult MeasurementDataManager::handleCompletedLine(const std::string &rawLi
         return ParseResult::Nothing;
     }
 
-    // Normal data line
-    if (state_ == ParserState::ReceivingSeries)
-        parseDataLine(line);
+    if (line.size() > 4 && line.rfind("DATA", 0) == 0 && std::isspace(static_cast<unsigned char>(line[4])) &&
+        state_ == ParserState::ReceivingSeries)
+    {
+        std::string payload = trim(line.substr(5)); // skip "DATA "
+        std::replace(payload.begin(), payload.end(), ',', '.');
+        parseDataLine(payload);
+    }
 
     return ParseResult::Nothing;
 }
