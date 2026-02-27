@@ -20,6 +20,7 @@
 #include <QToolBar>
 #include <QToolTip>
 #include <QValueAxis>
+#include <QSplineSeries>
 
 // Rounds a value up to the next 0.5 step.
 inline double roundUpToHalf(double value)
@@ -333,7 +334,7 @@ void MainWindow::rebuildChart()
     const auto &all = dataManager.allSeries();
     for (const auto &seriesData : all)
     {
-        auto *line = new QLineSeries();
+        auto *line = new QSplineSeries();
         for (const auto &p : seriesData.points())
             line->append(p.voltageVolt, p.currentMilliAmp);
 
