@@ -1,7 +1,6 @@
+# CMakeLists.txt for DiodeScoutUI
 cmake_minimum_required(VERSION 3.19)
 project(DiodeScoutUI LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Qt packages
 find_package(Qt6 6.5 REQUIRED COMPONENTS
@@ -24,10 +23,10 @@ qt_add_executable(DiodeScoutUI
     src/measurementdata.h
 )
 
+target_compile_features(DiodeScoutUI PRIVATE cxx_std_17)
+
 # Application icon (macOS bundle)
 if(APPLE)
-    # Make icon an explicit target source so
-    # Xcode includes it in the .app Resources.
     target_sources(DiodeScoutUI PRIVATE icons/appicon.icns)
     set_source_files_properties(icons/appicon.icns PROPERTIES
         MACOSX_PACKAGE_LOCATION "Resources")
