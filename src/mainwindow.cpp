@@ -15,12 +15,12 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
+#include <QSplineSeries>
 #include <QStatusBar>
 #include <QTimer>
 #include <QToolBar>
 #include <QToolTip>
 #include <QValueAxis>
-#include <QSplineSeries>
 
 // Rounds a value up to the next 0.5 step.
 inline double roundUpToHalf(double value)
@@ -347,32 +347,26 @@ void MainWindow::rebuildChart()
     chart->setAnimationOptions(QChart::AllAnimations);
 
     auto axesX = chart->axes(Qt::Horizontal);
-    if (!axesX.isEmpty())
+    auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
+    if (axisX)
     {
-        auto *axisX = qobject_cast<QValueAxis *>(axesX.first());
-        if (axisX)
-        {
-            axisX->setTitleText("Volt (V)");
-            axisX->setTickType(QValueAxis::TicksDynamic);
-            axisX->setRange(0, roundUpToHalf(dataManager.getMaxVoltage()));
-            axisX->setTickInterval(0.5);
-            axisX->setMinorTickCount(4);
-        }
+        axisX->setTitleText("Volt (V)");
+        axisX->setTickType(QValueAxis::TicksDynamic);
+        axisX->setRange(0, roundUpToHalf(dataManager.getMaxVoltage()));
+        axisX->setTickInterval(0.5);
+        axisX->setMinorTickCount(4);
     }
 
     auto axesY = chart->axes(Qt::Vertical);
-    if (!axesY.isEmpty())
+    auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
+    if (axisY)
     {
-        auto *axisY = qobject_cast<QValueAxis *>(axesY.first());
-        if (axisY)
-        {
-            axisY->setLabelFormat("%.2f");
-            axisY->setTitleText("\nMilliampere (mA)");
-            axisY->setTickType(QValueAxis::TicksDynamic);
-            axisY->setRange(0, roundUpToHalf(dataManager.getMaxCurrent()));
-            axisY->setTickInterval(0.5);
-            axisY->setMinorTickCount(4);
-        }
+        axisY->setLabelFormat("%.2f");
+        axisY->setTitleText("\nMilliampere (mA)");
+        axisY->setTickType(QValueAxis::TicksDynamic);
+        axisY->setRange(0, roundUpToHalf(dataManager.getMaxCurrent()));
+        axisY->setTickInterval(0.5);
+        axisY->setMinorTickCount(4);
     }
 }
 
