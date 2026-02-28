@@ -32,7 +32,7 @@ inline double roundUpToHalf(double value)
 class MyChartView : public QChartView
 {
   public:
-    using QChartView::QChartView; // Inherit constructors
+    using QChartView::QChartView; // inherit constructors
 
   protected:
     // Update tooltip with mouse position in chart coordinates.
@@ -371,17 +371,20 @@ void MainWindow::rebuildChart()
 }
 
 // Resets the chart to an empty default state.
-//
-// Clears all visual content from the chart and restores the initial
-// empty-state appearance. Used when no measurement series remain.
-// Does not touch the MeasurementDataManager.
 void MainWindow::resetChartToEmpty()
 {
+    // Clears all visual content from the chart and restores the
+    // initial empty-state appearance. Used when no measurement
+    // series remain. Does not touch the MeasurementDataManager.
     chart->removeAllSeries();
     chart->legend()->hide();
     chart->setAnimationOptions(QChart::NoAnimation);
     chart->setTitle("Press the button on the DiodeScout ...");
 
-    for (auto *axis : chart->axes())
-        chart->removeAxis(axis);
+    const auto axes = chart->axes();
+    for (QAbstractAxis *axis : axes)
+    {
+        chart->removeAxis(axis);  // chart releases ownership of axis
+        delete axis;
+    }
 }

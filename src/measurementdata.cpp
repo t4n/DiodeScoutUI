@@ -246,13 +246,13 @@ ParseResult MeasurementDataManager::handleCompletedLine(const std::string &rawLi
     {
         if (state_ == ParserState::ReceivingSeries && !tempSeries_.empty())
         {
-            series_.push_back(tempSeries_);
+            series_.push_back(std::move(tempSeries_));
             tempSeries_ = MeasurementSeries{};
             state_ = ParserState::Idle;
-            result = ParseResult::SeriesCompleted;
+            result = ParseResult::SeriesCompleted; // measurement series completed
         }
     }
-    else if (line.rfind("DATA ", 0) == 0 && state_ == ParserState::ReceivingSeries)
+    else if (line.find("DATA ") == 0 && state_ == ParserState::ReceivingSeries)
     {
         std::string payload = line.substr(5); // skip "DATA "
         std::replace(payload.begin(), payload.end(), ',', '.');
