@@ -10,9 +10,9 @@
 
 #include "measurementdata.h"
 #include <QLocale> // exportToCsv
+#include <cctype>
 #include <fstream>
 #include <sstream>
-#include <cctype>
 
 // ---------------------------------------------------------------------------
 //  MeasurementSeries – Implementation
@@ -234,29 +234,42 @@ std::string MeasurementDataManager::trim(const std::string &s)
 // Processes a fully received line.
 ParseResult MeasurementDataManager::handleCompletedLine(const std::string &rawLine)
 {
-    auto result = ParseResult::Nothing; // default
+    auto result = ParseResult::Nothing; // default return value
     std::string line = trim(rawLine);
 
-    if (line == "BEGIN")
+    switch (state_)
     {
-        tempSeries_ = MeasurementSeries{};
-        state_ = ParserState::ReceivingSeries;
-    }
-    else if (line == "END")
-    {
-        if (state_ == ParserState::ReceivingSeries && !tempSeries_.empty())
+    case ParserState::Idle:
+        if (line == "BEGIN")
         {
-            series_.push_back(std::move(tempSeries_));
             tempSeries_ = MeasurementSeries{};
-            state_ = ParserState::Idle;
-            result = ParseResult::SeriesCompleted; // measurement series completed
+            state_ = ParserState::ReceivingSeries;
         }
-    }
-    else if (line.find("DATA ") == 0 && state_ == ParserState::ReceivingSeries)
-    {
-        std::string payload = line.substr(5); // skip "DATA "
-        std::replace(payload.begin(), payload.end(), ',', '.');
-        parseDataLine(payload);
+        break;
+
+    case ParserState::ReceivingSeries:
+        if (line == "END")
+        {
+            if (!tempSeries_.empty())
+            {
+                series_.push_back(std::move(tempSeries_));
+                tempSeries_ = MeasurementSeries{};
+                result = ParseResult::SeriesCompleted; // series completed
+            }
+            state_ = ParserState::Idle;
+        }
+        else if (line.find("DATA ") == 0)
+        {
+            std::string payload = line.substr(5); // skip "DATA "
+            std::replace(payload.begin(), payload.end(), ',', '.');
+            parseDataLine(payload);
+        }
+        else if (line == "BEGIN")
+        {
+            // Resync: discard incomplete series and start fresh
+            tempSeries_ = MeasurementSeries{};
+        }
+        break;
     }
 
     return result;
