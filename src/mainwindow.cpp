@@ -41,7 +41,7 @@ class MyChartView : public QChartView
         bool showTip = false;
         QString text;
 
-        if (chart())
+        if (chart() && !chart()->series().empty())
         {
             QPointF value = chart()->mapToValue(event->position());
             auto *axisX = qobject_cast<QValueAxis *>(chart()->axes(Qt::Horizontal).value(0));
@@ -383,8 +383,5 @@ void MainWindow::resetChartToEmpty()
 
     const auto axes = chart->axes();
     for (QAbstractAxis *axis : axes)
-    {
-        chart->removeAxis(axis);  // chart releases ownership of axis
-        delete axis;
-    }
+        axis->setVisible(false);
 }
