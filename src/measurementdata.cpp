@@ -253,7 +253,6 @@ ParseResult MeasurementDataManager::handleCompletedLine(const std::string &rawLi
             if (!tempSeries_.empty())
             {
                 series_.push_back(std::move(tempSeries_));
-                tempSeries_ = MeasurementSeries{};
                 result = ParseResult::SeriesCompleted; // series completed
             }
             state_ = ParserState::Idle;
