@@ -135,7 +135,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     // Connect to DiodeScout
     if (!findAndOpenDiodeScout())
     {
-        QMessageBox::warning(this, "DiodeScoutUI", "No DiodeScout device detected.\nPlease check the connection.");
+        QMessageBox::warning(this, "DiodeScoutUI", "No DiodeScout device detected.\nPlease reconnect and try again.");
         QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
     }
     else
