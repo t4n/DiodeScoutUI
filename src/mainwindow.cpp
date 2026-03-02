@@ -137,11 +137,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     {
         QMessageBox::warning(this, "DiodeScoutUI", "No DiodeScout device detected.\nPlease check the connection.");
         QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
-        return;
     }
-
-    // Connection successful, now allow the window to be shown
-    setAttribute(Qt::WA_DontShowOnScreen, false);
+    else
+    {
+        // Connection successful, now allow the window to be shown
+        setAttribute(Qt::WA_DontShowOnScreen, false);
+    }
 }
 
 // Triggered when the user selects "Restore default view".
