@@ -213,14 +213,11 @@ void MainWindow::onExportPNGClicked()
 void MainWindow::onRemoveLastClicked()
 {
     dataManager.removeLastSeries();
+
     if (dataManager.seriesCount() == 0)
-    {
         resetChartToEmpty();
-    }
     else
-    {
         rebuildChart();
-    }
 }
 
 // Triggered when the user selects "Remove all series".
@@ -246,9 +243,7 @@ bool MainWindow::findAndOpenDiodeScout()
         hw += " " + info.serialNumber() + " " + info.systemLocation();
 
         if (hw.contains("DIODESCOUT", Qt::CaseInsensitive))
-        {
             return openSerialPort(info);
-        }
     }
 
     // 2) DiodeScout not found, ask the user to select a serial port
