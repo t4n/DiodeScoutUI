@@ -236,22 +236,25 @@ void MainWindow::onQuitClicked()
 // Search for the DiodeScout device and open the serial port.
 bool MainWindow::findAndOpenDiodeScout()
 {
-    // 1) Try to automatically detect the DiodeScout device
-    for (const QSerialPortInfo &info : QSerialPortInfo::availablePorts())
+    // 1) Try automatic detection
+    const QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
+    for (const QSerialPortInfo &p : ports)
     {
-        QString hw = info.description() + " " + info.manufacturer();
-        hw += " " + info.serialNumber() + " " + info.systemLocation();
+        QString hw = p.description() + ' ' + p.manufacturer();
+        hw += ' ' + p.serialNumber() + ' ' + p.systemLocation();
 
         if (hw.contains("DIODESCOUT", Qt::CaseInsensitive))
-            return openSerialPort(info);
+            return openSerialPort(p);
     }
 
-    // 2) DiodeScout not found, ask the user to select a serial port
+    // 2) Ask user to select port
     QStringList portNames;
-    const QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
-
-    for (const auto &p : ports)
-        portNames << p.systemLocation() + "   (" + p.description() + ")";
+    for (const QSerialPortInfo &p : ports)
+    {
+        QString prettyName = p.systemLocation();
+        prettyName.replace("\\\\.\\", "");
+        portNames << prettyName + "   (" + p.description() + ")";
+    }
 
     bool ok = false;
     QString choice = QInputDialog::getItem(this,
@@ -262,14 +265,14 @@ bool MainWindow::findAndOpenDiodeScout()
         false,
         &ok);
 
-    if (!ok || choice.isEmpty())
-        return false;
+    if (ok)
+    {
+        int index = portNames.indexOf(choice);
+        if (index >= 0)
+            return openSerialPort(ports.at(index));
+    }
 
-    int index = portNames.indexOf(choice);
-    if (index < 0)
-        return false;
-
-    return openSerialPort(ports[index]);
+    return false;
 }
 
 // Opens the given serial port and initializes the connection.
@@ -296,9 +299,12 @@ bool MainWindow::openSerialPort(const QSerialPortInfo &info)
 // Reads all available serial data and processes it byte-by-byte.
 void MainWindow::onSerialDataReceived()
 {
-    const QByteArray data = serial->readAll();
-    for (auto c : data)
-        handleSerialByte(c);
+    while (serial->bytesAvailable() > 0)
+    {
+        const QByteArray data = serial->readAll();
+        for (auto c : data)
+            handleSerialByte(c);
+    }
 }
 
 // Handles a single received byte from the serial interface.
