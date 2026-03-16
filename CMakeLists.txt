@@ -13,9 +13,7 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS
 qt_standard_project_setup()
 
 # Executable target
-qt_add_executable(DiodeScoutUI
-    WIN32
-    MACOSX_BUNDLE
+qt_add_executable(DiodeScoutUI WIN32 MACOSX_BUNDLE
     src/main.cpp
     src/mainwindow.cpp
     src/mainwindow.h
