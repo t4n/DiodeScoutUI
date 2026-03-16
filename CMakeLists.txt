@@ -35,16 +35,15 @@ if(APPLE)
 endif()
 
 # Qt UI resources (embedded icons)
-qt_add_resources(DiodeScoutUI "app_resources"
-    FILES
-        icons/appicon.svg
-        icons/exportcsv.svg
-        icons/exportpng.svg
-        icons/exportpython.svg
-        icons/quit.svg
-        icons/removeall.svg
-        icons/removelast.svg
-        icons/restoreview.svg
+qt_add_resources(DiodeScoutUI "app_resources" FILES
+    icons/appicon.svg
+    icons/exportcsv.svg
+    icons/exportpng.svg
+    icons/exportpython.svg
+    icons/quit.svg
+    icons/removeall.svg
+    icons/removelast.svg
+    icons/restoreview.svg
 )
 
 # Link Qt libraries
