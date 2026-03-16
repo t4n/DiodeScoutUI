@@ -43,9 +43,11 @@ class MyChartView : public QChartView
 
         if (chart() && !chart()->series().empty())
         {
+            auto axesX = chart()->axes(Qt::Horizontal);
+            auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
+            auto axesY = chart()->axes(Qt::Vertical);
+            auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
             QPointF value = chart()->mapToValue(event->position());
-            auto *axisX = qobject_cast<QValueAxis *>(chart()->axes(Qt::Horizontal).value(0));
-            auto *axisY = qobject_cast<QValueAxis *>(chart()->axes(Qt::Vertical).value(0));
 
             if (axisX && axisY && value.x() >= axisX->min() && value.x() <= axisX->max() && value.y() >= axisY->min() &&
                 value.y() <= axisY->max())
