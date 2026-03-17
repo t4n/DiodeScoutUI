@@ -369,7 +369,7 @@ void MainWindow::rebuildChart()
         axisY->setTitleText("\nMilliampere (mA)");
         axisY->setTickType(QValueAxis::TicksDynamic);
         axisY->setRange(0, roundUpToHalf(dataManager.getMaxCurrent()));
-        axisY->setTickInterval(0.5);
+        axisY->setTickInterval(1.0);
         axisY->setMinorTickCount(4);
     }
 }
