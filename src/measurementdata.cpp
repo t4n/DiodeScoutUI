@@ -212,6 +212,8 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
     out << "plt.ylabel('Milliampere (mA)')\n";
     out << "plt.legend()\n";
     out << "plt.grid(True)\n";
+    out << "plt.minorticks_on()\n";
+    out << "# plt.savefig('plot.png', dpi=300)\n";
     out << "plt.show()\n";
 
     return true;
