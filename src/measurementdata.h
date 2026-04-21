@@ -61,8 +61,7 @@ class MeasurementSeries
 };
 
 // ---------------------------------------------------------------------------
-//  MeasurementDataManager:
-//  Central data management:
+//  MeasurementDataManager, central data management:
 //  - Stores all completed measurement series
 //  - Holds a temporary series while receiving data
 //  - Provides parser functionality for the serial interface

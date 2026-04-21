@@ -283,7 +283,8 @@ void MeasurementDataManager::parseDataLine(const std::string &line)
     double x = 0.0;
     double y = 0.0;
 
-    if (!(iss >> x >> y))
+    iss >> x >> y;
+    if (iss.fail())
         return;
 
     tempSeries_.addPoint(x, y);
