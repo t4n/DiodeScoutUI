@@ -16,7 +16,7 @@
 #include <QStyleFactory>
 
 // Handles detecting and opening a DiodeScout serial connection.
-class DiodeScoutSerialConnection
+class DiodeScoutSerialConnector
 {
   public:
     // Locates the DiodeScout device and opens the connection.
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 
     // Establish DiodeScout serial connection, show MainWindow
     QSerialPort diodeScoutPort;
-    if (!DiodeScoutSerialConnection::FindAndOpen(diodeScoutPort))
+    if (!DiodeScoutSerialConnector::FindAndOpen(diodeScoutPort))
     {
         QMessageBox::warning(nullptr,
             "DiodeScoutUI",
