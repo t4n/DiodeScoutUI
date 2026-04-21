@@ -110,7 +110,8 @@ ParseResult MeasurementDataManager::processReceivedChar(char c)
         currentLine_.clear();
         return result;
     }
-    else if (c != '\r')
+
+    if (c != '\r')
     {
         currentLine_.push_back(c);
     }
