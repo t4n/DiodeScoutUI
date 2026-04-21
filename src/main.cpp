@@ -28,6 +28,7 @@ class DiodeScoutSerialConnector
         {
             QString hw = p.description() + ' ' + p.manufacturer();
             hw += ' ' + p.serialNumber() + ' ' + p.systemLocation();
+
             if (hw.contains("DIODESCOUT", Qt::CaseInsensitive))
                 return Open(serial, p);
         }
@@ -77,6 +78,8 @@ class DiodeScoutSerialConnector
 // Main entry point.
 int main(int argc, char *argv[])
 {
+    QApplication application(argc, argv);
+
     // Background colors
     QPalette darkPalette;
     darkPalette.setColor(QPalette::Window, QColor(53, 53, 53)); // Window background
@@ -99,10 +102,10 @@ int main(int argc, char *argv[])
     darkPalette.setColor(QPalette::Link, QColor(42, 130, 218)); // Links / clickable elements
     darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218)); // Selection / highlight
 
-    QApplication a(argc, argv);
-    a.setWindowIcon(QIcon(":/icons/appicon.svg"));
-    a.setStyle(QStyleFactory::create("Fusion"));
-    a.setPalette(darkPalette);
+    // Make it look good
+    application.setWindowIcon(QIcon(":/icons/appicon.svg"));
+    application.setStyle(QStyleFactory::create("Fusion"));
+    application.setPalette(darkPalette);
 
     // Establish DiodeScout serial connection, show MainWindow
     QSerialPort diodeScoutPort;
@@ -118,6 +121,6 @@ int main(int argc, char *argv[])
         MainWindow w(diodeScoutPort);
         w.resize(800, 600);
         w.show();
-        return a.exec();
+        return application.exec();
     }
 }
