@@ -17,15 +17,15 @@
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
 #include <QtSerialPort/QSerialPort>
-#include <QtSerialPort/QSerialPortInfo>
 
+// Main application window for the DiodeScout UI.
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
   public:
     // Constructs the main window and initializes UI components.
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(QSerialPort &diodeScoutPort);
 
     // Destructor.
     ~MainWindow() = default;
@@ -57,7 +57,7 @@ class MainWindow : public QMainWindow
 
   private:
     // Active serial port connection to the DiodeScout device.
-    QSerialPort *serial = nullptr;
+    QSerialPort &serial;
 
     // Manages all recorded measurement data and series.
     MeasurementDataManager dataManager;
@@ -74,12 +74,6 @@ class MainWindow : public QMainWindow
     QAction *removeLastAct;
     QAction *removeAllAct;
     QAction *quitAct;
-
-    // Search for the DiodeScout device and open the serial port.
-    bool findAndOpenDiodeScout();
-
-    // Opens the given serial port and initializes the connection.
-    bool openSerialPort(const QSerialPortInfo &info);
 
     // Handles a single received byte from the serial interface.
     void handleSerialByte(char c);

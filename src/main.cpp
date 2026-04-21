@@ -1,16 +1,80 @@
 // ---------------------------------------------------------------------------
 //  Entry point of the DiodeScout application. This file initializes the Qt
 //  application environment, applies the dark Fusion UI theme, loads the
-//  application icon, and launches the MainWindow instance.
+//  application icon, opens the serial connection to the DiodeScout device,
+//  and launches the MainWindow instance.
 //
 //  All UI logic and serial communication are handled inside MainWindow.
 // ---------------------------------------------------------------------------
 
 #include "mainwindow.h"
 #include <QApplication>
+#include <QInputDialog>
+#include <QMessageBox>
 #include <QPalette>
+#include <QSerialPortInfo>
 #include <QStyleFactory>
 
+// Handles detecting and opening a DiodeScout serial connection.
+class DiodeScoutSerialConnection
+{
+  public:
+    // Locates the DiodeScout device and opens the connection.
+    static bool FindAndOpen(QSerialPort &serial)
+    {
+        // 1) Try automatic detection
+        const QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
+        for (const QSerialPortInfo &p : ports)
+        {
+            QString hw = p.description() + ' ' + p.manufacturer();
+            hw += ' ' + p.serialNumber() + ' ' + p.systemLocation();
+            if (hw.contains("DIODESCOUT", Qt::CaseInsensitive))
+                return Open(serial, p);
+        }
+
+        // 2) Ask user to select port
+        QStringList portNames;
+        for (const QSerialPortInfo &p : ports)
+        {
+            QString prettyName = p.systemLocation();
+            prettyName.replace("\\\\.\\", "");
+            portNames << prettyName + "   (" + p.description() + ")";
+        }
+
+        bool ok = false;
+        QString choice = QInputDialog::getItem(nullptr,
+            "DiodeScoutUI",
+            "No DiodeScout device detected.\nPlease select the correct serial port:",
+            portNames,
+            0,
+            false,
+            &ok);
+
+        if (ok)
+        {
+            int index = portNames.indexOf(choice);
+            if (index >= 0)
+                return Open(serial, ports.at(index));
+        }
+
+        return false;
+    }
+
+  private:
+    // Configures and opens the serial port.
+    static bool Open(QSerialPort &serial, const QSerialPortInfo &info)
+    {
+        serial.setPortName(info.portName());
+        serial.setBaudRate(QSerialPort::Baud9600);
+        serial.setDataBits(QSerialPort::Data8);
+        serial.setParity(QSerialPort::NoParity);
+        serial.setStopBits(QSerialPort::OneStop);
+        serial.setFlowControl(QSerialPort::NoFlowControl);
+        return serial.open(QIODevice::ReadWrite);
+    }
+};
+
+// Main entry point.
 int main(int argc, char *argv[])
 {
     // Background colors
@@ -40,8 +104,19 @@ int main(int argc, char *argv[])
     a.setStyle(QStyleFactory::create("Fusion"));
     a.setPalette(darkPalette);
 
-    MainWindow w;
-    w.show();
-    w.resize(800, 600);
-    return a.exec();
+    QSerialPort diodeScoutPort;
+    if (!DiodeScoutSerialConnection::FindAndOpen(diodeScoutPort))
+    {
+        QMessageBox::warning(nullptr,
+            "DiodeScoutUI",
+            "No DiodeScout device detected.\nPlease reconnect and try again.");
+        return 0;
+    }
+    else
+    {
+        MainWindow w(diodeScoutPort);
+        w.show();
+        w.resize(800, 600);
+        return a.exec();
+    }
 }

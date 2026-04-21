@@ -87,9 +87,14 @@ class MyChartView : public QChartView
 };
 
 // Constructs the main window and initializes UI components.
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
+MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
 {
-    setAttribute(Qt::WA_DontShowOnScreen, true);
+    // Serial port must be open before constructing MainWindow
+    Q_ASSERT(serial.isOpen());
+    QString prettyName = serial.portName();
+    prettyName.replace("\\\\.\\", "");
+    statusBar()->showMessage(QString("DiodeScout at %1").arg(prettyName));
+    connect(&serial, &QSerialPort::readyRead, this, &MainWindow::onSerialDataReceived);
 
     // Toolbar
     auto *toolbar = new QToolBar("Main Toolbar", this);
@@ -133,18 +138,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     chartView->setRenderHint(QPainter::Antialiasing);
     chartView->setRubberBand(QChartView::RectangleRubberBand);
     setCentralWidget(chartView);
-
-    // Connect to DiodeScout
-    if (!findAndOpenDiodeScout())
-    {
-        QMessageBox::warning(this, "DiodeScoutUI", "No DiodeScout device detected.\nPlease reconnect and try again.");
-        QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
-    }
-    else
-    {
-        // Connection successful, now allow the window to be shown
-        setAttribute(Qt::WA_DontShowOnScreen, false);
-    }
 }
 
 // Triggered when the user selects "Restore default view".
@@ -235,75 +228,12 @@ void MainWindow::onQuitClicked()
     qApp->quit();
 }
 
-// Search for the DiodeScout device and open the serial port.
-bool MainWindow::findAndOpenDiodeScout()
-{
-    // 1) Try automatic detection
-    const QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
-    for (const QSerialPortInfo &p : ports)
-    {
-        QString hw = p.description() + ' ' + p.manufacturer();
-        hw += ' ' + p.serialNumber() + ' ' + p.systemLocation();
-
-        if (hw.contains("DIODESCOUT", Qt::CaseInsensitive))
-            return openSerialPort(p);
-    }
-
-    // 2) Ask user to select port
-    QStringList portNames;
-    for (const QSerialPortInfo &p : ports)
-    {
-        QString prettyName = p.systemLocation();
-        prettyName.replace("\\\\.\\", "");
-        portNames << prettyName + "   (" + p.description() + ")";
-    }
-
-    bool ok = false;
-    QString choice = QInputDialog::getItem(this,
-        "DiodeScoutUI",
-        "No DiodeScout device detected.\nPlease select the correct serial port:",
-        portNames,
-        0,
-        false,
-        &ok);
-
-    if (ok)
-    {
-        int index = portNames.indexOf(choice);
-        if (index >= 0)
-            return openSerialPort(ports.at(index));
-    }
-
-    return false;
-}
-
-// Opens the given serial port and initializes the connection.
-bool MainWindow::openSerialPort(const QSerialPortInfo &info)
-{
-    serial = new QSerialPort(info, this);
-    serial->setBaudRate(QSerialPort::Baud9600);
-    serial->setDataBits(QSerialPort::Data8);
-    serial->setParity(QSerialPort::NoParity);
-    serial->setStopBits(QSerialPort::OneStop);
-    serial->setFlowControl(QSerialPort::NoFlowControl);
-
-    if (!serial->open(QIODevice::ReadWrite))
-        return false;
-
-    connect(serial, &QSerialPort::readyRead, this, &MainWindow::onSerialDataReceived);
-
-    QString prettyName = info.systemLocation();
-    prettyName.replace("\\\\.\\", "");
-    statusBar()->showMessage(QString("DiodeScout at %1").arg(prettyName));
-    return true;
-}
-
 // Reads all available serial data and processes it byte-by-byte.
 void MainWindow::onSerialDataReceived()
 {
-    while (serial->bytesAvailable() > 0)
+    while (serial.bytesAvailable() > 0)
     {
-        const QByteArray data = serial->readAll();
+        const QByteArray data = serial.readAll();
         for (auto c : data)
             handleSerialByte(c);
     }
