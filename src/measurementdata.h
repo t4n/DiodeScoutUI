@@ -106,15 +106,23 @@ class MeasurementDataManager
     bool exportPython(const std::string &filePath) const;
 
   private:
+    // Current state of the serial data stream parser.
     enum class ParserState
     {
         Idle,
         ReceivingSeries
     };
 
+    // Current state of the internal parser.
     ParserState state_ = ParserState::Idle;
+
+    // Accumulates characters from the serial port.
     std::string currentLine_;
+
+    // Buffer for the series currently being received.
     MeasurementSeries tempSeries_;
+
+    // Collection of all successfully completed series.
     std::vector<MeasurementSeries> series_;
 
     // Removes leading and trailing whitespace.
