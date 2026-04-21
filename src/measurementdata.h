@@ -87,11 +87,8 @@ class MeasurementDataManager
     // Returns the number of points in the temporary series.
     std::size_t tempSeriesSize() const noexcept;
 
-    // Returns the maximum voltage across all series (including temporary).
-    double getMaxVoltage() const noexcept;
-
-    // Returns the maximum current across all series (including temporary).
-    double getMaxCurrent() const noexcept;
+    // Returns the maximum voltage and maximum current across all series.
+    void getMaxVoltageAndCurrent(double &maxV, double &maxI) const noexcept;
 
     // Parser: processes a single received character.
     ParseResult processReceivedChar(char c);

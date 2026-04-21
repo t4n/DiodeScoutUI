@@ -280,13 +280,16 @@ void MainWindow::rebuildChart()
     chart->legend()->hide();
     chart->setAnimationOptions(QChart::AllAnimations);
 
+    double maxVoltage, maxCurrent;
+    dataManager.getMaxVoltageAndCurrent(maxVoltage, maxCurrent);
+
     auto axesX = chart->axes(Qt::Horizontal);
     auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
     if (axisX)
     {
         axisX->setTitleText("Volt (V)");
         axisX->setTickType(QValueAxis::TicksDynamic);
-        axisX->setRange(0, roundUpToHalf(dataManager.getMaxVoltage()));
+        axisX->setRange(0, roundUpToHalf(maxVoltage));
         axisX->setTickInterval(0.5);
         axisX->setMinorTickCount(4);
     }
@@ -298,7 +301,7 @@ void MainWindow::rebuildChart()
         axisY->setLabelFormat("%.2f");
         axisY->setTitleText("\nMilliampere (mA)");
         axisY->setTickType(QValueAxis::TicksDynamic);
-        axisY->setRange(0, roundUpToHalf(dataManager.getMaxCurrent()));
+        axisY->setRange(0, roundUpToHalf(maxCurrent));
         axisY->setTickInterval(1.0);
         axisY->setMinorTickCount(4);
     }

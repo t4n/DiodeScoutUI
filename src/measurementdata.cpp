@@ -77,38 +77,28 @@ std::size_t MeasurementDataManager::tempSeriesSize() const noexcept
     return tempSeries_.size();
 }
 
-// Returns the maximum voltage across all series.
-double MeasurementDataManager::getMaxVoltage() const noexcept
+// Returns the maximum voltage and maximum current across all series.
+void MeasurementDataManager::getMaxVoltageAndCurrent(double &maxV, double &maxI) const noexcept
 {
-    double maxV = 0.0;
+    maxV = 0.0;
+    maxI = 0.0;
 
     for (const auto &series : series_)
         for (const auto &p : series.points())
+        {
             if (p.voltageVolt > maxV)
                 maxV = p.voltageVolt;
-
-    for (const auto &p : tempSeries_.points())
-        if (p.voltageVolt > maxV)
-            maxV = p.voltageVolt;
-
-    return maxV;
-}
-
-// Returns the maximum current across all series.
-double MeasurementDataManager::getMaxCurrent() const noexcept
-{
-    double maxI = 0.0;
-
-    for (const auto &series : series_)
-        for (const auto &p : series.points())
             if (p.currentMilliAmp > maxI)
                 maxI = p.currentMilliAmp;
+        }
 
     for (const auto &p : tempSeries_.points())
+    {
+        if (p.voltageVolt > maxV)
+            maxV = p.voltageVolt;
         if (p.currentMilliAmp > maxI)
             maxI = p.currentMilliAmp;
-
-    return maxI;
+    }
 }
 
 // Parser: processes a single received character.

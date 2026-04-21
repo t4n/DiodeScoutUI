@@ -104,6 +104,7 @@ int main(int argc, char *argv[])
     a.setStyle(QStyleFactory::create("Fusion"));
     a.setPalette(darkPalette);
 
+    // Establish DiodeScout serial connection, show MainWindow
     QSerialPort diodeScoutPort;
     if (!DiodeScoutSerialConnection::FindAndOpen(diodeScoutPort))
     {
@@ -115,8 +116,8 @@ int main(int argc, char *argv[])
     else
     {
         MainWindow w(diodeScoutPort);
-        w.show();
         w.resize(800, 600);
+        w.show();
         return a.exec();
     }
 }
