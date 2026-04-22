@@ -5,21 +5,21 @@ characteristics measured with the DiodeScout device.
 
 ## Features
 
-- Plotting with Qt Charts
-- Serial data acquisition
-- Export to PNG, CSV, and Python script
+* Plotting with Qt Charts
+* Serial data acquisition
+* Export to PNG, CSV, and Python script
 
 ## Build
 
 1. Install Qt 6 with QtSerialPort, QtCharts, and Qt Creator.
-2. Open `CMakeLists.txt` in Qt Creator.
+2. Open CMakeLists.txt in Qt Creator.
 3. Select a Qt kit and build the project.
 
 ## Structure
 
-- src/ → C++ source code
-- icons/ → SVG icons
-- docs/ → Documentation and notes
+* src/ → C++ source code
+* icons/ → SVG icons
+* docs/ → Documentation and notes
 
 ## License
 
@@ -54,3 +54,4 @@ See licenses/ for details.
 This application dynamically links against Qt libraries. Users
 may replace those libraries with compatible modified versions in
 accordance with the LGPLv3.
+
