@@ -15,7 +15,10 @@
 #include <QSerialPortInfo>
 #include <QStyleFactory>
 
-// Handles detecting and opening a DiodeScout serial connection.
+// ---------------------------------------------------------------------------
+//  DiodeScoutSerialConnector:
+//  Handles detecting and opening a DiodeScout serial connection.
+// ---------------------------------------------------------------------------
 class DiodeScoutSerialConnector
 {
   public:
@@ -75,7 +78,9 @@ class DiodeScoutSerialConnector
     }
 };
 
-// Main entry point.
+// ---------------------------------------------------------------------------
+//  Main entry point.
+// ---------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
     QApplication application(argc, argv);

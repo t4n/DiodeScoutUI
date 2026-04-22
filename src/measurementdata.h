@@ -57,6 +57,7 @@ class MeasurementSeries
     bool empty() const noexcept;
 
   private:
+    // Measurement points.
     std::vector<MeasurementPoint> points_;
 };
 

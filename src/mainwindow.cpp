@@ -22,19 +22,23 @@
 #include <QToolTip>
 #include <QValueAxis>
 
-// Rounds a value up to the next 0.5 step.
-inline double roundUpToHalf(double value)
-{
-    return std::ceil(value * 2.0) / 2.0;
-}
-
-// Custom QChartView providing mouse-position tooltips and interactive zooming.
+// ---------------------------------------------------------------------------
+//  MyChartView:
+//  Custom QChartView providing mouse-position tooltips and zooming.
+// ---------------------------------------------------------------------------
 class MyChartView : public QChartView
 {
   public:
     using QChartView::QChartView; // inherit constructors
 
   protected:
+    // Checks if value is within the axis limits.
+    bool inAxisRange(qreal value, const QValueAxis *axis)
+    {
+        Q_ASSERT(axis);
+        return axis && value >= axis->min() && value <= axis->max();
+    }
+
     // Update tooltip with mouse position in chart coordinates.
     void mouseMoveEvent(QMouseEvent *event) override
     {
@@ -43,16 +47,16 @@ class MyChartView : public QChartView
 
         if (chart() && !chart()->series().empty())
         {
-            auto axesX = chart()->axes(Qt::Horizontal);
-            auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
-            auto axesY = chart()->axes(Qt::Vertical);
-            auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
-            QPointF value = chart()->mapToValue(event->position());
+            const auto axesX = chart()->axes(Qt::Horizontal);
+            const auto axesY = chart()->axes(Qt::Vertical);
 
-            if (axisX && axisY && value.x() >= axisX->min() && value.x() <= axisX->max() && value.y() >= axisY->min() &&
-                value.y() <= axisY->max())
+            const auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
+            const auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
+
+            QPointF value = chart()->mapToValue(event->position());
+            if (inAxisRange(value.x(), axisX) && inAxisRange(value.y(), axisY))
             {
-                text = QString("%1 V, %2 mA").arg(value.x(), 0, 'f', 3).arg(value.y(), 0, 'f', 3);
+                text = QString::asprintf("%.3f V, %.3f mA", value.x(), value.y());
                 showTip = true;
             }
         }
@@ -85,6 +89,10 @@ class MyChartView : public QChartView
         event->accept();
     }
 };
+
+// ---------------------------------------------------------------------------
+//  MainWindow – Implementation
+// ---------------------------------------------------------------------------
 
 // Constructs the main window and initializes UI components.
 MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
@@ -253,6 +261,12 @@ void MainWindow::handleSerialByte(char c)
         int n = dataManager.tempSeriesSize();
         statusBar()->showMessage(QString("Receiving data ") + QString(n, '.'));
     }
+}
+
+// Rounds a value up to the next 0.5 step.
+double MainWindow::roundUpToHalf(double value)
+{
+    return std::ceil(value * 2.0) / 2.0;
 }
 
 // Rebuilds the chart from all stored measurement series.

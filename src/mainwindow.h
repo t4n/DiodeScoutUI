@@ -18,7 +18,10 @@
 #include <QtCharts/QValueAxis>
 #include <QtSerialPort/QSerialPort>
 
-// Main application window for the DiodeScout UI.
+// ---------------------------------------------------------------------------
+//  MainWindow:
+//  Main application window for the DiodeScout UI.
+// ---------------------------------------------------------------------------
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -77,6 +80,9 @@ class MainWindow : public QMainWindow
 
     // Handles a single received byte from the serial interface.
     void handleSerialByte(char c);
+
+    // Rounds a value up to the next 0.5 step.
+    double roundUpToHalf(double value);
 
     // Rebuilds the chart from all stored measurement series.
     void rebuildChart();
