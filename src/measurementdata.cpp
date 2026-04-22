@@ -13,6 +13,7 @@
 #include <cctype>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 
 // ---------------------------------------------------------------------------
 //  MeasurementSeries – Implementation
@@ -69,6 +70,24 @@ void MeasurementDataManager::removeLastSeries()
 {
     if (!series_.empty())
         series_.pop_back();
+}
+
+// Appends a simulated measurement series.
+void MeasurementDataManager::appendSimulatedSeries()
+{
+    MeasurementSeries simul;
+    double voltage = 0.0;
+    double current = 0.0;
+    const double step = 0.05;
+
+    while (current < 10.0)
+    {
+        current = 0.001 * (std::exp(voltage * 10.0) - 1.0);
+        simul.addPoint(voltage, current);
+        voltage += step;
+    }
+
+    series_.push_back(std::move(simul));
 }
 
 // Returns the number of points in the temporary series.

@@ -112,20 +112,22 @@ int main(int argc, char *argv[])
     application.setStyle(QStyleFactory::create("Fusion"));
     application.setPalette(darkPalette);
 
-    // Establish DiodeScout serial connection, show MainWindow
+    // Establish DiodeScout serial connection
     QSerialPort diodeScoutPort;
     if (!DiodeScoutSerialConnector::FindAndOpen(diodeScoutPort))
     {
-        QMessageBox::warning(nullptr,
+        auto result = QMessageBox::question(nullptr,
             "DiodeScoutUI",
-            "No DiodeScout device detected.\nPlease reconnect and try again.");
-        return 0;
+            "No DiodeScout device detected.\nDo you want to start in simulation mode?",
+            QMessageBox::Yes | QMessageBox::No);
+
+        if (result == QMessageBox::No)
+            return 0;
     }
-    else
-    {
-        MainWindow w(diodeScoutPort);
-        w.resize(800, 600);
-        w.show();
-        return application.exec();
-    }
+
+    // Show MainWindow
+    MainWindow w(diodeScoutPort);
+    w.resize(800, 600);
+    w.show();
+    return application.exec();
 }

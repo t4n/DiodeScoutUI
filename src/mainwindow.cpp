@@ -97,13 +97,6 @@ class MyChartView : public QChartView
 // Constructs the main window and initializes UI components.
 MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
 {
-    // Serial port must be open before constructing MainWindow
-    Q_ASSERT(serial.isOpen());
-    QString prettyName = serial.portName();
-    prettyName.replace("\\\\.\\", "");
-    statusBar()->showMessage(QString("DiodeScout at %1").arg(prettyName));
-    connect(&serial, &QSerialPort::readyRead, this, &MainWindow::onSerialDataReceived);
-
     // Toolbar
     auto *toolbar = new QToolBar("Main Toolbar", this);
     toolbar->setIconSize(QSize(24, 24));
@@ -132,7 +125,7 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
     connect(removeAllAct, &QAction::triggered, this, &MainWindow::onRemoveAllClicked);
     connect(quitAct, &QAction::triggered, this, &MainWindow::onQuitClicked);
 
-    // Chart setup
+    // Chart
     chart = new QChart();
     QFont titleFont = chart->titleFont();
     titleFont.setPointSize(12);
@@ -146,6 +139,22 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
     chartView->setRenderHint(QPainter::Antialiasing);
     chartView->setRubberBand(QChartView::RectangleRubberBand);
     setCentralWidget(chartView);
+
+    // Setup data source: Use simulation if no hardware is connected,
+    // otherwise initialize serial communication.
+    if (!serial.isOpen())
+    {
+        statusBar()->showMessage("Simulation");
+        dataManager.appendSimulatedSeries();
+        rebuildChart();
+    }
+    else
+    {
+        QString prettyName = serial.portName();
+        prettyName.replace("\\\\.\\", "");
+        statusBar()->showMessage(QString("DiodeScout at %1").arg(prettyName));
+        connect(&serial, &QSerialPort::readyRead, this, &MainWindow::onSerialDataReceived);
+    }
 }
 
 // Triggered when the user selects "Restore default view".

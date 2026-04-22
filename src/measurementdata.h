@@ -85,6 +85,9 @@ class MeasurementDataManager
     // Removes the last measurement series.
     void removeLastSeries();
 
+    // Appends a simulated measurement series.
+    void appendSimulatedSeries();
+
     // Returns the number of points in the temporary series.
     std::size_t tempSeriesSize() const noexcept;
 
