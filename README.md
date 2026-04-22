@@ -1,49 +1,56 @@
-## DiodeScoutUI
-DiodeScoutUI is a Qt 6 application for visualizing diode I‑V characteristics.
-It communicates with an external DiodeScout measurement device via a serial
-interface.
+# DiodeScoutUI
+
+DiodeScoutUI is a Qt 6 desktop application for visualizing diode I-V
+characteristics measured with the DiodeScout device.
 
 ## Features
-- Plotting with QtCharts
+
+- Plotting with Qt Charts
 - Serial data acquisition
 - Export to PNG, CSV, and Python script
 
 ## Build
-- mkdir build && cd build
-- cmake ..
-- cmake --build .
+
+1. Install Qt 6 with QtSerialPort, QtCharts, and Qt Creator.
+2. Open `CMakeLists.txt` in Qt Creator.
+3. Select a Qt kit and build the project.
 
 ## Structure
-- src/     → C++ source code
-- icons/   → SVG icons
-- docs/    → Documentation and notes
+
+- src/ → C++ source code
+- icons/ → SVG icons
+- docs/ → Documentation and notes
 
 ## License
+
 Copyright (C) 2026 Tilman Küpper
 
-This project is released under the GNU General Public License version 3
-(GPLv3). See the LICENSE file for details.
+DiodeScoutUI is licensed under the GNU General Public License
+version 3 (GPLv3). See the LICENSE file for the full license text.
 
-## Third‑Party Notices
+## Third-Party Software
+
 This project uses the Qt 6 framework, including QtCore, QtWidgets,
-QtSerialPort (LGPLv3) and QtCharts (GPLv3). Corresponding Qt license texts
-are included in the licenses/ directory.
+QtSerialPort and QtCharts. Qt modules are licensed under the GNU
+LGPLv3, GPLv3, or commercial licenses, depending on the module and
+distribution, see:
 
-Qt includes third-party libraries licensed under various open-source licenses.
-For a full list of third-party licenses included in Qt, please refer to the
-documentation at:
 https://doc.qt.io/qt-6/licensing.html
 
-## Binary releases
-Binary releases of DiodeScoutUI are provided under the terms of the GPLv3.
-The corresponding source code is available at:
+Copies of applicable third-party license texts are included in the
+licenses/ directory.
+
+## Binary Releases
+
+Binary releases of DiodeScoutUI are distributed under GPLv3.
+Complete corresponding source code is available at:
+
 https://github.com/t4n/DiodeScoutUI
 
-Binary releases include third-party libraries (Qt, MinGW-w64, GCC runtime).
-See the licenses/ directory for details.
+Distributed binaries may include third-party components such as Qt
+libraries, MinGW-w64 runtime libraries, and GCC runtime libraries.
+See licenses/ for details.
 
-This application dynamically links against the Qt 6 libraries. In accordance
-with the LGPLv3, users are permitted to replace the Qt libraries with their
-own compatible builds. The Qt source code is available from the official Qt
-download site:
-https://download.qt.io/official_releases/qt/
+This application dynamically links against Qt libraries. Users
+may replace those libraries with compatible modified versions in
+accordance with the LGPLv3.
