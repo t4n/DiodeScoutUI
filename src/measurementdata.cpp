@@ -78,9 +78,9 @@ void MeasurementDataManager::appendSimulatedSeries()
     MeasurementSeries simul;
     double voltage = 0.0;
     double current = 0.0;
-    const double step = 0.05;
+    const double step = 0.025;
 
-    while (current < 10.0)
+    while (current < 5.0)
     {
         current = 0.001 * (std::exp(voltage * 10.0) - 1.0);
         simul.addPoint(voltage, current);
