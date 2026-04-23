@@ -49,7 +49,6 @@ class MyChartView : public QChartView
         {
             const auto axesX = chart()->axes(Qt::Horizontal);
             const auto axesY = chart()->axes(Qt::Vertical);
-
             const auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
             const auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
 
@@ -140,8 +139,8 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
     chartView->setRubberBand(QChartView::RectangleRubberBand);
     setCentralWidget(chartView);
 
-    // Setup data source: Use simulation if no hardware is connected,
-    // otherwise initialize serial communication.
+    // Setup data source: Use simulation if no hardware is
+    // connected, otherwise initialize serial communication.
     if (!serial.isOpen())
     {
         statusBar()->showMessage("Simulation");
@@ -294,7 +293,6 @@ void MainWindow::rebuildChart()
         auto *line = new QSplineSeries();
         for (const auto &p : seriesData.points())
             line->append(p.voltageVolt, p.currentMilliAmp);
-
         chart->addSeries(line);
     }
 
@@ -303,11 +301,14 @@ void MainWindow::rebuildChart()
     chart->legend()->hide();
     chart->setAnimationOptions(QChart::AllAnimations);
 
+    auto axesX = chart->axes(Qt::Horizontal);
+    auto axesY = chart->axes(Qt::Vertical);
+    auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
+    auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
+
     double maxVoltage, maxCurrent;
     dataManager.getMaxVoltageAndCurrent(maxVoltage, maxCurrent);
 
-    auto axesX = chart->axes(Qt::Horizontal);
-    auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
     if (axisX)
     {
         axisX->setTitleText("Volt (V)");
@@ -317,8 +318,6 @@ void MainWindow::rebuildChart()
         axisX->setMinorTickCount(4);
     }
 
-    auto axesY = chart->axes(Qt::Vertical);
-    auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
     if (axisY)
     {
         axisY->setLabelFormat("%.2f");
