@@ -82,7 +82,7 @@ class MainWindow : public QMainWindow
     void handleSerialByte(char c);
 
     // Rounds a value up to the next 0.5 step.
-    double roundUpToHalf(double value);
+    double roundUpToHalf(double value) const;
 
     // Rebuilds the chart from all stored measurement series.
     void rebuildChart();

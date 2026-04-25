@@ -31,11 +31,13 @@ class MyChartView : public QChartView
   public:
     using QChartView::QChartView; // inherit constructors
 
+  private:
+    static constexpr qreal ZoomFactor = 1.05; // zoom step for mouse wheel
+
   protected:
     // Checks if value is within the axis limits.
     bool inAxisRange(qreal value, const QValueAxis *axis)
     {
-        Q_ASSERT(axis);
         return axis && value >= axis->min() && value <= axis->max();
     }
 
@@ -51,8 +53,9 @@ class MyChartView : public QChartView
             const auto axesY = chart()->axes(Qt::Vertical);
             const auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
             const auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
+            Q_ASSERT(axisX && axisY);
 
-            QPointF value = chart()->mapToValue(event->position());
+            const QPointF value = chart()->mapToValue(event->position());
             if (inAxisRange(value.x(), axisX) && inAxisRange(value.y(), axisY))
             {
                 text = QString::asprintf("%.3f V, %.3f mA", value.x(), value.y());
@@ -75,15 +78,13 @@ class MyChartView : public QChartView
         QChartView::leaveEvent(event);
     }
 
-    // Handles mouse‑wheel input to zoom the chart view.
+    // Handles mouse wheel input to zoom the chart view.
     void wheelEvent(QWheelEvent *event) override
     {
-        const double factor = 1.1;
-
         if (event->angleDelta().y() > 0)
-            chart()->zoom(factor); // zoom in
+            chart()->zoom(ZoomFactor); // zoom in
         else
-            chart()->zoom(1.0 / factor); // zoom out
+            chart()->zoom(1.0 / ZoomFactor); // zoom out
 
         event->accept();
     }
@@ -258,7 +259,7 @@ void MainWindow::onSerialDataReceived()
 // Handles a single received byte from the serial interface.
 void MainWindow::handleSerialByte(char c)
 {
-    auto result = dataManager.processReceivedChar(c);
+    const auto result = dataManager.processReceivedChar(c);
     if (result == ParseResult::SeriesCompleted)
     {
         statusBar()->showMessage("Ready");
@@ -272,7 +273,7 @@ void MainWindow::handleSerialByte(char c)
 }
 
 // Rounds a value up to the next 0.5 step.
-double MainWindow::roundUpToHalf(double value)
+double MainWindow::roundUpToHalf(double value) const
 {
     return std::ceil(value * 2.0) / 2.0;
 }
@@ -301,8 +302,8 @@ void MainWindow::rebuildChart()
     chart->legend()->hide();
     chart->setAnimationOptions(QChart::AllAnimations);
 
-    auto axesX = chart->axes(Qt::Horizontal);
-    auto axesY = chart->axes(Qt::Vertical);
+    const auto axesX = chart->axes(Qt::Horizontal);
+    const auto axesY = chart->axes(Qt::Vertical);
     auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
     auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
 
