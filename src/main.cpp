@@ -46,7 +46,7 @@ class DiodeScoutSerialConnector
         }
 
         bool ok = false;
-        QString choice = QInputDialog::getItem(nullptr,
+        const QString choice = QInputDialog::getItem(nullptr,
             "DiodeScoutUI",
             "No DiodeScout device detected.\nPlease select the correct serial port:",
             portNames,
@@ -108,9 +108,12 @@ int main(int argc, char *argv[])
     darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218)); // Selection / highlight
 
     // Make it look good
-    application.setWindowIcon(QIcon(":/icons/appicon.svg"));
-    application.setStyle(QStyleFactory::create("Fusion"));
+    QStyle *fusion = QStyleFactory::create("Fusion");
+    Q_ASSERT(fusion);
+
+    application.setStyle(fusion);
     application.setPalette(darkPalette);
+    application.setWindowIcon(QIcon(":/icons/appicon.svg"));
 
     // Establish DiodeScout serial connection
     QSerialPort diodeScoutPort;

@@ -24,7 +24,7 @@
 
 // ---------------------------------------------------------------------------
 //  MyChartView:
-//  Custom QChartView providing mouse-position tooltips and zooming.
+//  Custom QChartView with mouse-position tooltips, scrolling and zooming.
 // ---------------------------------------------------------------------------
 class MyChartView : public QChartView
 {
@@ -33,10 +33,11 @@ class MyChartView : public QChartView
 
   private:
     static constexpr qreal ZoomFactor = 1.05; // zoom step for mouse wheel
+    static constexpr qreal ScrollStep = 5; // pixels per key press
 
   protected:
     // Checks if value is within the axis limits.
-    bool inAxisRange(qreal value, const QValueAxis *axis)
+    bool inAxisRange(qreal value, const QValueAxis *axis) const
     {
         return axis && value >= axis->min() && value <= axis->max();
     }
@@ -44,10 +45,11 @@ class MyChartView : public QChartView
     // Update tooltip with mouse position in chart coordinates.
     void mouseMoveEvent(QMouseEvent *event) override
     {
+        Q_ASSERT(chart());
         bool showTip = false;
         QString text;
 
-        if (chart() && !chart()->series().empty())
+        if (!chart()->series().empty())
         {
             const auto axesX = chart()->axes(Qt::Horizontal);
             const auto axesY = chart()->axes(Qt::Vertical);
@@ -81,12 +83,51 @@ class MyChartView : public QChartView
     // Handles mouse wheel input to zoom the chart view.
     void wheelEvent(QWheelEvent *event) override
     {
+        Q_ASSERT(chart());
+
         if (event->angleDelta().y() > 0)
             chart()->zoom(ZoomFactor); // zoom in
         else
             chart()->zoom(1.0 / ZoomFactor); // zoom out
 
         event->accept();
+    }
+
+    // Keyboard-based scrolling and zooming.
+    void keyPressEvent(QKeyEvent *event) override
+    {
+        Q_ASSERT(chart());
+        bool handled = true;
+
+        switch (event->key())
+        {
+        case Qt::Key_Down:
+            chart()->scroll(0, ScrollStep);
+            break;
+        case Qt::Key_Up:
+            chart()->scroll(0, -ScrollStep);
+            break;
+        case Qt::Key_Right:
+            chart()->scroll(-ScrollStep, 0);
+            break;
+        case Qt::Key_Left:
+            chart()->scroll(ScrollStep, 0);
+            break;
+        case Qt::Key_Plus:
+            chart()->zoom(ZoomFactor);
+            break;
+        case Qt::Key_Minus:
+            chart()->zoom(1.0 / ZoomFactor);
+            break;
+        default:
+            handled = false;
+            break;
+        }
+
+        if (handled)
+            event->accept();
+        else
+            QGraphicsView::keyPressEvent(event);
     }
 };
 
@@ -160,7 +201,7 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
 // Triggered when the user selects "Restore default view".
 void MainWindow::onRestoreViewClicked()
 {
-    chart->zoomReset();
+    rebuildChart();
 }
 
 // Triggered when the user selects "Export CSV".
