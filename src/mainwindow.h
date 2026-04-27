@@ -1,10 +1,10 @@
 // ---------------------------------------------------------------------------
-//  Main application window for the DiodeScout UI, responsible for:
+//  Main application window for the DiodeScout UI. Responsible for:
 //
 //  - Creating and managing the toolbar and chart view
 //  - Handling serial communication with the DiodeScout device
-//  - Receiving and parsing measurement data
-//  - Updating the chart when new data arrives
+//  - Receiving and parsing incoming measurement data
+//  - Updating the chart when new data is available
 //  - Providing user actions (export, reset, clear, exit)
 // ---------------------------------------------------------------------------
 
@@ -14,13 +14,11 @@
 #include <QMainWindow>
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
-#include <QtCharts/QLineSeries>
-#include <QtCharts/QValueAxis>
 #include <QtSerialPort/QSerialPort>
 
 // ---------------------------------------------------------------------------
 //  MainWindow:
-//  Main application window for the DiodeScout UI.
+//  Primary application window for the DiodeScout user interface.
 // ---------------------------------------------------------------------------
 class MainWindow : public QMainWindow
 {
@@ -81,7 +79,7 @@ class MainWindow : public QMainWindow
     // Handles a single received byte from the serial interface.
     void handleSerialByte(char c);
 
-    // Rounds a value up to the next 0.5 step.
+    // Rounds a value up to the next 0.5 increment.
     double roundUpToHalf(double value) const;
 
     // Rebuilds the chart from all stored measurement series.

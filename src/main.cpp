@@ -1,8 +1,7 @@
 // ---------------------------------------------------------------------------
-//  Entry point of the DiodeScout application. This file initializes the Qt
-//  application environment, applies the dark Fusion UI theme, loads the
-//  application icon, opens the serial connection to the DiodeScout device,
-//  and launches the MainWindow instance.
+//  Entry point of the DiodeScout application. Initializes the Qt environment,
+//  applies the dark Fusion theme, loads the application icon, establishes the
+//  serial connection to the DiodeScout device, and launches the main window.
 //
 //  All UI logic and serial communication are handled inside MainWindow.
 // ---------------------------------------------------------------------------
@@ -17,12 +16,12 @@
 
 // ---------------------------------------------------------------------------
 //  DiodeScoutSerialConnector:
-//  Handles detecting and opening a DiodeScout serial connection.
+//  Utility class for detecting and opening a DiodeScout serial connection.
 // ---------------------------------------------------------------------------
 class DiodeScoutSerialConnector
 {
   public:
-    // Locates the DiodeScout device and opens the connection.
+    // Detect the DiodeScout device and open the serial connection.
     static bool FindAndOpen(QSerialPort &serial)
     {
         // 1) Try automatic detection
@@ -79,7 +78,7 @@ class DiodeScoutSerialConnector
 };
 
 // ---------------------------------------------------------------------------
-//  Main entry point.
+//  Application entry point.
 // ---------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {

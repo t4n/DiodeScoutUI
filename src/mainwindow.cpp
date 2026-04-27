@@ -1,15 +1,14 @@
 // ---------------------------------------------------------------------------
-//  Main application window for the DiodeScout UI, responsible for:
+//  Main application window for the DiodeScout UI. Responsible for:
 //
 //  - Creating and managing the toolbar and chart view
 //  - Handling serial communication with the DiodeScout device
-//  - Receiving and parsing measurement data
-//  - Updating the chart when new data arrives
+//  - Receiving and parsing incoming measurement data
+//  - Updating the chart when new data is available
 //  - Providing user actions (export, reset, clear, exit)
 // ---------------------------------------------------------------------------
 
 #include "mainwindow.h"
-#include <QChartView>
 #include <QDateTime>
 #include <QFileDialog>
 #include <QInputDialog>
@@ -314,7 +313,7 @@ void MainWindow::handleSerialByte(char c)
     }
 }
 
-// Rounds a value up to the next 0.5 step.
+// Rounds a value up to the next 0.5 increment.
 double MainWindow::roundUpToHalf(double value) const
 {
     return std::ceil(value * 2.0) / 2.0;

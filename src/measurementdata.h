@@ -1,11 +1,10 @@
 // ---------------------------------------------------------------------------
-//  Data model for capturing, storing, and parsing measurement series.
-//  This file contains the logic for:
+//  Measurement data model and parser
 //
-//  - Managing individual measurement points and complete measurement series
-//  - Receiving and parsing serial input line-by-line
-//  - Building temporary series during acquisition
-//  - Storing completed series for later visualization (e.g., QtCharts)
+//  - Defines data structures for measurement points and series
+//  - Manages temporary and finalized measurement series
+//  - Provides a parser for incoming serial data
+//  - Includes export utilities (CSV, Python)
 // ---------------------------------------------------------------------------
 
 #pragma once
@@ -16,8 +15,8 @@
 
 // ---------------------------------------------------------------------------
 //  ParseResult:
-//  Return value of the parser. Indicates whether a complete measurement
-//  series has been received or if nothing special happened.
+//  Return value of the parser indicating whether a measurement series
+//  has been completed.
 // ---------------------------------------------------------------------------
 enum class ParseResult
 {
@@ -27,8 +26,8 @@ enum class ParseResult
 
 // ---------------------------------------------------------------------------
 //  MeasurementPoint:
-//  Represents a single measurement point consisting of voltage (Volt)
-//  and current (Milliampere). Used as an element of a measurement series.
+//  Represents a single measurement point containing voltage (V) and
+//  current (mA).
 // ---------------------------------------------------------------------------
 struct MeasurementPoint
 {
@@ -38,8 +37,8 @@ struct MeasurementPoint
 
 // ---------------------------------------------------------------------------
 //  MeasurementSeries:
-//  Represents a complete measurement series consisting of multiple
-//  measurement points. Built by the parser and later visualized by the UI.
+//  Represents a complete measurement series of multiple measurement
+//  points. Built by the parser and later used for visualization.
 // ---------------------------------------------------------------------------
 class MeasurementSeries
 {
@@ -64,9 +63,9 @@ class MeasurementSeries
 // ---------------------------------------------------------------------------
 //  MeasurementDataManager, central data management:
 //  - Stores all completed measurement series
-//  - Holds a temporary series while receiving data
-//  - Provides parser functionality for the serial interface
-//  - Provides helper functions for the UI (e.g., max values)
+//  - Maintains a temporary series while receiving data
+//  - Implements a parser for serial input
+//  - Provides helper utilities (max values, data export)
 // ---------------------------------------------------------------------------
 class MeasurementDataManager
 {
@@ -76,7 +75,7 @@ class MeasurementDataManager
     // Returns the number of stored measurement series.
     std::size_t seriesCount() const noexcept;
 
-    // Returns all measurement series.
+    // Returns all completed measurement series.
     const std::vector<MeasurementSeries> &allSeries() const noexcept;
 
     // Removes all stored measurement series.
@@ -85,7 +84,7 @@ class MeasurementDataManager
     // Removes the last measurement series.
     void removeLastSeries();
 
-    // Appends a simulated measurement series.
+    // Appends a simulated diode characteristic curve.
     void appendSimulatedSeries(double scale_current);
 
     // Returns the number of points in the temporary series.
@@ -94,15 +93,15 @@ class MeasurementDataManager
     // Returns the maximum voltage and maximum current across all series.
     void getMaxVoltageAndCurrent(double &maxV, double &maxI) const noexcept;
 
-    // Parser: processes a single received character.
+    // Processes a single incoming character from the serial stream.
     ParseResult processReceivedChar(char c);
 
     // Exports all stored measurement series to a CSV file.
-    // Returns true on success, false on failure.
+    // Returns true on success.
     bool exportCSV(const std::string &filePath) const;
 
     // Exports all stored measurement series to a Python script.
-    // Returns true on success, false on failure.
+    // Returns true on success.
     bool exportPython(const std::string &filePath) const;
 
   private:
@@ -128,7 +127,7 @@ class MeasurementDataManager
     // Removes leading and trailing whitespace.
     static std::string trim(const std::string &s);
 
-    // Processes a fully received line.
+    // Processes a fully received line, updates the parser state.
     ParseResult handleCompletedLine(const std::string &rawLine);
 
     // Parses a data line in the format "<x> <y>".

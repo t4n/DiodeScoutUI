@@ -1,11 +1,10 @@
 // ---------------------------------------------------------------------------
-//  Data model for capturing, storing, and parsing measurement series.
-//  This file contains the logic for:
+//  Measurement data model and parser
 //
-//  - Managing individual measurement points and complete measurement series
-//  - Receiving and parsing serial input line-by-line
-//  - Building temporary series during acquisition
-//  - Storing completed series for later visualization (e.g., QtCharts)
+//  - Defines data structures for measurement points and series
+//  - Manages temporary and finalized measurement series
+//  - Provides a parser for incoming serial data
+//  - Includes export utilities (CSV, Python)
 // ---------------------------------------------------------------------------
 
 #include "measurementdata.h"
@@ -53,7 +52,7 @@ std::size_t MeasurementDataManager::seriesCount() const noexcept
     return series_.size();
 }
 
-// Returns all measurement series.
+// Returns all completed measurement series.
 const std::vector<MeasurementSeries> &MeasurementDataManager::allSeries() const noexcept
 {
     return series_;
@@ -72,7 +71,7 @@ void MeasurementDataManager::removeLastSeries()
         series_.pop_back();
 }
 
-// Appends a simulated measurement series.
+// Appends a simulated diode characteristic curve.
 void MeasurementDataManager::appendSimulatedSeries(double scale_current)
 {
     MeasurementSeries simul;
@@ -130,7 +129,7 @@ void MeasurementDataManager::getMaxVoltageAndCurrent(double &maxV, double &maxI)
     }
 }
 
-// Parser: processes a single received character.
+// Processes a single incoming character from the serial stream.
 ParseResult MeasurementDataManager::processReceivedChar(char c)
 {
     if (c == '\n')
@@ -149,7 +148,7 @@ ParseResult MeasurementDataManager::processReceivedChar(char c)
 }
 
 // Exports all stored measurement series to a CSV file.
-// Returns true on success, false on failure.
+// Returns true on success.
 bool MeasurementDataManager::exportCSV(const std::string &filePath) const
 {
     std::ofstream out(filePath);
@@ -181,7 +180,7 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath) const
 }
 
 // Exports all stored measurement series to a Python script.
-// Returns true on success, false on failure.
+// Returns true on success.
 bool MeasurementDataManager::exportPython(const std::string &filePath) const
 {
     std::ofstream out(filePath);
@@ -253,7 +252,7 @@ std::string MeasurementDataManager::trim(const std::string &s)
     return s.substr(start, end - start);
 }
 
-// Processes a fully received line.
+// Processes a fully received line, updates the parser state.
 ParseResult MeasurementDataManager::handleCompletedLine(const std::string &rawLine)
 {
     auto result = ParseResult::Nothing; // default return value
