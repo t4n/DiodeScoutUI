@@ -9,11 +9,11 @@
 // ---------------------------------------------------------------------------
 
 #include "measurementdata.h"
-#include <QLocale> // exportToCsv
+#include <QLocale> // exportCSV, exportPython
 #include <cctype>
+#include <cmath>
 #include <fstream>
 #include <sstream>
-#include <cmath>
 
 // ---------------------------------------------------------------------------
 //  MeasurementSeries – Implementation
@@ -73,18 +73,28 @@ void MeasurementDataManager::removeLastSeries()
 }
 
 // Appends a simulated measurement series.
-void MeasurementDataManager::appendSimulatedSeries()
+void MeasurementDataManager::appendSimulatedSeries(double scale_current)
 {
     MeasurementSeries simul;
+
+    constexpr double v_max = 5.00; // Max DiodeScout voltage
+    constexpr double i_max = 0.01; // Max DiodeScout current
+
+    constexpr double quality = 1.950; // Emission coefficient
+    constexpr double v_therm = 0.026; // Thermal voltage, room temp
+
+    constexpr double voltage_step = 0.01;
+    constexpr double slope = i_max / v_max;
+
     double voltage = 0.0;
     double current = 0.0;
-    const double step = 0.025;
 
-    while (current < 5.0)
+    while (current < i_max - slope * voltage)
     {
-        current = 0.001 * (std::exp(voltage * 10.0) - 1.0);
-        simul.addPoint(voltage, current);
-        voltage += step;
+        simul.addPoint(voltage, current * 1000.0); // Include origin (0 V, 0 mA)
+
+        voltage += voltage_step;
+        current = scale_current * (std::exp(voltage / quality / v_therm) - 1.0);
     }
 
     series_.push_back(std::move(simul));

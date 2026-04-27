@@ -186,7 +186,8 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
     if (!serial.isOpen())
     {
         statusBar()->showMessage("Simulation");
-        dataManager.appendSimulatedSeries();
+        dataManager.appendSimulatedSeries(1.0e-8);
+        dataManager.appendSimulatedSeries(1.0e-10);
         rebuildChart();
     }
     else
