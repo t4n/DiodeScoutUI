@@ -74,17 +74,15 @@ void MeasurementDataManager::removeLastSeries()
 // Appends a simulated diode characteristic curve.
 void MeasurementDataManager::appendSimulatedSeries(double scale_current)
 {
-    MeasurementSeries simul;
-
     constexpr double v_max = 5.00; // Max DiodeScout voltage
     constexpr double i_max = 0.01; // Max DiodeScout current
-
     constexpr double quality = 1.950; // Emission coefficient
     constexpr double v_therm = 0.026; // Thermal voltage, room temp
 
     constexpr double voltage_step = 0.01;
     constexpr double slope = i_max / v_max;
 
+    MeasurementSeries simul;
     double voltage = 0.0;
     double current = 0.0;
 
