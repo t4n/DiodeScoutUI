@@ -13,6 +13,7 @@
 #include <cmath>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 // ---------------------------------------------------------------------------
 //  MeasurementSeries – Implementation
@@ -110,20 +111,18 @@ void MeasurementDataManager::getMaxVoltageAndCurrent(double &maxV, double &maxI)
     maxI = 0.0;
 
     for (const auto &series : series_)
+    {
         for (const auto &p : series.points())
         {
-            if (p.voltageVolt > maxV)
-                maxV = p.voltageVolt;
-            if (p.currentMilliAmp > maxI)
-                maxI = p.currentMilliAmp;
+            maxV = std::max(maxV, p.voltageVolt);
+            maxI = std::max(maxI, p.currentMilliAmp);
         }
+    }
 
     for (const auto &p : tempSeries_.points())
     {
-        if (p.voltageVolt > maxV)
-            maxV = p.voltageVolt;
-        if (p.currentMilliAmp > maxI)
-            maxI = p.currentMilliAmp;
+        maxV = std::max(maxV, p.voltageVolt);
+        maxI = std::max(maxI, p.currentMilliAmp);
     }
 }
 
