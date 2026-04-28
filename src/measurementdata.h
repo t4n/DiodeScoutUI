@@ -85,7 +85,7 @@ class MeasurementDataManager
     void removeLastSeries();
 
     // Appends a simulated diode characteristic curve.
-    void appendSimulatedSeries(double scale_current);
+    void appendSimulatedSeries(double scaleCurrent);
 
     // Returns the number of points in the temporary series.
     std::size_t tempSeriesSize() const noexcept;

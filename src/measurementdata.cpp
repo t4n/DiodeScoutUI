@@ -72,26 +72,26 @@ void MeasurementDataManager::removeLastSeries()
 }
 
 // Appends a simulated diode characteristic curve.
-void MeasurementDataManager::appendSimulatedSeries(double scale_current)
+void MeasurementDataManager::appendSimulatedSeries(double scaleCurrent)
 {
-    constexpr double v_max = 5.00; // Max DiodeScout voltage
-    constexpr double i_max = 0.01; // Max DiodeScout current
-    constexpr double quality = 1.950; // Emission coefficient
-    constexpr double v_therm = 0.026; // Thermal voltage, room temp
+    constexpr double vMax = 5.00; // Max DiodeScout voltage
+    constexpr double iMax = 0.01; // Max DiodeScout current
+    constexpr double emission = 1.950; // Emission coefficient
+    constexpr double vThermal = 0.026; // Thermal voltage, room temp
 
-    constexpr double voltage_step = 0.01;
-    constexpr double slope = i_max / v_max;
+    constexpr double voltageStep = 0.01;
+    constexpr double slope = iMax / vMax;
 
     MeasurementSeries simul;
     double voltage = 0.0;
     double current = 0.0;
 
-    while (current < i_max - slope * voltage)
+    while (current < iMax - slope * voltage)
     {
         simul.addPoint(voltage, current * 1000.0); // Include origin (0 V, 0 mA)
 
-        voltage += voltage_step;
-        current = scale_current * (std::exp(voltage / quality / v_therm) - 1.0);
+        voltage += voltageStep;
+        current = scaleCurrent * (std::exp(voltage / emission / vThermal) - 1.0);
     }
 
     series_.push_back(std::move(simul));
