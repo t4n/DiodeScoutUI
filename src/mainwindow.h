@@ -38,7 +38,7 @@ class MainWindow : public QMainWindow
     // Triggered when the user selects "Dark mode".
     void onDarkModeClicked();
 
-    // Triggered when the user selects "Light mode, high contrast".
+    // Triggered when the user selects "Light mode".
     void onLightModeClicked();
 
     // Triggered when the user selects "Export CSV".
@@ -96,6 +96,6 @@ class MainWindow : public QMainWindow
     // Resets the chart to an empty default state.
     void resetChartToEmpty();
 
-    // Slightly increases chart title font size.
+    // Slightly increases the title font size.
     void setChartTitleFont();
 };

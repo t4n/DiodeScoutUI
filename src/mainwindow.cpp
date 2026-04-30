@@ -401,7 +401,7 @@ void MainWindow::resetChartToEmpty()
         axis->setVisible(false);
 }
 
-// Slightly increases chart title font size.
+// Slightly increases the title font size.
 void MainWindow::setChartTitleFont()
 {
     QFont titleFont = chart->titleFont();
