@@ -148,6 +148,8 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
     spacer2->setFixedWidth(20);
 
     restoreViewAct = toolbar->addAction(QIcon(":/icons/restoreview.svg"), "Restore default view");
+    darkModeAct = toolbar->addAction(QIcon(":/icons/darkmode.svg"), "Dark mode");
+    lightModeAct = toolbar->addAction(QIcon(":/icons/lightmode.svg"), "Light mode");
     toolbar->addWidget(spacer1);
     exportCSVAct = toolbar->addAction(QIcon(":/icons/exportcsv.svg"), "Export CSV");
     exportPythonAct = toolbar->addAction(QIcon(":/icons/exportpython.svg"), "Export Python script");
@@ -158,6 +160,8 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
     quitAct = toolbar->addAction(QIcon(":/icons/quit.svg"), "Quit");
 
     connect(restoreViewAct, &QAction::triggered, this, &MainWindow::onRestoreViewClicked);
+    connect(darkModeAct, &QAction::triggered, this, &MainWindow::onDarkModeClicked);
+    connect(lightModeAct, &QAction::triggered, this, &MainWindow::onLightModeClicked);
     connect(exportCSVAct, &QAction::triggered, this, &MainWindow::onExportCSVClicked);
     connect(exportPythonAct, &QAction::triggered, this, &MainWindow::onExportPythonClicked);
     connect(exportPNGAct, &QAction::triggered, this, &MainWindow::onExportPNGClicked);
@@ -167,12 +171,9 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
 
     // Chart
     chart = new QChart();
-    QFont titleFont = chart->titleFont();
-    titleFont.setPointSize(12);
-    titleFont.setBold(true);
     chart->setTheme(QChart::ChartThemeBlueCerulean);
-    chart->setTitleFont(titleFont);
     chart->setTitle("Press the button on the DiodeScout ...");
+    setChartTitleFont();
 
     chartView = new MyChartView(chart);
     chartView->setMouseTracking(true);
@@ -202,6 +203,20 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
 void MainWindow::onRestoreViewClicked()
 {
     rebuildChart();
+}
+
+// Triggered when the user selects "Dark mode".
+void MainWindow::onDarkModeClicked()
+{
+    chart->setTheme(QChart::ChartThemeBlueCerulean);
+    setChartTitleFont();
+}
+
+// Triggered when the user selects "Light mode".
+void MainWindow::onLightModeClicked()
+{
+    chart->setTheme(QChart::ChartThemeBlueNcs);
+    setChartTitleFont();
 }
 
 // Triggered when the user selects "Export CSV".
@@ -384,4 +399,14 @@ void MainWindow::resetChartToEmpty()
     const auto axes = chart->axes();
     for (QAbstractAxis *axis : axes)
         axis->setVisible(false);
+}
+
+// Slightly increases chart title font size.
+void MainWindow::setChartTitleFont()
+{
+    QFont titleFont = chart->titleFont();
+    titleFont.setPointSize(12);
+    titleFont.setBold(true);
+
+    chart->setTitleFont(titleFont);
 }

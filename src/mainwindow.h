@@ -35,6 +35,12 @@ class MainWindow : public QMainWindow
     // Triggered when the user selects "Restore default view".
     void onRestoreViewClicked();
 
+    // Triggered when the user selects "Dark mode".
+    void onDarkModeClicked();
+
+    // Triggered when the user selects "Light mode, high contrast".
+    void onLightModeClicked();
+
     // Triggered when the user selects "Export CSV".
     void onExportCSVClicked();
 
@@ -69,6 +75,8 @@ class MainWindow : public QMainWindow
 
     // UI actions for menu and toolbar commands.
     QAction *restoreViewAct;
+    QAction *darkModeAct;
+    QAction *lightModeAct;
     QAction *exportCSVAct;
     QAction *exportPythonAct;
     QAction *exportPNGAct;
@@ -87,4 +95,7 @@ class MainWindow : public QMainWindow
 
     // Resets the chart to an empty default state.
     void resetChartToEmpty();
+
+    // Slightly increases chart title font size.
+    void setChartTitleFont();
 };
