@@ -206,6 +206,7 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
 void MainWindow::onRestoreViewClicked()
 {
     rebuildChart();
+    statusBar()->showMessage("Ready");
 }
 
 // Triggered when the user selects "Light mode".
@@ -243,7 +244,7 @@ void MainWindow::onComputePWL()
     while (chart->series().size() > 1)
         chart->removeSeries(chart->series().at(1));
 
-    // Display piecewise-linear diode characteristic
+    // Plot piecewise-linear approximation of diode I–V curve
     double maxV, maxI;
     dataManager.getMaxVoltageAndCurrent(maxV, maxI);
     maxI /= 1000.0; // convert mA to A
@@ -339,18 +340,16 @@ void MainWindow::onExportPNGClicked()
 void MainWindow::onRemoveLastClicked()
 {
     dataManager.removeLastSeries();
-
-    if (dataManager.seriesCount() == 0)
-        resetChartToEmpty();
-    else
-        rebuildChart();
+    statusBar()->showMessage("Ready");
+    rebuildChart();
 }
 
 // Triggered when the user selects "Remove all series".
 void MainWindow::onRemoveAllClicked()
 {
     dataManager.removeAllSeries();
-    resetChartToEmpty();
+    statusBar()->showMessage("Ready");
+    rebuildChart();
 }
 
 // Triggered when the user selects "Quit".
@@ -415,7 +414,6 @@ void MainWindow::rebuildChart()
     chart->createDefaultAxes();
     chart->legend()->hide();
     chart->setAnimationOptions(QChart::SeriesAnimations);
-    statusBar()->showMessage("Ready");
 
     const auto axesX = chart->axes(Qt::Horizontal);
     const auto axesY = chart->axes(Qt::Vertical);
@@ -454,7 +452,6 @@ void MainWindow::resetChartToEmpty()
     chart->removeAllSeries();
     chart->setAnimationOptions(QChart::NoAnimation);
     chart->setTitle("Press the button on the DiodeScout ...");
-    statusBar()->showMessage("Ready");
 
     const auto axes = chart->axes();
     for (QAbstractAxis *axis : axes)
