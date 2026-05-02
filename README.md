@@ -9,6 +9,7 @@ characteristics measured with the DiodeScout device.
 * Simulation mode for testing without physical hardware
 * Serial data acquisition
 * Export to PNG, CSV, and Python script
+* Computation of piecewise-linear diode model
 
 ## Build
 
