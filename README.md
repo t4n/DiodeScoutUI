@@ -5,11 +5,11 @@ characteristics measured with the DiodeScout device.
 
 ## Features
 
-* Plotting with Qt Charts
-* Simulation mode for testing without physical hardware
 * Serial data acquisition
+* Plotting with Qt Charts
 * Export to PNG, CSV, and Python script
 * Computation of piecewise-linear diode model
+* Simulation mode for testing without physical hardware
 
 ## Build
 
