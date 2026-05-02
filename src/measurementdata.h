@@ -104,6 +104,10 @@ class MeasurementDataManager
     // Returns true on success.
     bool exportPython(const std::string &filePath) const;
 
+    // Computes the piecewise-linear diode parameters (Vf, Rs)
+    // from measured I–V data. Returns true on success.
+    bool computePWL(double &forwardV, double &seriesR) const;
+
   private:
     // Current state of the serial data stream parser.
     enum class ParserState

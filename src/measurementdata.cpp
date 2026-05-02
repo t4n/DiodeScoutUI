@@ -9,11 +9,11 @@
 
 #include "measurementdata.h"
 #include <QLocale> // exportCSV, exportPython
+#include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <fstream>
 #include <sstream>
-#include <algorithm>
 
 // ---------------------------------------------------------------------------
 //  MeasurementSeries – Implementation
@@ -87,9 +87,11 @@ void MeasurementDataManager::appendSimulatedSeries(double scaleCurrent)
     double voltage = 0.0;
     double current = 0.0;
 
+    // Keep below DiodeScout load line (5 V, 500 Ohm)
     while (current < iMax - slope * voltage)
     {
-        simul.addPoint(voltage, current * 1000.0); // Include origin (0 V, 0 mA)
+        // First iteration includes origin (0 V, 0 mA)
+        simul.addPoint(voltage, current * 1000.0);
 
         voltage += voltageStep;
         current = scaleCurrent * (std::exp(voltage / emission / vThermal) - 1.0);
@@ -160,7 +162,7 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath) const
         const auto &s = series_[i];
 
         out << "Series " << (i + 1) << "\n";
-        out << "Voltage (V);Current (mA)\n";
+        out << "Volt (V);Milliampere (mA)\n";
 
         for (const auto &p : s.points())
         {
@@ -231,6 +233,56 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
     out << "plt.minorticks_on()\n";
     out << "# plt.savefig('plot.png', dpi=300)\n";
     out << "plt.show()\n";
+
+    return true;
+}
+
+// Computes the piecewise-linear diode parameters (Vf, Rs)
+// from measured I–V data. Returns true on success.
+bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
+{
+    // Exactly one measurement series is required
+    if (series_.size() != 1 || series_[0].empty())
+        return false;
+
+    // Ignore measurement points below 0.5 * maxI (non-conducting diode)
+    const double noiseFloor = 0.1; // mA
+    const double maxI = series_[0].points().back().currentMilliAmp;
+    const double threshold = std::max(0.5 * maxI, noiseFloor);
+
+    // Linear least-squares fit, V = Rs * I + Vf
+    int n = 0;
+    double sumI = 0.0;
+    double sumV = 0.0;
+    double sumIV = 0.0;
+    double sumII = 0.0;
+
+    for (const auto &p : series_[0].points())
+    {
+        if (p.currentMilliAmp < threshold)
+            continue;
+
+        double I = p.currentMilliAmp * 1e-3; // convert mA to A
+        sumI += I;
+        sumV += p.voltageVolt;
+        sumIV += I * p.voltageVolt;
+        sumII += I * I;
+        ++n;
+    }
+
+    // Require at least 2 points
+    const double denom = (n * sumII - sumI * sumI);
+    if (n < 2 || denom < 1e-15)
+        return false;
+
+    seriesR = (n * sumIV - sumI * sumV) / denom;
+    forwardV = (sumV - seriesR * sumI) / n;
+
+    // Sanity checks
+    if (!std::isfinite(seriesR) || !std::isfinite(forwardV))
+        return false;
+    if (seriesR <= 0.0 || forwardV <= 0.0)
+        return false;
 
     return true;
 }

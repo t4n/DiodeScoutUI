@@ -12,6 +12,7 @@
 #include <QDateTime>
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QLineSeries>
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QSplineSeries>
@@ -148,8 +149,9 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
     spacer2->setFixedWidth(20);
 
     restoreViewAct = toolbar->addAction(QIcon(":/icons/restoreview.svg"), "Restore default view");
-    darkModeAct = toolbar->addAction(QIcon(":/icons/darkmode.svg"), "Dark mode");
     lightModeAct = toolbar->addAction(QIcon(":/icons/lightmode.svg"), "Light mode");
+    darkModeAct = toolbar->addAction(QIcon(":/icons/darkmode.svg"), "Dark mode");
+    computePWLAct = toolbar->addAction(QIcon(":/icons/computepwl.svg"), "Compute piecewise-linear diode model");
     toolbar->addWidget(spacer1);
     exportCSVAct = toolbar->addAction(QIcon(":/icons/exportcsv.svg"), "Export CSV");
     exportPythonAct = toolbar->addAction(QIcon(":/icons/exportpython.svg"), "Export Python script");
@@ -160,8 +162,9 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
     quitAct = toolbar->addAction(QIcon(":/icons/quit.svg"), "Quit");
 
     connect(restoreViewAct, &QAction::triggered, this, &MainWindow::onRestoreViewClicked);
-    connect(darkModeAct, &QAction::triggered, this, &MainWindow::onDarkModeClicked);
     connect(lightModeAct, &QAction::triggered, this, &MainWindow::onLightModeClicked);
+    connect(darkModeAct, &QAction::triggered, this, &MainWindow::onDarkModeClicked);
+    connect(computePWLAct, &QAction::triggered, this, &MainWindow::onComputePWL);
     connect(exportCSVAct, &QAction::triggered, this, &MainWindow::onExportCSVClicked);
     connect(exportPythonAct, &QAction::triggered, this, &MainWindow::onExportPythonClicked);
     connect(exportPNGAct, &QAction::triggered, this, &MainWindow::onExportPNGClicked);
@@ -185,17 +188,17 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial(diodeScoutPort)
     // connected, otherwise initialize serial communication.
     if (!serial.isOpen())
     {
-        statusBar()->showMessage("Simulation");
         dataManager.appendSimulatedSeries(1.0e-8);
         dataManager.appendSimulatedSeries(1.0e-10);
         rebuildChart();
+        statusBar()->showMessage("Simulation");
     }
     else
     {
         QString prettyName = serial.portName();
         prettyName.replace("\\\\.\\", "");
-        statusBar()->showMessage(QString("DiodeScout at %1").arg(prettyName));
         connect(&serial, &QSerialPort::readyRead, this, &MainWindow::onSerialDataReceived);
+        statusBar()->showMessage(QString("DiodeScout at %1").arg(prettyName));
     }
 }
 
@@ -205,6 +208,13 @@ void MainWindow::onRestoreViewClicked()
     rebuildChart();
 }
 
+// Triggered when the user selects "Light mode".
+void MainWindow::onLightModeClicked()
+{
+    chart->setTheme(QChart::ChartThemeBlueNcs);
+    setChartTitleFont();
+}
+
 // Triggered when the user selects "Dark mode".
 void MainWindow::onDarkModeClicked()
 {
@@ -212,11 +222,59 @@ void MainWindow::onDarkModeClicked()
     setChartTitleFont();
 }
 
-// Triggered when the user selects "Light mode".
-void MainWindow::onLightModeClicked()
+// Triggered when the user selects "Compute piecewise-linear diode model".
+void MainWindow::onComputePWL()
 {
-    chart->setTheme(QChart::ChartThemeBlueNcs);
-    setChartTitleFont();
+    double forwardV, seriesR;
+    if (!dataManager.computePWL(forwardV, seriesR))
+    {
+        QMessageBox::warning(this,
+            "Piecewise-linear diode model",
+            "Please ensure that:\n\n"
+            "- Exactly one measurement series is loaded\n"
+            "- The diode is connected with the correct polarity\n"
+            "- The forward voltage is below approximately 4 V\n"
+            "- A measurable forward current is present");
+        return;
+    }
+
+    // Ensure that only the diode I–V curve is visible
+    Q_ASSERT(!chart->series().empty());
+    while (chart->series().size() > 1)
+        chart->removeSeries(chart->series().at(1));
+
+    // Display piecewise-linear diode characteristic
+    double maxV, maxI;
+    dataManager.getMaxVoltageAndCurrent(maxV, maxI);
+    maxI /= 1000.0; // convert mA to A
+
+    auto *line = new QLineSeries();
+    line->append(0.0, 0.0);
+    line->append(forwardV, 0.0);
+    line->append(forwardV + seriesR * maxI, maxI * 1000.0);
+    chart->addSeries(line);
+
+    QPen pen = line->pen();
+    pen.setColor(Qt::red);
+    line->setPen(pen);
+
+    const auto axesX = chart->axes(Qt::Horizontal);
+    const auto axesY = chart->axes(Qt::Vertical);
+    auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
+    auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
+
+    if (axisX && axisY)
+    {
+        line->attachAxis(axisX);
+        line->attachAxis(axisY);
+    }
+
+    // Show model parameters in status bar
+    const char *fmt = "Forward voltage (turn-on): %.2f V, "
+                      "Effective series resistance: %.2f \u03A9";
+
+    QString msg = QString::asprintf(fmt, forwardV, seriesR);
+    statusBar()->showMessage(msg);
 }
 
 // Triggered when the user selects "Export CSV".
@@ -357,6 +415,7 @@ void MainWindow::rebuildChart()
     chart->createDefaultAxes();
     chart->legend()->hide();
     chart->setAnimationOptions(QChart::SeriesAnimations);
+    statusBar()->showMessage("Ready");
 
     const auto axesX = chart->axes(Qt::Horizontal);
     const auto axesY = chart->axes(Qt::Vertical);
@@ -395,6 +454,7 @@ void MainWindow::resetChartToEmpty()
     chart->removeAllSeries();
     chart->setAnimationOptions(QChart::NoAnimation);
     chart->setTitle("Press the button on the DiodeScout ...");
+    statusBar()->showMessage("Ready");
 
     const auto axes = chart->axes();
     for (QAbstractAxis *axis : axes)
@@ -407,6 +467,5 @@ void MainWindow::setChartTitleFont()
     QFont titleFont = chart->titleFont();
     titleFont.setPointSize(12);
     titleFont.setBold(true);
-
     chart->setTitleFont(titleFont);
 }

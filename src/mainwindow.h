@@ -35,11 +35,14 @@ class MainWindow : public QMainWindow
     // Triggered when the user selects "Restore default view".
     void onRestoreViewClicked();
 
+    // Triggered when the user selects "Light mode".
+    void onLightModeClicked();
+
     // Triggered when the user selects "Dark mode".
     void onDarkModeClicked();
 
-    // Triggered when the user selects "Light mode".
-    void onLightModeClicked();
+    // Triggered when the user selects "Compute piecewise-linear diode model".
+    void onComputePWL();
 
     // Triggered when the user selects "Export CSV".
     void onExportCSVClicked();
@@ -75,8 +78,9 @@ class MainWindow : public QMainWindow
 
     // UI actions for menu and toolbar commands.
     QAction *restoreViewAct;
-    QAction *darkModeAct;
     QAction *lightModeAct;
+    QAction *darkModeAct;
+    QAction *computePWLAct;
     QAction *exportCSVAct;
     QAction *exportPythonAct;
     QAction *exportPNGAct;

@@ -44,6 +44,7 @@ qt_add_resources(DiodeScoutUI "app_resources" FILES
     icons/restoreview.svg
     icons/lightmode.svg
     icons/darkmode.svg
+    icons/computepwl.svg
 )
 
 # Link Qt libraries
