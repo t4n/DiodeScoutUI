@@ -32,6 +32,13 @@ enum class ParseResult
 // ---------------------------------------------------------------------------
 class SerialParser
 {
+  private:
+    static constexpr double VoltageRangeMin = 0.0; // min accepted voltage
+    static constexpr double VoltageRangeMax = 50.0; // max accepted voltage
+    static constexpr double CurrentRangeMin = 0.0; // min accepted current
+    static constexpr double CurrentRangeMax = 50.0; // max accepted current
+    static constexpr size_t MaxPointsCount = 100; // max points per series
+
   public:
     // Returns the number of points collected in the current series.
     std::size_t currentSeriesSize() const noexcept;

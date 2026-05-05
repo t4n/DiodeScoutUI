@@ -119,7 +119,7 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath) const
         out << "\n";
     }
 
-    return true;
+    return out.good();
 }
 
 // Exports all stored measurement series to a Python script.
@@ -178,7 +178,7 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
     out << "# plt.savefig('plot.png', dpi=300)\n";
     out << "plt.show()\n";
 
-    return true;
+    return out.good();
 }
 
 // Computes piecewise-linear diode parameters (Vf, Rs).

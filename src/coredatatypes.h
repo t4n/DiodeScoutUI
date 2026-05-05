@@ -17,8 +17,18 @@
 // ---------------------------------------------------------------------------
 struct MeasurementPoint
 {
-    double voltageVolt = 0.0; // x-value
-    double currentMilliAmp = 0.0; // y-value
+    double voltageVolt; // x-value
+    double currentMilliAmp; // y-value
+
+    // Constructs a MeasurementPoint from voltage and current.
+    explicit MeasurementPoint(double voltage, double current)
+    {
+        voltageVolt = voltage;
+        currentMilliAmp = current;
+    }
+
+    // Prevent construction without initialization.
+    MeasurementPoint() = delete;
 };
 
 // ---------------------------------------------------------------------------

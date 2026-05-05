@@ -12,7 +12,7 @@
 // Adds a new measurement point.
 void MeasurementSeries::addPoint(double voltage, double currentMilliAmp)
 {
-    points_.push_back({voltage, currentMilliAmp});
+    points_.push_back(MeasurementPoint(voltage, currentMilliAmp));
 }
 
 // Returns all measurement points.

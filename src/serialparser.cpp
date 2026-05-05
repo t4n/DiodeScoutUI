@@ -108,7 +108,14 @@ ParseResult SerialParser::parseDataLine(const std::string &line)
     double y = 0.0;
 
     iss >> x >> y;
+
     if (iss.fail())
+        return ParseResult::Nothing;
+    if (x < VoltageRangeMin || x > VoltageRangeMax)
+        return ParseResult::Nothing;
+    if (y < CurrentRangeMin || y > CurrentRangeMax)
+        return ParseResult::Nothing;
+    if (currentSeriesSize() >= MaxPointsCount)
         return ParseResult::Nothing;
 
     currentSeries_.addPoint(x, y);
