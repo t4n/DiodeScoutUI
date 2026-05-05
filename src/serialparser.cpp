@@ -119,25 +119,25 @@ ParseResult SerialParser::parseDataLine(const std::string &line)
 
     if (iss.fail())
     {
-        qWarning() << "Invalid DATA line:" << QString::fromStdString(line);
+        qWarning() << "Invalid DATA:" << QString::fromStdString(line);
         return ParseResult::Nothing;
     }
 
     if (x < VoltageRangeMin || x > VoltageRangeMax)
     {
-        qWarning() << "Invalid DATA line:" << QString::fromStdString(line);
+        qWarning() << "Invalid voltage:" << QString::fromStdString(line);
         return ParseResult::Nothing;
     }
 
     if (y < CurrentRangeMin || y > CurrentRangeMax)
     {
-        qWarning() << "Invalid DATA line:" << QString::fromStdString(line);
+        qWarning() << "Invalid current:" << QString::fromStdString(line);
         return ParseResult::Nothing;
     }
 
     if (currentSeriesSize() >= MaxPointsCount)
     {
-        qWarning() << "Invalid DATA line:" << QString::fromStdString(line);
+        qWarning() << "MaxPointsCount overrun:" << QString::fromStdString(line);
         return ParseResult::Nothing;
     }
 

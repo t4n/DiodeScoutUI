@@ -421,14 +421,14 @@ void MainWindow::rebuildChart()
     chart_->legend()->hide();
     chart_->setAnimationOptions(QChart::SeriesAnimations);
 
+    double maxVoltage, maxCurrent;
+    dataManager_.getMaxVoltageAndCurrent(maxVoltage, maxCurrent);
+
     const auto axesX = chart_->axes(Qt::Horizontal);
     const auto axesY = chart_->axes(Qt::Vertical);
     auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
     auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
     Q_ASSERT(axisX && axisY);
-
-    double maxVoltage, maxCurrent;
-    dataManager_.getMaxVoltageAndCurrent(maxVoltage, maxCurrent);
 
     if (axisX)
     {
