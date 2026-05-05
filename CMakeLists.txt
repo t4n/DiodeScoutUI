@@ -15,10 +15,14 @@ qt_standard_project_setup()
 # Executable target
 qt_add_executable(DiodeScoutUI WIN32 MACOSX_BUNDLE
     src/main.cpp
+    src/coredatatypes.h
+    src/coredatatypes.cpp
     src/mainwindow.cpp
     src/mainwindow.h
-    src/measurementdata.cpp
-    src/measurementdata.h
+    src/datamanager.cpp
+    src/datamanager.h
+    src/serialparser.h
+    src/serialparser.cpp
 )
 
 target_compile_features(DiodeScoutUI PRIVATE cxx_std_17)

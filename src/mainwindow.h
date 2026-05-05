@@ -1,16 +1,18 @@
 // ---------------------------------------------------------------------------
-//  Main application window for the DiodeScout UI. Responsible for:
+//  Main application window for the DiodeScout UI.
 //
-//  - Creating and managing the toolbar and chart view
+//  Responsibilities:
+//  - Creating and managing the toolbar, chart, and overall UI layout
 //  - Handling serial communication with the DiodeScout device
-//  - Receiving and parsing incoming measurement data
-//  - Updating the chart when new data is available
+//  - Forwarding incoming serial data to the SerialParser
+//  - Updating the chart when new measurement series become available
 //  - Providing user actions (export, reset, clear, exit)
 // ---------------------------------------------------------------------------
 
 #pragma once
 
-#include "measurementdata.h"
+#include "datamanager.h"
+#include "serialparser.h"
 #include <QMainWindow>
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
@@ -18,7 +20,7 @@
 
 // ---------------------------------------------------------------------------
 //  MainWindow:
-//  Primary application window for the DiodeScout user interface.
+//  Main application window for the DiodeScout UI.
 // ---------------------------------------------------------------------------
 class MainWindow : public QMainWindow
 {
@@ -27,9 +29,6 @@ class MainWindow : public QMainWindow
   public:
     // Constructs the main window and initializes UI components.
     MainWindow(QSerialPort &diodeScoutPort);
-
-    // Destructor.
-    ~MainWindow() = default;
 
   private slots:
     // Triggered when the user selects "Restore default view".
@@ -62,34 +61,34 @@ class MainWindow : public QMainWindow
     // Triggered when the user selects "Quit".
     void onQuitClicked();
 
-    // Called when serial data is available.
+    // Reads all available serial data and forwards it to the SerialParser.
     void onSerialDataReceived();
 
   private:
     // Active serial port connection to the DiodeScout device.
-    QSerialPort &serial;
+    QSerialPort &serial_;
 
-    // Manages all recorded measurement data and series.
-    MeasurementDataManager dataManager;
+    // Stores measurement series and provides analysis/export utilities.
+    MeasurementDataManager dataManager_;
+
+    // Parses incoming serial data forwarded from the serial port handler.
+    SerialParser serialParser_;
 
     // Chart object and chart view (central widget).
-    QChart *chart;
-    QChartView *chartView;
+    QChart *chart_;
+    QChartView *chartView_;
 
     // UI actions for menu and toolbar commands.
-    QAction *restoreViewAct;
-    QAction *lightModeAct;
-    QAction *darkModeAct;
-    QAction *computePWLAct;
-    QAction *exportCSVAct;
-    QAction *exportPythonAct;
-    QAction *exportPNGAct;
-    QAction *removeLastAct;
-    QAction *removeAllAct;
-    QAction *quitAct;
-
-    // Handles a single received byte from the serial interface.
-    void handleSerialByte(char c);
+    QAction *restoreViewAct_;
+    QAction *lightModeAct_;
+    QAction *darkModeAct_;
+    QAction *computePWLAct_;
+    QAction *exportCSVAct_;
+    QAction *exportPythonAct_;
+    QAction *exportPNGAct_;
+    QAction *removeLastAct_;
+    QAction *removeAllAct_;
+    QAction *quitAct_;
 
     // Rounds a value up to the next 0.5 increment.
     double roundUpToHalf(double value) const;

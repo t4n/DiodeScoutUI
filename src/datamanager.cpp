@@ -1,51 +1,19 @@
 // ---------------------------------------------------------------------------
-//  Measurement data model and parser
+//  Central data management, stores and manages all acquired measurement
+//  series and provides utilities for exporting, analyzing, and generating
+//  measurement data.
 //
-//  - Defines data structures for measurement points and series
-//  - Manages temporary and finalized measurement series
-//  - Provides a parser for incoming serial data
-//  - Includes export utilities (CSV, Python)
+//  - Maintains a collection of measurement series
+//  - Exports data to CSV or Python format
+//  - Generates simulated diode characteristics
+//  - Computes piecewise-linear diode parameters
 // ---------------------------------------------------------------------------
 
-#include "measurementdata.h"
+#include "datamanager.h"
 #include <QLocale> // exportCSV, exportPython
 #include <algorithm>
-#include <cctype>
 #include <cmath>
 #include <fstream>
-#include <sstream>
-
-// ---------------------------------------------------------------------------
-//  MeasurementSeries – Implementation
-// ---------------------------------------------------------------------------
-
-// Adds a new measurement point.
-void MeasurementSeries::addPoint(double voltage, double currentMilliAmp)
-{
-    points_.push_back({voltage, currentMilliAmp});
-}
-
-// Returns all measurement points.
-const std::vector<MeasurementPoint> &MeasurementSeries::points() const noexcept
-{
-    return points_;
-}
-
-// Returns the number of measurement points.
-std::size_t MeasurementSeries::size() const noexcept
-{
-    return points_.size();
-}
-
-// Checks whether the series is empty.
-bool MeasurementSeries::empty() const noexcept
-{
-    return points_.empty();
-}
-
-// ---------------------------------------------------------------------------
-//  MeasurementDataManager – Implementation
-// ---------------------------------------------------------------------------
 
 // Returns the number of stored measurement series.
 std::size_t MeasurementDataManager::seriesCount() const noexcept
@@ -53,7 +21,7 @@ std::size_t MeasurementDataManager::seriesCount() const noexcept
     return series_.size();
 }
 
-// Returns all completed measurement series.
+// Returns a read-only reference to all stored measurement series.
 const std::vector<MeasurementSeries> &MeasurementDataManager::allSeries() const noexcept
 {
     return series_;
@@ -65,14 +33,20 @@ void MeasurementDataManager::removeAllSeries()
     series_.clear();
 }
 
-// Removes the last measurement series.
+// Removes the most recently added measurement series.
 void MeasurementDataManager::removeLastSeries()
 {
     if (!series_.empty())
         series_.pop_back();
 }
 
-// Appends a simulated diode characteristic curve.
+// Adds a completed measurement series to the collection.
+void MeasurementDataManager::appendSeries(const MeasurementSeries &series)
+{
+    series_.push_back(series);
+}
+
+// Generates and appends a simulated diode I–V characteristic.
 void MeasurementDataManager::appendSimulatedSeries(double scaleCurrent)
 {
     constexpr double vMax = 5.00; // Max DiodeScout voltage
@@ -100,13 +74,7 @@ void MeasurementDataManager::appendSimulatedSeries(double scaleCurrent)
     series_.push_back(std::move(simul));
 }
 
-// Returns the number of points in the temporary series.
-std::size_t MeasurementDataManager::tempSeriesSize() const noexcept
-{
-    return tempSeries_.size();
-}
-
-// Returns the maximum voltage and maximum current across all series.
+// Retrieves the maximum voltage and current across all series.
 void MeasurementDataManager::getMaxVoltageAndCurrent(double &maxV, double &maxI) const noexcept
 {
     maxV = 0.0;
@@ -120,30 +88,6 @@ void MeasurementDataManager::getMaxVoltageAndCurrent(double &maxV, double &maxI)
             maxI = std::max(maxI, p.currentMilliAmp);
         }
     }
-
-    for (const auto &p : tempSeries_.points())
-    {
-        maxV = std::max(maxV, p.voltageVolt);
-        maxI = std::max(maxI, p.currentMilliAmp);
-    }
-}
-
-// Processes a single incoming character from the serial stream.
-ParseResult MeasurementDataManager::processReceivedChar(char c)
-{
-    if (c == '\n')
-    {
-        auto result = handleCompletedLine(currentLine_);
-        currentLine_.clear();
-        return result;
-    }
-
-    if (c != '\r')
-    {
-        currentLine_.push_back(c);
-    }
-
-    return ParseResult::Nothing;
 }
 
 // Exports all stored measurement series to a CSV file.
@@ -237,8 +181,8 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
     return true;
 }
 
-// Computes the piecewise-linear diode parameters (Vf, Rs)
-// from measured I–V data. Returns true on success.
+// Computes piecewise-linear diode parameters (Vf, Rs).
+// Returns true on success.
 bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
 {
     // Exactly one measurement series is required
@@ -285,75 +229,4 @@ bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
         return false;
 
     return true;
-}
-
-// Removes leading and trailing whitespace.
-std::string MeasurementDataManager::trim(const std::string &s)
-{
-    std::size_t start = 0;
-    while (start < s.size() && std::isspace(static_cast<unsigned char>(s[start])))
-        ++start;
-
-    std::size_t end = s.size();
-    while (end > start && std::isspace(static_cast<unsigned char>(s[end - 1])))
-        --end;
-
-    return s.substr(start, end - start);
-}
-
-// Processes a fully received line, updates the parser state.
-ParseResult MeasurementDataManager::handleCompletedLine(const std::string &rawLine)
-{
-    auto result = ParseResult::Nothing; // default return value
-    std::string line = trim(rawLine);
-
-    switch (state_)
-    {
-    case ParserState::Idle:
-        if (line == "BEGIN")
-        {
-            tempSeries_ = MeasurementSeries{};
-            state_ = ParserState::ReceivingSeries;
-        }
-        break;
-
-    case ParserState::ReceivingSeries:
-        if (line == "END")
-        {
-            if (!tempSeries_.empty())
-            {
-                series_.push_back(std::move(tempSeries_));
-                result = ParseResult::SeriesCompleted; // series completed
-            }
-            state_ = ParserState::Idle;
-        }
-        else if (line.find("DATA ") == 0)
-        {
-            std::string payload = line.substr(5); // skip "DATA "
-            std::replace(payload.begin(), payload.end(), ',', '.');
-            parseDataLine(payload);
-        }
-        else if (line == "BEGIN")
-        {
-            // Resync: discard incomplete series and start fresh
-            tempSeries_ = MeasurementSeries{};
-        }
-        break;
-    }
-
-    return result;
-}
-
-// Parses a data line in the format "<x> <y>".
-void MeasurementDataManager::parseDataLine(const std::string &line)
-{
-    std::istringstream iss(line);
-    double x = 0.0;
-    double y = 0.0;
-
-    iss >> x >> y;
-    if (iss.fail())
-        return;
-
-    tempSeries_.addPoint(x, y);
 }
