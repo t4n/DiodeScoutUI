@@ -38,6 +38,7 @@ class SerialParser
     static constexpr double CurrentRangeMin = 0.0; // min accepted current
     static constexpr double CurrentRangeMax = 50.0; // max accepted current
     static constexpr size_t MaxPointsCount = 100; // max points per series
+    static constexpr size_t MaxLineLength = 100; // max accepted line length
 
   public:
     // Returns the number of points collected in the current series.

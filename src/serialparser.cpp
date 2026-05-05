@@ -38,9 +38,10 @@ ParseResult SerialParser::processReceivedChar(char c)
     }
 
     if (c != '\r')
-    {
         lineBuffer_.push_back(c);
-    }
+
+    if (lineBuffer_.size() >= MaxLineLength)
+        lineBuffer_.clear(); // discard overlong/invalid line
 
     return ParseResult::Nothing;
 }
