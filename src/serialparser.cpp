@@ -46,7 +46,7 @@ ParseResult SerialParser::processReceivedChar(char c)
     // Safety guard: prevent unbounded buffer growth on malformed input
     if (lineBuffer_.size() >= MaxLineLength)
     {
-        qDebug() << "Invalid data:" << QString::fromStdString(lineBuffer_);
+        qWarning() << "Invalid data:" << QString::fromStdString(lineBuffer_);
         lineBuffer_.clear();
     }
 
@@ -98,7 +98,7 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
         }
         else if (line == "BEGIN")
         {
-            qDebug() << "Resync: discard incomplete series and start fresh";
+            qWarning() << "Resync: discard incomplete series and start fresh";
             currentSeries_ = MeasurementSeries{};
             state_ = ParserState::ReceivingSeries;
         }
@@ -119,25 +119,25 @@ ParseResult SerialParser::parseDataLine(const std::string &line)
 
     if (iss.fail())
     {
-        qDebug() << "Invalid DATA line:" << QString::fromStdString(line);
+        qWarning() << "Invalid DATA line:" << QString::fromStdString(line);
         return ParseResult::Nothing;
     }
 
     if (x < VoltageRangeMin || x > VoltageRangeMax)
     {
-        qDebug() << "Invalid DATA line:" << QString::fromStdString(line);
+        qWarning() << "Invalid DATA line:" << QString::fromStdString(line);
         return ParseResult::Nothing;
     }
 
     if (y < CurrentRangeMin || y > CurrentRangeMax)
     {
-        qDebug() << "Invalid DATA line:" << QString::fromStdString(line);
+        qWarning() << "Invalid DATA line:" << QString::fromStdString(line);
         return ParseResult::Nothing;
     }
 
     if (currentSeriesSize() >= MaxPointsCount)
     {
-        qDebug() << "Invalid DATA line:" << QString::fromStdString(line);
+        qWarning() << "Invalid DATA line:" << QString::fromStdString(line);
         return ParseResult::Nothing;
     }
 
