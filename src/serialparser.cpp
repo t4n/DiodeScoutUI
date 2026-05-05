@@ -40,8 +40,9 @@ ParseResult SerialParser::processReceivedChar(char c)
     if (c != '\r')
         lineBuffer_.push_back(c);
 
+    // Safety guard: prevent unbounded buffer growth on malformed input
     if (lineBuffer_.size() >= MaxLineLength)
-        lineBuffer_.clear(); // discard overlong/invalid line
+        lineBuffer_.clear();
 
     return ParseResult::Nothing;
 }
