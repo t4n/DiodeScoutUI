@@ -10,6 +10,7 @@
 // ---------------------------------------------------------------------------
 
 #include "serialparser.h"
+#include <QDebug>
 #include <algorithm>
 #include <cctype>
 #include <sstream>
@@ -38,11 +39,16 @@ ParseResult SerialParser::processReceivedChar(char c)
     }
 
     if (c != '\r')
+    {
         lineBuffer_.push_back(c);
+    }
 
     // Safety guard: prevent unbounded buffer growth on malformed input
     if (lineBuffer_.size() >= MaxLineLength)
+    {
+        qDebug() << "Invalid data:" << QString::fromStdString(lineBuffer_);
         lineBuffer_.clear();
+    }
 
     return ParseResult::Nothing;
 }
@@ -92,7 +98,7 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
         }
         else if (line == "BEGIN")
         {
-            // Resync: discard incomplete series and start fresh
+            qDebug() << "Resync: discard incomplete series and start fresh";
             currentSeries_ = MeasurementSeries{};
             state_ = ParserState::ReceivingSeries;
         }
@@ -105,20 +111,35 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
 // Appends "<x> <y>" data from the received line to the current series.
 ParseResult SerialParser::parseDataLine(const std::string &line)
 {
-    std::istringstream iss(line);
     double x = 0.0;
     double y = 0.0;
 
+    std::istringstream iss(line);
     iss >> x >> y;
 
     if (iss.fail())
+    {
+        qDebug() << "Invalid DATA line:" << QString::fromStdString(line);
         return ParseResult::Nothing;
+    }
+
     if (x < VoltageRangeMin || x > VoltageRangeMax)
+    {
+        qDebug() << "Invalid DATA line:" << QString::fromStdString(line);
         return ParseResult::Nothing;
+    }
+
     if (y < CurrentRangeMin || y > CurrentRangeMax)
+    {
+        qDebug() << "Invalid DATA line:" << QString::fromStdString(line);
         return ParseResult::Nothing;
+    }
+
     if (currentSeriesSize() >= MaxPointsCount)
+    {
+        qDebug() << "Invalid DATA line:" << QString::fromStdString(line);
         return ParseResult::Nothing;
+    }
 
     currentSeries_.addPoint(x, y);
     return ParseResult::DataPointAdded;

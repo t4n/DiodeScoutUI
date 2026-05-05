@@ -96,7 +96,10 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath) const
 {
     std::ofstream out(filePath);
     if (!out.is_open())
+    {
+        qWarning() << "Cannot open file:" << QString::fromStdString(filePath);
         return false;
+    }
 
     // Use Qt's locale (system locale)
     QLocale loc;
@@ -128,7 +131,10 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
 {
     std::ofstream out(filePath);
     if (!out.is_open())
+    {
+        qWarning() << "Cannot open file:" << QString::fromStdString(filePath);
         return false;
+    }
 
     // Force C locale (Python expects dot!)
     QLocale loc(QLocale::C);
@@ -194,7 +200,8 @@ bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
     const double maxI = series_[0].points().back().currentMilliAmp;
     const double threshold = std::max(0.5 * maxI, noiseFloor);
 
-    // Linear least-squares fit, V = Rs * I + Vf
+    // Linear least-squares fit: V = Rs * I + Vf where
+    // Rs = Effective series resistance, Vf = Forward voltage (turn-on)
     int n = 0;
     double sumI = 0.0;
     double sumV = 0.0;

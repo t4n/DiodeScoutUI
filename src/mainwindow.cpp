@@ -36,7 +36,11 @@ class MyChartView : public QChartView
     // Checks if value is within the axis limits.
     bool inAxisRange(qreal value, const QValueAxis *axis) const
     {
-        return axis && value >= axis->min() && value <= axis->max();
+        Q_ASSERT(axis);
+        if(!axis)
+            return false;
+
+        return value >= axis->min() && value <= axis->max();
     }
 
     // Update tooltip with mouse position in chart coordinates.
@@ -170,7 +174,7 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
     connect(removeAllAct_, &QAction::triggered, this, &MainWindow::onRemoveAllClicked);
     connect(quitAct_, &QAction::triggered, this, &MainWindow::onQuitClicked);
 
-    // Chart
+    // Chart: chartView_ takes ownership of chart_
     chart_ = new QChart();
     chart_->setTheme(QChart::ChartThemeBlueCerulean);
     chart_->setTitle("Press the button on the DiodeScout ...");
@@ -195,7 +199,7 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
     {
         QString prettyName = serial_.portName();
         prettyName.replace("\\\\.\\", "");
-        connect(&serial_, &QSerialPort::readyRead, this, &MainWindow::onSerialDataReceived);
+        connect(&serial_, &QSerialPort::readyRead, this, &MainWindow::onSerialDataReceived, Qt::QueuedConnection);
         statusBar()->showMessage(QString("DiodeScout at %1").arg(prettyName));
     }
 }
@@ -247,7 +251,7 @@ void MainWindow::onComputePWL()
     dataManager_.getMaxVoltageAndCurrent(maxV, maxI);
     maxI /= 1000.0; // convert mA to A
 
-    auto *line = new QLineSeries();
+    auto *line = new QLineSeries(chart_);
     line->append(0.0, 0.0);
     line->append(forwardV, 0.0);
     line->append(forwardV + seriesR * maxI, maxI * 1000.0);
@@ -261,6 +265,7 @@ void MainWindow::onComputePWL()
     const auto axesY = chart_->axes(Qt::Vertical);
     auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
     auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
+    Q_ASSERT(axisX && axisY);
 
     if (axisX && axisY)
     {
@@ -405,7 +410,7 @@ void MainWindow::rebuildChart()
     const auto &all = dataManager_.allSeries();
     for (const auto &seriesData : all)
     {
-        auto *line = new QSplineSeries();
+        auto *line = new QSplineSeries(chart_);
         for (const auto &p : seriesData.points())
             line->append(p.voltageVolt, p.currentMilliAmp);
         chart_->addSeries(line);
@@ -420,6 +425,7 @@ void MainWindow::rebuildChart()
     const auto axesY = chart_->axes(Qt::Vertical);
     auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
     auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
+    Q_ASSERT(axisX && axisY);
 
     double maxVoltage, maxCurrent;
     dataManager_.getMaxVoltageAndCurrent(maxVoltage, maxCurrent);
