@@ -449,7 +449,7 @@ void MainWindow::resetChartToEmpty()
 {
     // Clears all visual content from the chart and restores the
     // initial empty-state appearance. Used when no measurement
-    // series remain. Does not modify the MeasurementdataManager_.
+    // series remain. Does not modify the MeasurementdataManager.
     chart_->removeAllSeries();
     chart_->setAnimationOptions(QChart::NoAnimation);
     chart_->setTitle("Press the button on the DiodeScout ...");
