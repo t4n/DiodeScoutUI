@@ -430,17 +430,14 @@ void MainWindow::rebuildChart()
     auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
     Q_ASSERT(axisX && axisY);
 
-    if (axisX)
+    if (axisX && axisY)
     {
         axisX->setTitleText("Volt (V)");
         axisX->setTickType(QValueAxis::TicksDynamic);
         axisX->setRange(0, roundUpToHalf(maxVoltage));
         axisX->setTickInterval(0.5);
         axisX->setMinorTickCount(4);
-    }
 
-    if (axisY)
-    {
         axisY->setLabelFormat("%.2f");
         axisY->setTitleText("\nMilliampere (mA)");
         axisY->setTickType(QValueAxis::TicksDynamic);

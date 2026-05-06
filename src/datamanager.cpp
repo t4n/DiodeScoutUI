@@ -54,12 +54,12 @@ void MeasurementDataManager::appendSimulatedSeries(double scaleCurrent)
     constexpr double emission = 1.950; // Emission coefficient
     constexpr double vThermal = 0.026; // Thermal voltage, room temp
 
-    constexpr double voltageStep = 0.01;
-    constexpr double slope = iMax / vMax;
-
     MeasurementSeries simul;
     double voltage = 0.0;
     double current = 0.0;
+
+    constexpr double voltageStep = 0.01;
+    constexpr double slope = iMax / vMax;
 
     // Keep below DiodeScout load line (5 V, 500 Ohm)
     while (current < iMax - slope * voltage)

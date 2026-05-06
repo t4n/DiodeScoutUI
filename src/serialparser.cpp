@@ -94,7 +94,7 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
         {
             std::string payload = line.substr(5); // skip "DATA "
             std::replace(payload.begin(), payload.end(), ',', '.');
-            result = parseDataLine(payload);
+            result = extractXYData(payload);
         }
         else if (line == "BEGIN")
         {
@@ -108,36 +108,36 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
     return result;
 }
 
-// Appends "<x> <y>" data from the received line to the current series.
-ParseResult SerialParser::parseDataLine(const std::string &line)
+// Extracts an XY data point and appends it to currentSeries_.
+ParseResult SerialParser::extractXYData(const std::string& data)
 {
     double x = 0.0;
     double y = 0.0;
 
-    std::istringstream iss(line);
+    std::istringstream iss(data);
     iss >> x >> y;
 
     if (iss.fail())
     {
-        qWarning() << "Invalid DATA:" << QString::fromStdString(line);
+        qWarning() << "Invalid DATA:" << QString::fromStdString(data);
         return ParseResult::Nothing;
     }
 
     if (x < VoltageRangeMin || x > VoltageRangeMax)
     {
-        qWarning() << "Invalid voltage:" << QString::fromStdString(line);
+        qWarning() << "Invalid voltage:" << QString::fromStdString(data);
         return ParseResult::Nothing;
     }
 
     if (y < CurrentRangeMin || y > CurrentRangeMax)
     {
-        qWarning() << "Invalid current:" << QString::fromStdString(line);
+        qWarning() << "Invalid current:" << QString::fromStdString(data);
         return ParseResult::Nothing;
     }
 
-    if (currentSeriesSize() >= MaxPointsCount)
+    if (currentSeriesSize() > MaxPointsCount)
     {
-        qWarning() << "MaxPointsCount overrun:" << QString::fromStdString(line);
+        qWarning() << "MaxPointsCount overrun:" << QString::fromStdString(data);
         return ParseResult::Nothing;
     }
 
