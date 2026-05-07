@@ -11,6 +11,12 @@ characteristics measured with the DiodeScout device.
 * Computation of piecewise-linear diode model
 * Simulation mode for testing without physical hardware
 
+## Source Code
+
+The full source code is available on GitHub:
+
+👉 [View project on GitHub](https://github.com/t4n/DiodeScoutUI)
+
 ## Screenshots
 
 ### Diode Measurement
@@ -20,12 +26,6 @@ characteristics measured with the DiodeScout device.
 ### Transistor Measurement
 
 ![Transistor Measurement](DiodeScoutUI-Transistor.png)
-
-## Source Code
-
-The full source code is available on GitHub:
-
-👉 [View project on GitHub](https://github.com/t4n/DiodeScoutUI)
 
 ## License
 
