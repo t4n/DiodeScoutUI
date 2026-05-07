@@ -29,4 +29,6 @@ The full source code is available on GitHub:
 
 ## License
 
+Copyright (C) 2026 Tilman Küpper
+
 DiodeScoutUI is licensed under the GNU GPLv3.
