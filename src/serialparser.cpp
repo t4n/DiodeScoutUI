@@ -124,13 +124,13 @@ ParseResult SerialParser::extractXYData(const std::string &data)
     iss >> x >> y;
 
     if (iss.fail())
-        fail("Invalid DATA: ");
+        return fail("Invalid DATA: ");
     if (x < VoltageRangeMin || x > VoltageRangeMax)
-        fail("Invalid voltage: ");
+        return fail("Invalid voltage: ");
     if (y < CurrentRangeMin || y > CurrentRangeMax)
-        fail("Invalid current: ");
+        return fail("Invalid current: ");
     if (currentSeriesSize() >= MaxPointsCount)
-        fail("MaxPointsCount overrun: ");
+        return fail("MaxPointsCount overrun: ");
 
     currentSeries_.addPoint(x, y);
     return ParseResult::DataPointAdded;
