@@ -37,7 +37,7 @@ class MyChartView : public QChartView
     bool inAxisRange(qreal value, const QValueAxis *axis) const
     {
         Q_ASSERT(axis);
-        if(!axis)
+        if (!axis)
             return false;
 
         return value >= axis->min() && value <= axis->max();

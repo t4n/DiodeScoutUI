@@ -33,12 +33,13 @@ enum class ParseResult
 class SerialParser
 {
   private:
-    static constexpr double VoltageRangeMin = 0.0; // min accepted voltage
-    static constexpr double VoltageRangeMax = 50.0; // max accepted voltage
-    static constexpr double CurrentRangeMin = 0.0; // min accepted current
-    static constexpr double CurrentRangeMax = 50.0; // max accepted current
-    static constexpr size_t MaxPointsCount = 100; // max points per series
-    static constexpr size_t MaxLineLength = 100; // max accepted line length
+    // Validation limits used while parsing input data.
+    static constexpr double VoltageRangeMin = 0.0;
+    static constexpr double VoltageRangeMax = 50.0;
+    static constexpr double CurrentRangeMin = 0.0;
+    static constexpr double CurrentRangeMax = 50.0;
+    static constexpr size_t MaxPointsCount = 100;
+    static constexpr size_t MaxLineLength = 100;
 
   public:
     // Returns the number of points collected in the current series.
@@ -47,8 +48,8 @@ class SerialParser
     // Provides read-only access to the current measurement series.
     const MeasurementSeries &currentSeries() const noexcept;
 
-    // Returns DataPointAdded when a DATA line was parsed,
-    // SeriesCompleted when END was received, or Nothing otherwise.
+    // Returns DataPointAdded when a DATA line is parsed,
+    // SeriesCompleted when END is received, or Nothing otherwise.
     ParseResult processReceivedChar(char c);
 
   private:
@@ -75,5 +76,5 @@ class SerialParser
     ParseResult handleCompletedLine(const std::string &rawLine);
 
     // Extracts an XY data point and appends it to currentSeries_.
-    ParseResult extractXYData(const std::string& data);
+    ParseResult extractXYData(const std::string &data);
 };
