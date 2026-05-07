@@ -61,12 +61,13 @@ void MeasurementDataManager::appendSimulatedSeries(double scaleCurrent)
     constexpr double voltageStep = 0.01;
     constexpr double slope = iMax / vMax;
 
-    // Keep below DiodeScout load line (5 V, 500 Ohm)
+    // Keep below DiodeScout load line (5 V, 500 Ohm, max 10 mA)
     while (current < iMax - slope * voltage)
     {
         // First iteration includes origin (0 V, 0 mA)
         simul.addPoint(voltage, current * 1000.0);
 
+        // Shockley diode equation
         voltage += voltageStep;
         current = scaleCurrent * (std::exp(voltage / emission / vThermal) - 1.0);
     }
