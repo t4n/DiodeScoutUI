@@ -13,7 +13,7 @@
 #include <QDebug>
 #include <algorithm>
 #include <cctype>
-#include <sstream>
+#include <cstdlib> // std::strtod
 
 // Returns the number of points collected in the current series.
 std::size_t SerialParser::currentSeriesSize() const noexcept
@@ -117,14 +117,21 @@ ParseResult SerialParser::extractXYData(const std::string &data)
         return ParseResult::Nothing;
     };
 
-    double x = 0.0;
-    double y = 0.0;
+    const char *ptr = data.c_str();
+    char *end = nullptr;
 
-    std::istringstream iss(data);
-    iss >> x >> y;
+    // Extract X
+    double x = std::strtod(ptr, &end);
+    if (end == ptr)
+        return fail("Invalid DATA (X): ");
 
-    if (iss.fail())
-        return fail("Invalid DATA: ");
+    // Extract Y
+    ptr = end;
+    double y = std::strtod(ptr, &end);
+    if (end == ptr)
+        return fail("Invalid DATA (Y): ");
+
+    // Sanity checks
     if (x < VoltageRangeMin || x > VoltageRangeMax)
         return fail("Invalid voltage: ");
     if (y < CurrentRangeMin || y > CurrentRangeMax)
