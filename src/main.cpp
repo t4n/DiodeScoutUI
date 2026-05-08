@@ -86,11 +86,12 @@ class DiodeScoutSerialConnector
 // ---------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-    // Prevent locale-dependent parsing errors
-    std::setlocale(LC_NUMERIC, "C");
-
     // Initialize the main application framework
     QApplication application(argc, argv);
+
+    // Qt may use system locale on Unix/Linux, conflicting with POSIX numeric
+    // parsing (decimal comma vs dot). Force C-locale for numeric operations.
+    std::setlocale(LC_NUMERIC, "C");
 
     // Background colors
     QPalette darkPalette;

@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib> // std::strtod
+#include <cmath> // std::isfinite
 
 // Returns the number of points collected in the current series.
 std::size_t SerialParser::currentSeriesSize() const noexcept
@@ -132,6 +133,8 @@ ParseResult SerialParser::extractXYData(const std::string &data)
         return fail("Invalid DATA (Y): ");
 
     // Sanity checks
+    if (!std::isfinite(x) || !std::isfinite(y))
+        return fail("Invalid DATA: ");
     if (x < VoltageRangeMin || x > VoltageRangeMax)
         return fail("Invalid voltage: ");
     if (y < CurrentRangeMin || y > CurrentRangeMax)
