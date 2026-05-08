@@ -123,18 +123,16 @@ ParseResult SerialParser::extractXYData(const std::string &data)
 
     // Extract X
     double x = std::strtod(ptr, &end);
-    if (end == ptr)
+    if (end == ptr || !std::isfinite(x))
         return fail("Invalid DATA (X): ");
 
     // Extract Y
     ptr = end;
     double y = std::strtod(ptr, &end);
-    if (end == ptr)
+    if (end == ptr || !std::isfinite(y))
         return fail("Invalid DATA (Y): ");
 
     // Sanity checks
-    if (!std::isfinite(x) || !std::isfinite(y))
-        return fail("Invalid DATA: ");
     if (x < VoltageRangeMin || x > VoltageRangeMax)
         return fail("Invalid voltage: ");
     if (y < CurrentRangeMin || y > CurrentRangeMax)
