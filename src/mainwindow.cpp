@@ -293,7 +293,13 @@ void MainWindow::onExportCSVClicked()
 
     if (!fileName.isEmpty())
     {
-        if (!dataManager_.exportCSV(fileName.toStdString()))
+        // Locale-based CSV formatting
+        const bool germanStyle = (QLocale().decimalPoint() == QString(","));
+        const char decimalSeparator = germanStyle ? ',' : '.';
+        const char fieldSeparator = germanStyle ? ';' : ',';
+
+        CSVSettings csv(decimalSeparator, fieldSeparator);
+        if (!dataManager_.exportCSV(fileName.toStdString(), csv))
             QMessageBox::warning(this, "Error", "CSV export failed.");
     }
 }
@@ -365,7 +371,6 @@ void MainWindow::onQuitClicked()
 void MainWindow::onSerialDataReceived()
 {
     const QByteArray data = serial_.readAll();
-
     for (char c : data)
     {
         const auto result = serialParser_.processReceivedChar(c);
@@ -383,6 +388,10 @@ void MainWindow::onSerialDataReceived()
             // Update progress indicator in status bar
             n = serialParser_.currentSeriesSize();
             statusBar()->showMessage(QString("Receiving data ") + QString(n, '.'));
+            break;
+
+        case ParseResult::ParseError:
+            qWarning() << "SerialParser, Format Error: " << data;
             break;
 
         case ParseResult::Nothing:

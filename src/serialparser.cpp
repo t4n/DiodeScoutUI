@@ -6,15 +6,12 @@
 //  - Call processReceivedChar() for each incoming character.
 //  - When SeriesCompleted is returned, the current series
 //    contains a fully parsed measurement sequence.
-//  - The next BEGIN block automatically starts a new series.
 // ---------------------------------------------------------------------------
 
 #include "serialparser.h"
-#include <QDebug>
 #include <algorithm>
 #include <cctype>
-#include <cstdlib> // std::strtod
-#include <cmath> // std::isfinite
+#include <sstream>
 
 // Returns the number of points collected in the current series.
 std::size_t SerialParser::currentSeriesSize() const noexcept
@@ -29,7 +26,8 @@ const MeasurementSeries &SerialParser::currentSeries() const noexcept
 }
 
 // Returns DataPointAdded when a DATA line is parsed,
-// SeriesCompleted when END is received, or Nothing otherwise.
+// SeriesCompleted when END is received, ParseError on
+// invalid or malformed input data, or Nothing otherwise.
 ParseResult SerialParser::processReceivedChar(char c)
 {
     if (c == '\n')
@@ -39,18 +37,20 @@ ParseResult SerialParser::processReceivedChar(char c)
         return result;
     }
 
-    if (c != '\r')
+    if (c == '\r')
     {
-        lineBuffer_.push_back(c);
+        // Ignore \r
+        return ParseResult::Nothing;
     }
 
-    // Safety guard: prevent unbounded buffer growth on malformed input
     if (lineBuffer_.size() >= MaxLineLength)
     {
-        qWarning() << "Invalid data:" << QString::fromStdString(lineBuffer_);
+        // Prevent unbounded buffer growth on malformed input
         lineBuffer_.clear();
+        return ParseResult::ParseError;
     }
 
+    lineBuffer_.push_back(c);
     return ParseResult::Nothing;
 }
 
@@ -91,7 +91,7 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
                 result = ParseResult::SeriesCompleted;
             state_ = ParserState::Idle;
         }
-        else if (line.find("DATA ") == 0)
+        else if (line.rfind("DATA ", 0) == 0)
         {
             std::string payload = line.substr(5); // skip "DATA "
             std::replace(payload.begin(), payload.end(), ',', '.');
@@ -99,7 +99,7 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
         }
         else if (line == "BEGIN")
         {
-            qWarning() << "Resync: discard incomplete series and start fresh";
+            // Resync, discard incomplete series and start fresh
             currentSeries_ = MeasurementSeries{};
             state_ = ParserState::ReceivingSeries;
         }
@@ -112,33 +112,20 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
 // Extracts an XY data point and appends it to currentSeries_.
 ParseResult SerialParser::extractXYData(const std::string &data)
 {
-    auto fail = [&data](const QString &msg)
-    {
-        qWarning() << msg << QString::fromStdString(data);
-        return ParseResult::Nothing;
-    };
+    double x = 0.0;
+    double y = 0.0;
 
-    const char *ptr = data.c_str();
-    char *end = nullptr;
+    std::istringstream iss(data);
+    iss >> x >> y;
 
-    // Extract X
-    double x = std::strtod(ptr, &end);
-    if (end == ptr || !std::isfinite(x))
-        return fail("Invalid DATA (X): ");
-
-    // Extract Y
-    ptr = end;
-    double y = std::strtod(ptr, &end);
-    if (end == ptr || !std::isfinite(y))
-        return fail("Invalid DATA (Y): ");
-
-    // Sanity checks
+    if (iss.fail())
+        return ParseResult::ParseError;
     if (x < VoltageRangeMin || x > VoltageRangeMax)
-        return fail("Invalid voltage: ");
+        return ParseResult::ParseError;
     if (y < CurrentRangeMin || y > CurrentRangeMax)
-        return fail("Invalid current: ");
+        return ParseResult::ParseError;
     if (currentSeriesSize() >= MaxPointsCount)
-        return fail("MaxPointsCount overrun: ");
+        return ParseResult::ParseError;
 
     currentSeries_.addPoint(x, y);
     return ParseResult::DataPointAdded;

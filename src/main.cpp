@@ -13,7 +13,8 @@
 #include <QPalette>
 #include <QSerialPortInfo>
 #include <QStyleFactory>
-#include <clocale> // std::setlocale
+#include <clocale>
+#include <locale>
 
 // ---------------------------------------------------------------------------
 //  DiodeScoutSerialConnector:
@@ -91,6 +92,7 @@ int main(int argc, char *argv[])
 
     // Qt may use system locale on Unix/Linux, conflicting with POSIX numeric
     // parsing (decimal comma vs dot). Force C-locale for numeric operations.
+    std::locale::global(std::locale::classic());
     std::setlocale(LC_NUMERIC, "C");
 
     // Background colors
@@ -133,7 +135,7 @@ int main(int argc, char *argv[])
             QMessageBox::Yes | QMessageBox::No);
 
         if (result == QMessageBox::No)
-            return 0;
+            return EXIT_SUCCESS;
     }
 
     // Show MainWindow

@@ -14,6 +14,27 @@
 #include "coredatatypes.h"
 #include <cstddef>
 #include <string>
+#include <vector>
+
+// ---------------------------------------------------------------------------
+//  CSVSettings:
+//  Defines formatting rules for CSV export.
+// ---------------------------------------------------------------------------
+struct CSVSettings
+{
+    char decimalSeparator;
+    char fieldSeparator;
+
+    // Constructs CSVSettings, sets decimal and field separator.
+    explicit CSVSettings(char decimalSep, char fieldSep) noexcept
+    {
+        decimalSeparator = decimalSep;
+        fieldSeparator = fieldSep;
+    }
+
+    // Prevent construction without initialization.
+    CSVSettings() = delete;
+};
 
 // ---------------------------------------------------------------------------
 //  MeasurementDataManager:
@@ -35,7 +56,7 @@ class MeasurementDataManager
     void removeLastSeries();
 
     // Adds a completed measurement series to the collection.
-    void appendSeries(const MeasurementSeries &series);
+    void appendSeries(MeasurementSeries series);
 
     // Generates and appends a simulated diode I–V characteristic.
     void appendSimulatedSeries(double scaleCurrent);
@@ -45,7 +66,7 @@ class MeasurementDataManager
 
     // Exports all stored measurement series to a CSV file.
     // Returns true on success.
-    bool exportCSV(const std::string &filePath) const;
+    bool exportCSV(const std::string &filePath, CSVSettings csv) const;
 
     // Exports all stored measurement series to a Python script.
     // Returns true on success.

@@ -6,7 +6,6 @@
 //  - Call processReceivedChar() for each incoming character.
 //  - When SeriesCompleted is returned, the current series
 //    contains a fully parsed measurement sequence.
-//  - The next BEGIN block automatically starts a new series.
 // ---------------------------------------------------------------------------
 
 #pragma once
@@ -17,13 +16,14 @@
 // ---------------------------------------------------------------------------
 //  ParseResult:
 //  Indicates whether processing the latest character added a data point,
-//  completed a series, or had no effect.
+//  completed a series, detected invalid input data, or had no effect.
 // ---------------------------------------------------------------------------
 enum class ParseResult
 {
     Nothing,
     DataPointAdded,
-    SeriesCompleted
+    SeriesCompleted,
+    ParseError
 };
 
 // ---------------------------------------------------------------------------
@@ -49,7 +49,8 @@ class SerialParser
     const MeasurementSeries &currentSeries() const noexcept;
 
     // Returns DataPointAdded when a DATA line is parsed,
-    // SeriesCompleted when END is received, or Nothing otherwise.
+    // SeriesCompleted when END is received, ParseError on
+    // invalid or malformed input data, or Nothing otherwise.
     ParseResult processReceivedChar(char c);
 
   private:

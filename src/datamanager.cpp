@@ -10,10 +10,10 @@
 // ---------------------------------------------------------------------------
 
 #include "datamanager.h"
-#include <QLocale> // exportCSV, exportPython
 #include <algorithm>
 #include <cmath>
 #include <fstream>
+#include <iomanip>
 
 // Returns the number of stored measurement series.
 std::size_t MeasurementDataManager::seriesCount() const noexcept
@@ -41,9 +41,9 @@ void MeasurementDataManager::removeLastSeries()
 }
 
 // Adds a completed measurement series to the collection.
-void MeasurementDataManager::appendSeries(const MeasurementSeries &series)
+void MeasurementDataManager::appendSeries(MeasurementSeries series)
 {
-    series_.push_back(series);
+    series_.push_back(std::move(series));
 }
 
 // Generates and appends a simulated diode I–V characteristic.
@@ -65,7 +65,8 @@ void MeasurementDataManager::appendSimulatedSeries(double scaleCurrent)
     while (current < iMax - slope * voltage)
     {
         // First iteration includes origin (0 V, 0 mA)
-        simul.addPoint(voltage, current * 1000.0);
+        const double currentMilli = current * 1000.0;
+        simul.addPoint(voltage, currentMilli);
 
         // Shockley diode equation
         voltage += voltageStep;
@@ -93,37 +94,36 @@ void MeasurementDataManager::getMaxVoltageAndCurrent(double &maxV, double &maxI)
 
 // Exports all stored measurement series to a CSV file.
 // Returns true on success.
-bool MeasurementDataManager::exportCSV(const std::string &filePath) const
+bool MeasurementDataManager::exportCSV(const std::string &filePath, CSVSettings csv) const
 {
     std::ofstream out(filePath);
     if (!out.is_open())
-    {
-        qWarning() << "Cannot open file:" << QString::fromStdString(filePath);
         return false;
-    }
 
-    // Use Qt's locale (system locale)
-    QLocale loc;
+    // Format numeric values according to the CSV settings
+    auto formatNumber = [&csv](double value)
+    {
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(6) << value;
+        std::string s = oss.str();
+        if (csv.decimalSeparator != '.')
+            std::replace(s.begin(), s.end(), '.', csv.decimalSeparator);
+        return s;
+    };
 
     for (std::size_t i = 0; i < series_.size(); ++i)
     {
         const auto &s = series_[i];
-
         out << "Series " << (i + 1) << "\n";
-        out << "Volt (V);Milliampere (mA)\n";
+        out << "Volt (V)" << csv.fieldSeparator << "Milliampere (mA)\n";
 
         for (const auto &p : s.points())
-        {
-            QString v = loc.toString(p.voltageVolt, 'f', 6);
-            QString c = loc.toString(p.currentMilliAmp, 'f', 6);
-
-            out << v.toStdString() << ";" << c.toStdString() << "\n";
-        }
+            out << formatNumber(p.voltageVolt) << csv.fieldSeparator << formatNumber(p.currentMilliAmp) << "\n";
 
         out << "\n";
     }
 
-    return out.good();
+    return out.flush().good();
 }
 
 // Exports all stored measurement series to a Python script.
@@ -132,15 +132,10 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
 {
     std::ofstream out(filePath);
     if (!out.is_open())
-    {
-        qWarning() << "Cannot open file:" << QString::fromStdString(filePath);
         return false;
-    }
-
-    // Force C locale (Python expects dot!)
-    QLocale loc(QLocale::C);
 
     // Header
+    out << std::fixed << std::setprecision(6);
     out << "#!/usr/bin/env python3\n";
     out << "import matplotlib.pyplot as plt\n\n";
     out << "series = []\n\n";
@@ -148,29 +143,30 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
     for (std::size_t i = 0; i < series_.size(); ++i)
     {
         const auto &s = series_[i];
-        int idx = i + 1;
-
+        const std::size_t idx = i + 1;
         out << "# Series " << idx << "\n";
+
+        // Voltage list
         out << "voltage_" << idx << " = [";
-        for (size_t j = 0; j < s.points().size(); ++j)
+        for (std::size_t j = 0; j < s.points().size(); ++j)
         {
             const auto &p = s.points()[j];
-            out << loc.toString(p.voltageVolt, 'f', 6).toStdString();
+            out << p.voltageVolt;
             if (j + 1 < s.points().size())
                 out << ", ";
         }
         out << "]\n";
 
+        // Current list
         out << "current_" << idx << " = [";
-        for (size_t j = 0; j < s.points().size(); ++j)
+        for (std::size_t j = 0; j < s.points().size(); ++j)
         {
             const auto &p = s.points()[j];
-            out << loc.toString(p.currentMilliAmp, 'f', 6).toStdString();
+            out << p.currentMilliAmp;
             if (j + 1 < s.points().size())
                 out << ", ";
         }
         out << "]\n";
-
         out << "series.append((voltage_" << idx << ", current_" << idx << "))\n\n";
     }
 
@@ -185,7 +181,7 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
     out << "# plt.savefig('plot.png', dpi=300)\n";
     out << "plt.show()\n";
 
-    return out.good();
+    return out.flush().good();
 }
 
 // Computes piecewise-linear diode parameters (Vf, Rs).
