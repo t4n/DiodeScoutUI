@@ -371,10 +371,11 @@ void MainWindow::onQuitClicked()
 void MainWindow::onSerialDataReceived()
 {
     const QByteArray data = serial_.readAll();
+
     for (char c : data)
     {
-        const auto result = serialParser_.processReceivedChar(c);
         int n;
+        const auto result = serialParser_.processReceivedChar(c);
 
         switch (result)
         {
@@ -391,7 +392,7 @@ void MainWindow::onSerialDataReceived()
             break;
 
         case ParseResult::ParseError:
-            qWarning() << "SerialParser, Format Error: " << data;
+            qWarning() << "ParseError: " << data;
             break;
 
         case ParseResult::Nothing:
