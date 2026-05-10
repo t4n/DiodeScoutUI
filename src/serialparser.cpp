@@ -96,6 +96,7 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
             std::string payload = line.substr(5); // skip "DATA "
             std::replace(payload.begin(), payload.end(), ',', '.');
             result = extractXYData(payload);
+            state_ = ParserState::ReceivingSeries;
         }
         else if (line == "BEGIN")
         {
