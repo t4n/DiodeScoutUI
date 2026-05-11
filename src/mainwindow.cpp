@@ -177,7 +177,6 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
     // Chart: chartView_ takes ownership of chart_
     chart_ = new QChart();
     chart_->setTheme(QChart::ChartThemeBlueCerulean);
-    chart_->setTitle("Press the button on the DiodeScout ...");
     setChartTitleFont();
 
     chartView_ = new MyChartView(chart_);
@@ -192,8 +191,8 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
     {
         dataManager_.appendSimulatedSeries(1.0e-8);
         dataManager_.appendSimulatedSeries(1.0e-10);
-        rebuildChart();
         statusBar()->showMessage("Simulation");
+        rebuildChart();
     }
     else
     {
@@ -201,6 +200,7 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
         prettyName.replace("\\\\.\\", "");
         connect(&serial_, &QSerialPort::readyRead, this, &MainWindow::onSerialDataReceived, Qt::QueuedConnection);
         statusBar()->showMessage(QString("DiodeScout at %1").arg(prettyName));
+        chart_->setTitle("Press the button on the DiodeScout ...");
     }
 }
 
