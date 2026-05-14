@@ -48,7 +48,7 @@ void MeasurementDataManager::appendSeries(MeasurementSeries series)
     series_.push_back(std::move(series));
 }
 
-// Generates and appends simulated diode I–V characteristics.
+// Appends simulated diode I–V characteristics to the collection.
 void MeasurementDataManager::appendSimulatedSeries()
 {
     static constexpr std::array voltage_1 = {0.000000, 0.193000, 0.290000, 0.389000, 0.489000, 0.552000, 0.603000,
@@ -76,7 +76,7 @@ void MeasurementDataManager::appendSimulatedSeries()
         4.297000, 4.447000, 4.655000, 4.819000, 5.009000, 5.198000, 5.379000, 5.576000, 5.715000, 5.724000};
 
     // Helper to add a series
-    auto addSeries = [&](const auto &v, const auto &i)
+    auto addSeries = [this](const auto &v, const auto &i)
     {
         if (v.size() != i.size())
             return; // malformed built-in simulation data
