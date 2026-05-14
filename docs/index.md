@@ -33,8 +33,6 @@ Measurement and visualization of transistor characteristics.
 
 ## Personal Homepage & Projects
 
-A selection of related work and personal projects:
-
 👉 [Homepage (HM Munich University of Applied Sciences)](https://kuepper.userweb.mwn.de)
 
 👉 [50 Ω Driver Circuits – Research Article (Heliyon, 2021)](https://doi.org/10.1016/j.heliyon.2021.e07674)
