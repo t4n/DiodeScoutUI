@@ -47,13 +47,8 @@ class DiodeScoutSerialConnector
         }
 
         bool ok = false;
-        const QString choice = QInputDialog::getItem(nullptr,
-            "DiodeScoutUI",
-            "No DiodeScout device detected.\nPlease select the correct serial port:",
-            portNames,
-            0,
-            false,
-            &ok);
+        const QString choice = QInputDialog::getItem(nullptr, "DiodeScoutUI",
+            "No DiodeScout device detected.\nPlease select the correct serial port:", portNames, 0, false, &ok);
 
         if (ok)
         {
@@ -129,8 +124,7 @@ int main(int argc, char *argv[])
     QSerialPort diodeScoutPort;
     if (!DiodeScoutSerialConnector::FindAndOpen(diodeScoutPort))
     {
-        auto result = QMessageBox::question(nullptr,
-            "DiodeScoutUI",
+        auto result = QMessageBox::question(nullptr, "DiodeScoutUI",
             "No DiodeScout device detected.\nDo you want to start in simulation mode?",
             QMessageBox::Yes | QMessageBox::No);
 

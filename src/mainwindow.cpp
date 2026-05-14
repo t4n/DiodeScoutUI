@@ -189,8 +189,7 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
     // connected, otherwise initialize serial communication.
     if (!serial_.isOpen())
     {
-        dataManager_.appendSimulatedSeries(1.0e-8);
-        dataManager_.appendSimulatedSeries(1.0e-10);
+        dataManager_.appendSimulatedSeries();
         statusBar()->showMessage("Simulation");
         rebuildChart();
     }
@@ -231,8 +230,7 @@ void MainWindow::onComputePWL()
     double forwardV, seriesR;
     if (!dataManager_.computePWL(forwardV, seriesR))
     {
-        QMessageBox::warning(this,
-            "Piecewise-linear diode model",
+        QMessageBox::warning(this, "Piecewise-linear diode model",
             "Please ensure that:\n\n"
             "- Exactly one measurement series is loaded\n"
             "- The diode is connected with the correct polarity\n"
@@ -284,12 +282,8 @@ void MainWindow::onComputePWL()
 // Triggered when the user selects "Export CSV".
 void MainWindow::onExportCSVClicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this,
-        "Export CSV",
-        QDir::homePath() + "/dscout.csv",
-        "CSV file (*.csv)",
-        nullptr,
-        QFileDialog::DontUseNativeDialog);
+    QString fileName = QFileDialog::getSaveFileName(this, "Export CSV", QDir::homePath() + "/dscout.csv",
+        "CSV file (*.csv)", nullptr, QFileDialog::DontUseNativeDialog);
 
     if (!fileName.isEmpty())
     {
@@ -307,12 +301,8 @@ void MainWindow::onExportCSVClicked()
 // Triggered when the user selects "Export Python script".
 void MainWindow::onExportPythonClicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this,
-        "Export Python script",
-        QDir::homePath() + "/dscout.py",
-        "Python script (*.py)",
-        nullptr,
-        QFileDialog::DontUseNativeDialog);
+    QString fileName = QFileDialog::getSaveFileName(this, "Export Python script", QDir::homePath() + "/dscout.py",
+        "Python script (*.py)", nullptr, QFileDialog::DontUseNativeDialog);
 
     if (!fileName.isEmpty())
     {
@@ -324,12 +314,8 @@ void MainWindow::onExportPythonClicked()
 // Triggered when the user selects "Export PNG".
 void MainWindow::onExportPNGClicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this,
-        "Export PNG",
-        QDir::homePath() + "/dscout.png",
-        "PNG file (*.png)",
-        nullptr,
-        QFileDialog::DontUseNativeDialog);
+    QString fileName = QFileDialog::getSaveFileName(this, "Export PNG", QDir::homePath() + "/dscout.png",
+        "PNG file (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
 
     if (!fileName.isEmpty())
     {

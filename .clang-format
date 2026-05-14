@@ -28,6 +28,4 @@ ReflowComments: false
 
 # Do not align arguments under the opening bracket
 AlignAfterOpenBracket: DontAlign
-BinPackArguments: false
-BinPackParameters: false
 AllowAllArgumentsOnNextLine: false

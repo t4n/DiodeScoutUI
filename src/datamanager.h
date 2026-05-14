@@ -58,8 +58,8 @@ class MeasurementDataManager
     // Adds a completed measurement series to the collection.
     void appendSeries(MeasurementSeries series);
 
-    // Generates and appends a simulated diode I–V characteristic.
-    void appendSimulatedSeries(double scaleCurrent);
+    // Generates and appends simulated diode I–V characteristics.
+    void appendSimulatedSeries();
 
     // Retrieves the maximum voltage and current across all series.
     void getMaxVoltageAndCurrent(double &maxV, double &maxI) const noexcept;
