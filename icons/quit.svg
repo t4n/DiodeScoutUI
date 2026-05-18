@@ -7,8 +7,8 @@
    viewBox="0 0 6.3499999 6.35"
    version="1.1"
    id="svg1"
-   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
-   sodipodi:docname="exit.svg"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   sodipodi:docname="quit.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -26,11 +26,11 @@
      showgrid="true"
      inkscape:zoom="21.979125"
      inkscape:cx="15.855954"
-     inkscape:cy="12.966849"
+     inkscape:cy="12.9441"
      inkscape:window-width="1920"
-     inkscape:window-height="1029"
+     inkscape:window-height="1003"
      inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1">
     <inkscape:grid
@@ -55,7 +55,7 @@
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       style="fill:none;stroke:#ffffff;stroke-width:0.555661;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:#ffffff;stroke-width:0.52916667;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
        id="path6"
        sodipodi:type="arc"
        sodipodi:cx="3.1749797"

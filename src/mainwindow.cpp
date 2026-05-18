@@ -155,7 +155,7 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
     darkModeAct_ = toolbar->addAction(QIcon(":/icons/darkmode.svg"), "Dark mode");
     computePWLAct_ = toolbar->addAction(QIcon(":/icons/computepwl.svg"), "Compute piecewise-linear diode model");
     toolbar->addWidget(spacer1);
-    exportCSVAct_ = toolbar->addAction(QIcon(":/icons/exportcsv.svg"), "Export CSV");
+    exportCSVAct_ = toolbar->addAction(QIcon(":/icons/exportcsv.svg"), "Export CSV (Excel)");
     exportPythonAct_ = toolbar->addAction(QIcon(":/icons/exportpython.svg"), "Export Python script");
     exportPNGAct_ = toolbar->addAction(QIcon(":/icons/exportpng.svg"), "Export PNG");
     toolbar->addWidget(spacer2);

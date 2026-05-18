@@ -7,7 +7,7 @@
    viewBox="0 0 6.3499999 6.35"
    version="1.1"
    id="svg1"
-   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
    sodipodi:docname="restoreview.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -24,13 +24,13 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="15.541588"
-     inkscape:cx="7.1099556"
-     inkscape:cy="12.804354"
+     inkscape:zoom="31.083176"
+     inkscape:cx="10.085842"
+     inkscape:cy="9.3137201"
      inkscape:window-width="1920"
-     inkscape:window-height="1029"
+     inkscape:window-height="1003"
      inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1">
     <inkscape:grid
@@ -55,7 +55,7 @@
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       style="fill:none;stroke:#ffffff;stroke-width:0.52916698;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:#ffffff;stroke-width:0.52899997;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
        d="M 0.52916663,2.6458332 3.1749999,0.52916664 5.820833,2.6458332"
        id="path9"
        sodipodi:nodetypes="ccc" />
