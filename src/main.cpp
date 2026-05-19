@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
             return EXIT_SUCCESS;
     }
 
-    // Show MainWindow
+    // MainWindow enters Simulation Mode if the serial port is not open
     MainWindow w(diodeScoutPort);
     w.resize(800, 600);
     w.show();
