@@ -10,7 +10,6 @@
 
 #include "serialparser.h"
 #include <algorithm>
-#include <cctype>
 #include <sstream>
 
 // Returns the number of points collected in the current series.
