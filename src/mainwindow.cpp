@@ -231,10 +231,9 @@ void MainWindow::onComputePWL()
     if (!dataManager_.computePWL(forwardV, seriesR))
     {
         QMessageBox::warning(this, "Piecewise-linear diode model",
-            "Please ensure that:\n\n"
+            "Please ensure that:\n"
             "- Exactly one measurement series is loaded\n"
             "- The diode is connected with the correct polarity\n"
-            "- The forward voltage is below approximately 4 V\n"
             "- A measurable forward current is present");
         return;
     }
@@ -272,9 +271,7 @@ void MainWindow::onComputePWL()
     }
 
     // Show model parameters in status bar
-    const char *fmt = "Forward voltage (turn-on): %.2f V, "
-                      "Effective series resistance: %.2f \u03A9";
-
+    const char *fmt = "Forward voltage (turn-on): %.2f V, Effective series resistance: %.2f \u03A9";
     QString msg = QString::asprintf(fmt, forwardV, seriesR);
     statusBar()->showMessage(msg);
 }
