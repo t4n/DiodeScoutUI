@@ -15,6 +15,7 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+#include <locale>
 #include <sstream>
 
 // Returns the number of stored measurement series.
@@ -113,14 +114,21 @@ void MeasurementDataManager::getMaxVoltageAndCurrent(double &maxV, double &maxI)
 bool MeasurementDataManager::exportCSV(const std::string &filePath, CSVSettings csv) const
 {
     std::ofstream out(filePath);
-    if (!out.is_open())
+    if (!out)
         return false;
 
+    // Internal string-stream used by formatNumber()
+    std::ostringstream oss;
+    oss.imbue(std::locale::classic());
+    oss << std::fixed << std::setprecision(6);
+
     // Format numeric values according to the CSV settings
-    const auto formatNumber = [&csv](double value)
+    const auto formatNumber = [&csv, &oss](double value)
     {
-        std::ostringstream oss;
-        oss << std::fixed << std::setprecision(6) << value;
+        oss.str("");
+        oss.clear();
+        oss << value;
+
         std::string s = oss.str();
         if (csv.decimalSeparator != '.')
             std::replace(s.begin(), s.end(), '.', csv.decimalSeparator);
@@ -135,7 +143,6 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath, CSVSettings 
 
         for (const auto &p : s.points())
             out << formatNumber(p.voltageVolt) << csv.fieldSeparator << formatNumber(p.currentMilliAmp) << "\n";
-
         out << "\n";
     }
 
@@ -147,11 +154,13 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath, CSVSettings 
 bool MeasurementDataManager::exportPython(const std::string &filePath) const
 {
     std::ofstream out(filePath);
-    if (!out.is_open())
+    if (!out)
         return false;
 
-    // Header
+    out.imbue(std::locale::classic());
     out << std::fixed << std::setprecision(6);
+
+    // Header
     out << "#!/usr/bin/env python3\n";
     out << "import matplotlib.pyplot as plt\n\n";
     out << "series = []\n\n";

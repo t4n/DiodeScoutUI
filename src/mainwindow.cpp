@@ -23,7 +23,7 @@
 //  MyChartView:
 //  Custom QChartView with mouse-position tooltips, scrolling and zooming.
 // ---------------------------------------------------------------------------
-class MyChartView : public QChartView
+class MyChartView final : public QChartView
 {
   public:
     using QChartView::QChartView; // inherit constructors

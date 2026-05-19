@@ -42,8 +42,8 @@ class SerialParser
     static constexpr std::size_t MaxLineLength = 100;
 
   public:
-    // Configure iss_ to use the classic C locale so floating-point
-    // parsing is independent of the user's system locale.
+    // Configures xyStream_ to use the classic C locale,
+    // so floating-point parsing is independent of the system locale.
     SerialParser();
 
     // Returns the number of points collected in the current series.
@@ -52,9 +52,8 @@ class SerialParser
     // Provides read-only access to the current measurement series.
     const MeasurementSeries &currentSeries() const noexcept;
 
-    // Returns DataPointAdded when a DATA line is parsed,
-    // SeriesCompleted when END is received, ParseError on
-    // invalid or malformed input data, or Nothing otherwise.
+    // Returns DataPointAdded when a DATA line is parsed, SeriesCompleted when
+    // END is received, ParseError on invalid input, or Nothing otherwise.
     ParseResult processReceivedChar(char c);
 
   private:

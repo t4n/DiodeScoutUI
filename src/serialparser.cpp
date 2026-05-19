@@ -12,8 +12,8 @@
 #include <algorithm>
 #include <locale>
 
-// Configure iss_ to use the classic C locale so floating-point
-// parsing is independent of the user's system locale.
+// Configures xyStream_ to use the classic C locale,
+// so floating-point parsing is independent of the system locale.
 SerialParser::SerialParser()
 {
     xyStream_.imbue(std::locale::classic());
@@ -31,9 +31,8 @@ const MeasurementSeries &SerialParser::currentSeries() const noexcept
     return currentSeries_;
 }
 
-// Returns DataPointAdded when a DATA line is parsed,
-// SeriesCompleted when END is received, ParseError on
-// invalid or malformed input data, or Nothing otherwise.
+// Returns DataPointAdded when a DATA line is parsed, SeriesCompleted when
+// END is received, ParseError on invalid input, or Nothing otherwise.
 ParseResult SerialParser::processReceivedChar(char c)
 {
     if (c == '\n')
