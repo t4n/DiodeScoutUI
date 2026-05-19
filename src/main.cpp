@@ -85,8 +85,8 @@ int main(int argc, char *argv[])
     // Initialize the main application framework
     QApplication application(argc, argv);
 
-    // Qt may use system locale on Unix/Linux, conflicting with POSIX numeric
-    // parsing (decimal comma vs dot). Force C-locale for numeric operations.
+    // Force C locale for consistent numeric parsing in C/POSIX APIs
+    // and C++ streams (decimal point vs. comma in some locales).
     std::locale::global(std::locale::classic());
     std::setlocale(LC_NUMERIC, "C");
 
