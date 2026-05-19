@@ -57,15 +57,12 @@ ParseResult SerialParser::processReceivedChar(char c)
 // Removes leading and trailing whitespace.
 std::string SerialParser::trim(const std::string &s)
 {
-    std::size_t start = 0;
-    while (start < s.size() && std::isspace(static_cast<unsigned char>(s[start])))
-        ++start;
+    const auto first = s.find_first_not_of(" \t\n\r");
+    if (first == std::string::npos)
+        return {};
 
-    std::size_t end = s.size();
-    while (end > start && std::isspace(static_cast<unsigned char>(s[end - 1])))
-        --end;
-
-    return s.substr(start, end - start);
+    const auto last = s.find_last_not_of(" \t\n\r");
+    return s.substr(first, last - first + 1);
 }
 
 // Processes a fully received line and updates the parser state.
