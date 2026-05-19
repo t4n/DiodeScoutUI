@@ -11,12 +11,12 @@
 #pragma once
 
 #include "coredatatypes.h"
+#include <sstream>
 #include <string>
 
 // ---------------------------------------------------------------------------
 //  ParseResult:
-//  Indicates whether processing the latest character added a data point,
-//  completed a series, detected invalid input data, or had no effect.
+//  Indicates the outcome of processing the latest input character.
 // ---------------------------------------------------------------------------
 enum class ParseResult
 {
@@ -38,10 +38,14 @@ class SerialParser
     static constexpr double VoltageRangeMax = 50.0;
     static constexpr double CurrentRangeMin = 0.0;
     static constexpr double CurrentRangeMax = 50.0;
-    static constexpr size_t MaxPointsCount = 100;
-    static constexpr size_t MaxLineLength = 100;
+    static constexpr std::size_t MaxPointsCount = 100;
+    static constexpr std::size_t MaxLineLength = 100;
 
   public:
+    // Configure iss_ to use the classic C locale so floating-point
+    // parsing is independent of the user's system locale.
+    SerialParser();
+
     // Returns the number of points collected in the current series.
     std::size_t currentSeriesSize() const noexcept;
 
@@ -70,7 +74,10 @@ class SerialParser
     // Current state of the parser.
     ParserState state_ = ParserState::Idle;
 
-    // Removes leading and trailing whitespace.
+    // Used by extractXYData() to extract XY data points.
+    std::istringstream xyStream_;
+
+    // Returns a copy of s with leading and trailing whitespace removed.
     static std::string trim(const std::string &s);
 
     // Processes a fully received line and updates the parser state.

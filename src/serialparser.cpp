@@ -10,7 +10,14 @@
 
 #include "serialparser.h"
 #include <algorithm>
-#include <sstream>
+#include <locale>
+
+// Configure iss_ to use the classic C locale so floating-point
+// parsing is independent of the user's system locale.
+SerialParser::SerialParser()
+{
+    xyStream_.imbue(std::locale::classic());
+}
 
 // Returns the number of points collected in the current series.
 std::size_t SerialParser::currentSeriesSize() const noexcept
@@ -53,7 +60,7 @@ ParseResult SerialParser::processReceivedChar(char c)
     return ParseResult::Nothing;
 }
 
-// Removes leading and trailing whitespace.
+// Returns a copy of s with leading and trailing whitespace removed.
 std::string SerialParser::trim(const std::string &s)
 {
     const auto first = s.find_first_not_of(" \t\n\r");
@@ -112,10 +119,11 @@ ParseResult SerialParser::extractXYData(const std::string &data)
     double x = 0.0;
     double y = 0.0;
 
-    std::istringstream iss(data);
-    iss >> x >> y;
+    xyStream_.clear();
+    xyStream_.str(data);
+    xyStream_ >> x >> y;
 
-    if (iss.fail())
+    if (xyStream_.fail())
         return ParseResult::ParseError;
     if (x < VoltageRangeMin || x > VoltageRangeMax)
         return ParseResult::ParseError;

@@ -82,7 +82,7 @@ void MeasurementDataManager::appendSimulatedSeries()
             return; // malformed built-in simulation data
 
         MeasurementSeries s;
-        for (size_t idx = 0; idx < v.size(); ++idx)
+        for (std::size_t idx = 0; idx < v.size(); ++idx)
             s.addPoint(v[idx], i[idx]);
         series_.push_back(std::move(s));
     };
