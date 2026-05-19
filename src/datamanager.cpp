@@ -234,7 +234,8 @@ bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
         ++n;
     }
 
-    // Require at least 2 points
+    // Guard against invalid or ill-conditioned regression:
+    // requires n >= 2 and non-zero variance in current (denom)
     const double denom = (n * sumII - sumI * sumI);
     if (n < 2 || denom < 1e-15)
         return false;
