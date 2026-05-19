@@ -64,16 +64,16 @@ class SerialParser
         ReceivingSeries
     };
 
+    // Current state of the parser.
+    ParserState state_ = ParserState::Idle;
+
     // The series currently being received.
     MeasurementSeries currentSeries_;
 
     // Buffer for the line currently being received.
     std::string lineBuffer_;
 
-    // Current state of the parser.
-    ParserState state_ = ParserState::Idle;
-
-    // Used by extractXYData() to extract XY data points.
+    // Used by extractXYData() to parse XY data points.
     std::istringstream xyStream_;
 
     // Returns a copy of s with leading and trailing whitespace removed.
