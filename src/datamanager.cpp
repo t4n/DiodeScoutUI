@@ -235,7 +235,7 @@ bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
         if (p.currentMilliAmp < threshold)
             continue;
 
-        double I = p.currentMilliAmp * 1e-3; // convert mA to A
+        const double I = p.currentMilliAmp * 1e-3; // convert mA to A
         sumI += I;
         sumV += p.voltageVolt;
         sumIV += I * p.voltageVolt;
