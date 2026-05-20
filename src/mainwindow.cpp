@@ -20,23 +20,50 @@
 #include <QValueAxis>
 
 // ---------------------------------------------------------------------------
+// Axes helper functions.
+// ---------------------------------------------------------------------------
+
+// Returns the chart's horizontal QValueAxis.
+inline QValueAxis *getAxisX(const QChart *chart)
+{
+    Q_ASSERT(chart);
+    const auto axesX = chart->axes(Qt::Horizontal);
+
+    if (axesX.empty())
+        return nullptr;
+
+    return qobject_cast<QValueAxis *>(axesX.first());
+}
+
+// Returns the chart's vertical QValueAxis.
+inline QValueAxis *getAxisY(const QChart *chart)
+{
+    Q_ASSERT(chart);
+    const auto axesY = chart->axes(Qt::Vertical);
+
+    if (axesY.empty())
+        return nullptr;
+
+    return qobject_cast<QValueAxis *>(axesY.first());
+}
+
+// ---------------------------------------------------------------------------
 //  MyChartView:
 //  Custom QChartView with mouse-position tooltips, scrolling and zooming.
 // ---------------------------------------------------------------------------
 class MyChartView final : public QChartView
 {
-  public:
-    using QChartView::QChartView; // inherit constructors
-
   private:
     static constexpr qreal ZoomFactor = 1.05; // zoom step for mouse wheel
     static constexpr qreal ScrollStep = 5; // pixels per key press
+
+  public:
+    using QChartView::QChartView; // inherit constructors
 
   protected:
     // Checks if value is within the axis limits.
     bool inAxisRange(qreal value, const QValueAxis *axis) const
     {
-        Q_ASSERT(axis);
         if (!axis)
             return false;
 
@@ -52,13 +79,10 @@ class MyChartView final : public QChartView
 
         if (!chart()->series().empty())
         {
-            const auto axesX = chart()->axes(Qt::Horizontal);
-            const auto axesY = chart()->axes(Qt::Vertical);
-            const auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
-            const auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
-            Q_ASSERT(axisX && axisY);
-
+            const auto *axisX = getAxisX(chart());
+            const auto *axisY = getAxisY(chart());
             const QPointF value = chart()->mapToValue(event->position());
+
             if (inAxisRange(value.x(), axisX) && inAxisRange(value.y(), axisY))
             {
                 text = QString::asprintf("%.3f V, %.3f mA", value.x(), value.y());
@@ -258,12 +282,8 @@ void MainWindow::onComputePWL()
     pen.setColor(Qt::red);
     line->setPen(pen);
 
-    const auto axesX = chart_->axes(Qt::Horizontal);
-    const auto axesY = chart_->axes(Qt::Vertical);
-    auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
-    auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
-    Q_ASSERT(axisX && axisY);
-
+    auto *axisX = getAxisX(chart_);
+    auto *axisY = getAxisY(chart_);
     if (axisX && axisY)
     {
         line->attachAxis(axisX);
@@ -400,6 +420,7 @@ void MainWindow::rebuildChart()
     }
 
     chart_->removeAllSeries();
+
     const auto &all = dataManager_.allSeries();
     for (const auto &seriesData : all)
     {
@@ -417,12 +438,8 @@ void MainWindow::rebuildChart()
     double maxVoltage, maxCurrent;
     dataManager_.getMaxVoltageAndCurrent(maxVoltage, maxCurrent);
 
-    const auto axesX = chart_->axes(Qt::Horizontal);
-    const auto axesY = chart_->axes(Qt::Vertical);
-    auto *axisX = qobject_cast<QValueAxis *>(axesX.value(0));
-    auto *axisY = qobject_cast<QValueAxis *>(axesY.value(0));
-    Q_ASSERT(axisX && axisY);
-
+    auto *axisX = getAxisX(chart_);
+    auto *axisY = getAxisY(chart_);
     if (axisX && axisY)
     {
         axisX->setTitleText("Volt (V)");

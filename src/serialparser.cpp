@@ -120,9 +120,9 @@ ParseResult SerialParser::extractXYData(const std::string &data)
 
     xyStream_.clear();
     xyStream_.str(data);
-    xyStream_ >> x >> y;
+    xyStream_ >> x >> y; // ignore any trailing garbage
 
-    if (xyStream_.fail())
+    if (!xyStream_)
         return ParseResult::ParseError;
     if (x < VoltageRangeMin || x > VoltageRangeMax)
         return ParseResult::ParseError;
