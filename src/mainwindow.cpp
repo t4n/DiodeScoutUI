@@ -20,7 +20,7 @@
 #include <QValueAxis>
 
 // ---------------------------------------------------------------------------
-// Axes helper functions.
+//  Axes helper functions.
 // ---------------------------------------------------------------------------
 
 // Returns the chart's horizontal QValueAxis.
