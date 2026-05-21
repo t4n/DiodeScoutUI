@@ -26,7 +26,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
   public:
-    // Constructs the main window and initializes UI components.
+    // Main window constructor.
     MainWindow(QSerialPort &diodeScoutPort);
 
   private slots:
@@ -100,4 +100,7 @@ class MainWindow : public QMainWindow
 
     // Slightly increases the title font size.
     void setChartTitleFont();
+
+    // Initializes the main window UI, including toolbar and actions.
+    void setupUI();
 };

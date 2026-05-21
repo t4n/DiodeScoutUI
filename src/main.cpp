@@ -39,8 +39,7 @@ class DiodeScoutSerialConnector
         QStringList portNames;
         for (const QSerialPortInfo &p : ports)
         {
-            QString prettyName = p.systemLocation();
-            prettyName.replace("\\\\.\\", "");
+            QString prettyName = p.systemLocation().remove("\\\\.\\");
             portNames << prettyName + "   (" + p.description() + ")";
         }
 

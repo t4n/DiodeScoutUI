@@ -2,10 +2,10 @@
 //  Custom QChartView subclass
 //
 //  Responsibilities:
-//   - Interactive zooming (mouse wheel + keyboard)
-//   - Panning / scrolling support (keyboard)
-//   - Real-time coordinate tooltip display
-//   - Convenience accessors for chart axes (X/Y)
+//  - Interactive zooming (mouse wheel + keyboard)
+//  - Panning / scrolling support (keyboard)
+//  - Real-time coordinate tooltip display
+//  - Convenience accessors for chart axes (X/Y)
 // ---------------------------------------------------------------------------
 
 #include "mychartview.h"

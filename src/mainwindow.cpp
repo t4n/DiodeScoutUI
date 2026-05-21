@@ -18,53 +18,11 @@
 #include <QStatusBar>
 #include <QToolBar>
 
-// Constructs the main window and initializes UI components.
+// Main window constructor.
 MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
 {
-    // Toolbar
-    auto *toolbar = new QToolBar("Main Toolbar", this);
-    toolbar->setIconSize(QSize(24, 24));
-    addToolBar(Qt::TopToolBarArea, toolbar);
-
-    auto *spacer1 = new QWidget(toolbar);
-    auto *spacer2 = new QWidget(toolbar);
-    spacer1->setFixedWidth(20);
-    spacer2->setFixedWidth(20);
-
-    restoreViewAct_ = toolbar->addAction(QIcon(":/icons/restoreview.svg"), "Restore default view");
-    lightModeAct_ = toolbar->addAction(QIcon(":/icons/lightmode.svg"), "Light mode");
-    darkModeAct_ = toolbar->addAction(QIcon(":/icons/darkmode.svg"), "Dark mode");
-    computePWLAct_ = toolbar->addAction(QIcon(":/icons/computepwl.svg"), "Compute piecewise-linear diode model");
-    toolbar->addWidget(spacer1);
-    exportCSVAct_ = toolbar->addAction(QIcon(":/icons/exportcsv.svg"), "Export CSV (Excel)");
-    exportPythonAct_ = toolbar->addAction(QIcon(":/icons/exportpython.svg"), "Export Python script");
-    exportPNGAct_ = toolbar->addAction(QIcon(":/icons/exportpng.svg"), "Export PNG");
-    toolbar->addWidget(spacer2);
-    removeLastAct_ = toolbar->addAction(QIcon(":/icons/removelast.svg"), "Remove last series");
-    removeAllAct_ = toolbar->addAction(QIcon(":/icons/removeall.svg"), "Remove all series");
-    quitAct_ = toolbar->addAction(QIcon(":/icons/quit.svg"), "Quit");
-
-    connect(restoreViewAct_, &QAction::triggered, this, &MainWindow::onRestoreViewClicked);
-    connect(lightModeAct_, &QAction::triggered, this, &MainWindow::onLightModeClicked);
-    connect(darkModeAct_, &QAction::triggered, this, &MainWindow::onDarkModeClicked);
-    connect(computePWLAct_, &QAction::triggered, this, &MainWindow::onComputePWL);
-    connect(exportCSVAct_, &QAction::triggered, this, &MainWindow::onExportCSVClicked);
-    connect(exportPythonAct_, &QAction::triggered, this, &MainWindow::onExportPythonClicked);
-    connect(exportPNGAct_, &QAction::triggered, this, &MainWindow::onExportPNGClicked);
-    connect(removeLastAct_, &QAction::triggered, this, &MainWindow::onRemoveLastClicked);
-    connect(removeAllAct_, &QAction::triggered, this, &MainWindow::onRemoveAllClicked);
-    connect(quitAct_, &QAction::triggered, this, &MainWindow::onQuitClicked);
-
-    // Chart: chartView_ takes ownership of chart_
-    chart_ = new QChart();
-    chart_->setTheme(QChart::ChartThemeBlueCerulean);
-    setChartTitleFont();
-
-    chartView_ = new MyChartView(chart_);
-    chartView_->setMouseTracking(true);
-    chartView_->setRenderHint(QPainter::Antialiasing);
-    chartView_->setRubberBand(QChartView::RectangleRubberBand);
-    setCentralWidget(chartView_);
+    // Initialize the main window UI, including toolbar and actions.
+    setupUI();
 
     // Setup data source: Use simulation if no hardware is
     // connected, otherwise initialize serial communication.
@@ -76,8 +34,7 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
     }
     else
     {
-        QString prettyName = serial_.portName();
-        prettyName.replace("\\\\.\\", "");
+        QString prettyName = serial_.portName().remove("\\\\.\\");
         connect(&serial_, &QSerialPort::readyRead, this, &MainWindow::onSerialDataReceived, Qt::QueuedConnection);
         statusBar()->showMessage(QString("DiodeScout at %1").arg(prettyName));
         chart_->setTitle("Press the button on the DiodeScout ...");
@@ -319,7 +276,7 @@ void MainWindow::resetChartToEmpty()
 {
     // Clears all visual content from the chart and restores the
     // initial empty-state appearance. Used when no measurement
-    // series remain. Does not modify the MeasurementdataManager.
+    // series remain. Does not modify the MeasurementDataManager.
     chart_->removeAllSeries();
     chart_->setAnimationOptions(QChart::NoAnimation);
     chart_->setTitle("Press the button on the DiodeScout ...");
@@ -336,4 +293,53 @@ void MainWindow::setChartTitleFont()
     titleFont.setPointSize(12);
     titleFont.setBold(true);
     chart_->setTitleFont(titleFont);
+}
+
+// Initializes the main window UI, including toolbar and actions.
+void MainWindow::setupUI()
+{
+    // Toolbar
+    auto *toolbar = new QToolBar("Main Toolbar", this);
+    toolbar->setIconSize(QSize(24, 24));
+    addToolBar(Qt::TopToolBarArea, toolbar);
+
+    auto *spacer1 = new QWidget(toolbar);
+    auto *spacer2 = new QWidget(toolbar);
+    spacer1->setFixedWidth(20);
+    spacer2->setFixedWidth(20);
+
+    restoreViewAct_ = toolbar->addAction(QIcon(":/icons/restoreview.svg"), "Restore default view");
+    lightModeAct_ = toolbar->addAction(QIcon(":/icons/lightmode.svg"), "Light mode");
+    darkModeAct_ = toolbar->addAction(QIcon(":/icons/darkmode.svg"), "Dark mode");
+    computePWLAct_ = toolbar->addAction(QIcon(":/icons/computepwl.svg"), "Compute piecewise-linear diode model");
+    toolbar->addWidget(spacer1);
+    exportCSVAct_ = toolbar->addAction(QIcon(":/icons/exportcsv.svg"), "Export CSV (Excel)");
+    exportPythonAct_ = toolbar->addAction(QIcon(":/icons/exportpython.svg"), "Export Python script");
+    exportPNGAct_ = toolbar->addAction(QIcon(":/icons/exportpng.svg"), "Export PNG");
+    toolbar->addWidget(spacer2);
+    removeLastAct_ = toolbar->addAction(QIcon(":/icons/removelast.svg"), "Remove last series");
+    removeAllAct_ = toolbar->addAction(QIcon(":/icons/removeall.svg"), "Remove all series");
+    quitAct_ = toolbar->addAction(QIcon(":/icons/quit.svg"), "Quit");
+
+    connect(restoreViewAct_, &QAction::triggered, this, &MainWindow::onRestoreViewClicked);
+    connect(lightModeAct_, &QAction::triggered, this, &MainWindow::onLightModeClicked);
+    connect(darkModeAct_, &QAction::triggered, this, &MainWindow::onDarkModeClicked);
+    connect(computePWLAct_, &QAction::triggered, this, &MainWindow::onComputePWL);
+    connect(exportCSVAct_, &QAction::triggered, this, &MainWindow::onExportCSVClicked);
+    connect(exportPythonAct_, &QAction::triggered, this, &MainWindow::onExportPythonClicked);
+    connect(exportPNGAct_, &QAction::triggered, this, &MainWindow::onExportPNGClicked);
+    connect(removeLastAct_, &QAction::triggered, this, &MainWindow::onRemoveLastClicked);
+    connect(removeAllAct_, &QAction::triggered, this, &MainWindow::onRemoveAllClicked);
+    connect(quitAct_, &QAction::triggered, this, &MainWindow::onQuitClicked);
+
+    // Chart: chartView_ takes ownership of chart_
+    chart_ = new QChart();
+    chart_->setTheme(QChart::ChartThemeBlueCerulean);
+    setChartTitleFont();
+
+    chartView_ = new MyChartView(chart_);
+    chartView_->setMouseTracking(true);
+    chartView_->setRenderHint(QPainter::Antialiasing);
+    chartView_->setRubberBand(QChartView::RectangleRubberBand);
+    setCentralWidget(chartView_);
 }
