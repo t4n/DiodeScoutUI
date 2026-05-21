@@ -160,7 +160,6 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath, CSVSettings 
         return false;
 
     CSVNumberFormatter format(csv.decimalSeparator);
-
     for (std::size_t i = 0; i < series_.size(); ++i)
     {
         const auto &s = series_[i];
