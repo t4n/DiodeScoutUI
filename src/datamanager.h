@@ -32,9 +32,6 @@ struct CSVSettings
         decimalSeparator = decimalSep;
         fieldSeparator = fieldSep;
     }
-
-    // Prevent construction without initialization.
-    CSVSettings() = delete;
 };
 
 // ---------------------------------------------------------------------------

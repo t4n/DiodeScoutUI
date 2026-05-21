@@ -27,9 +27,6 @@ struct MeasurementPoint
         voltageVolt = voltage;
         currentMilliAmp = current;
     }
-
-    // Prevent construction without initialization.
-    MeasurementPoint() = delete;
 };
 
 // ---------------------------------------------------------------------------

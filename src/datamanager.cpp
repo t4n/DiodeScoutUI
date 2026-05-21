@@ -19,6 +19,47 @@
 #include <locale>
 #include <sstream>
 
+// ---------------------------------------------------------------------------
+//  CSVNumberFormatter:
+//  Formats floating-point values using a configurable decimal separator.
+// ---------------------------------------------------------------------------
+class CSVNumberFormatter
+{
+  public:
+    // Initializes the formatter with a specific decimal separator.
+    explicit CSVNumberFormatter(char decimalSeparator)
+    {
+        decimalSeparator_ = decimalSeparator;
+        stream_.imbue(std::locale::classic());
+        stream_ << std::fixed << std::setprecision(6);
+    }
+
+    // Formats a floating-point value into a CSV-compliant string.
+    void operator()(double value, std::string &out)
+    {
+        stream_.str(std::string());
+        stream_.clear();
+
+        stream_ << value;
+        out = stream_.str();
+
+        if (decimalSeparator_ != '.')
+            std::replace(out.begin(), out.end(), '.', decimalSeparator_);
+    }
+
+  private:
+    // Decimal separator used for formatting.
+    char decimalSeparator_;
+
+    // Internal stream reused for string conversion.
+    std::ostringstream stream_;
+};
+
+// ---------------------------------------------------------------------------
+//  MeasurementDataManager:
+//  Stores and manages all acquired measurement series.
+// ---------------------------------------------------------------------------
+
 // Returns the number of stored measurement series.
 std::size_t MeasurementDataManager::seriesCount() const noexcept
 {
@@ -118,25 +159,8 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath, CSVSettings 
     if (!out)
         return false;
 
-    // Internal string-stream used by formatNumber()
-    std::ostringstream oss;
-    oss.imbue(std::locale::classic());
-    oss << std::fixed << std::setprecision(6);
+    CSVNumberFormatter format(csv.decimalSeparator);
 
-    // Format numeric values according to the CSV settings
-    const auto formatNumber = [&csv, &oss](double value, std::string &out)
-    {
-        oss.str(std::string());
-        oss.clear();
-
-        oss << value;
-        out = oss.str();
-
-        if (csv.decimalSeparator != '.')
-            std::replace(out.begin(), out.end(), '.', csv.decimalSeparator);
-    };
-
-    // Save series to CSV file
     for (std::size_t i = 0; i < series_.size(); ++i)
     {
         const auto &s = series_[i];
@@ -146,16 +170,17 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath, CSVSettings 
         std::string tmp;
         for (const auto &p : s.points())
         {
-            formatNumber(p.voltageVolt, tmp);
+            format(p.voltageVolt, tmp);
             out << tmp << csv.fieldSeparator;
 
-            formatNumber(p.currentMilliAmp, tmp);
+            format(p.currentMilliAmp, tmp);
             out << tmp << "\n";
         }
         out << "\n";
     }
 
-    return out.flush().good();
+    out.flush();
+    return out.good();
 }
 
 // Exports all stored measurement series to a Python script.
@@ -215,7 +240,8 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
     out << "# plt.savefig('plot.png', dpi=300)\n";
     out << "plt.show()\n";
 
-    return out.flush().good();
+    out.flush();
+    return out.good();
 }
 
 // Computes piecewise-linear diode parameters (Vf, Rs).
