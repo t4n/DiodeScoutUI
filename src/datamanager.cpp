@@ -136,6 +136,7 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath, CSVSettings 
             std::replace(out.begin(), out.end(), '.', csv.decimalSeparator);
     };
 
+    // Save series to CSV file
     for (std::size_t i = 0; i < series_.size(); ++i)
     {
         const auto &s = series_[i];
