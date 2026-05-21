@@ -24,8 +24,8 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
     // Initialize the main window UI, including toolbar and actions.
     setupUI();
 
-    // Setup data source: Use simulation if no hardware is
-    // connected, otherwise initialize serial communication.
+    // Setup data source: Use simulation if no hardware is connected,
+    // otherwise initialize serial communication.
     if (!serial_.isOpen())
     {
         dataManager_.appendSimulatedSeries();
