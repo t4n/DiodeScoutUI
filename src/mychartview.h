@@ -20,9 +20,11 @@
 // ---------------------------------------------------------------------------
 class MyChartView final : public QChartView
 {
+    Q_OBJECT
+
   private:
     static constexpr qreal ZoomFactor = 1.05; // zoom step for mouse wheel
-    static constexpr qreal ScrollStep = 5; // pixels per key press
+    static constexpr qreal ScrollStep = 5.00; // pixels per key press
 
   public:
     // Inherit constructors.
