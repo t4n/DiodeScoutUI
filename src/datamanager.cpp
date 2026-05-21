@@ -124,16 +124,16 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath, CSVSettings 
     oss << std::fixed << std::setprecision(6);
 
     // Format numeric values according to the CSV settings
-    const auto formatNumber = [&csv, &oss](double value)
+    const auto formatNumber = [&csv, &oss](double value, std::string &out)
     {
-        oss.str("");
+        oss.str(std::string());
         oss.clear();
-        oss << value;
 
-        std::string s = oss.str();
+        oss << value;
+        out = oss.str();
+
         if (csv.decimalSeparator != '.')
-            std::replace(s.begin(), s.end(), '.', csv.decimalSeparator);
-        return s;
+            std::replace(out.begin(), out.end(), '.', csv.decimalSeparator);
     };
 
     for (std::size_t i = 0; i < series_.size(); ++i)
@@ -142,8 +142,15 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath, CSVSettings 
         out << "Series " << (i + 1) << "\n";
         out << "Volt (V)" << csv.fieldSeparator << "Milliampere (mA)\n";
 
+        std::string tmp;
         for (const auto &p : s.points())
-            out << formatNumber(p.voltageVolt) << csv.fieldSeparator << formatNumber(p.currentMilliAmp) << "\n";
+        {
+            formatNumber(p.voltageVolt, tmp);
+            out << tmp << csv.fieldSeparator;
+
+            formatNumber(p.currentMilliAmp, tmp);
+            out << tmp << "\n";
+        }
         out << "\n";
     }
 
