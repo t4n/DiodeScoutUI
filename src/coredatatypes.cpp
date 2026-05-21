@@ -7,6 +7,7 @@
 //  by the UI and export functionality.
 // ---------------------------------------------------------------------------
 
+// Portable core module, no Qt dependencies.
 #include "coredatatypes.h"
 
 // Adds a new measurement point.

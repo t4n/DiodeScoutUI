@@ -10,6 +10,7 @@
 
 #pragma once
 
+// Portable core module, no Qt dependencies.
 #include "coredatatypes.h"
 #include <sstream>
 #include <string>

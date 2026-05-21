@@ -9,6 +9,7 @@
 
 #pragma once
 
+// Portable core module, no Qt dependencies.
 #include <vector>
 
 // ---------------------------------------------------------------------------

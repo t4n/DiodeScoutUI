@@ -9,6 +9,7 @@
 //  - Computes piecewise-linear diode parameters
 // ---------------------------------------------------------------------------
 
+// Portable core module, no Qt dependencies.
 #include "datamanager.h"
 #include <algorithm>
 #include <array>

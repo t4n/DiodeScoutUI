@@ -12,10 +12,9 @@
 #pragma once
 
 #include "datamanager.h"
+#include "mychartview.h"
 #include "serialparser.h"
 #include <QMainWindow>
-#include <QtCharts/QChart>
-#include <QtCharts/QChartView>
 #include <QtSerialPort/QSerialPort>
 
 // ---------------------------------------------------------------------------
@@ -76,7 +75,7 @@ class MainWindow : public QMainWindow
 
     // Chart object and chart view (central widget).
     QChart *chart_;
-    QChartView *chartView_;
+    MyChartView *chartView_;
 
     // UI actions for menu and toolbar commands.
     QAction *restoreViewAct_;

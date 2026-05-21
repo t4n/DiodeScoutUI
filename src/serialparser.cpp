@@ -8,6 +8,7 @@
 //    contains a fully parsed measurement sequence.
 // ---------------------------------------------------------------------------
 
+// Portable core module, no Qt dependencies.
 #include "serialparser.h"
 #include <algorithm>
 #include <locale>

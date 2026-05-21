@@ -10,156 +10,13 @@
 // ---------------------------------------------------------------------------
 
 #include "mainwindow.h"
+#include "mychartview.h"
 #include <QFileDialog>
 #include <QLineSeries>
 #include <QMessageBox>
 #include <QSplineSeries>
 #include <QStatusBar>
 #include <QToolBar>
-#include <QToolTip>
-#include <QValueAxis>
-
-// ---------------------------------------------------------------------------
-//  Axes helper functions.
-// ---------------------------------------------------------------------------
-
-// Returns the chart's horizontal QValueAxis.
-inline QValueAxis *getAxisX(const QChart *chart)
-{
-    Q_ASSERT(chart);
-    const auto axesX = chart->axes(Qt::Horizontal);
-
-    if (axesX.empty())
-        return nullptr;
-
-    return qobject_cast<QValueAxis *>(axesX.first());
-}
-
-// Returns the chart's vertical QValueAxis.
-inline QValueAxis *getAxisY(const QChart *chart)
-{
-    Q_ASSERT(chart);
-    const auto axesY = chart->axes(Qt::Vertical);
-
-    if (axesY.empty())
-        return nullptr;
-
-    return qobject_cast<QValueAxis *>(axesY.first());
-}
-
-// ---------------------------------------------------------------------------
-//  MyChartView:
-//  Custom QChartView with mouse-position tooltips, scrolling and zooming.
-// ---------------------------------------------------------------------------
-class MyChartView final : public QChartView
-{
-  private:
-    static constexpr qreal ZoomFactor = 1.05; // zoom step for mouse wheel
-    static constexpr qreal ScrollStep = 5; // pixels per key press
-
-  public:
-    using QChartView::QChartView; // inherit constructors
-
-  protected:
-    // Checks if value is within the axis limits.
-    bool inAxisRange(qreal value, const QValueAxis *axis) const
-    {
-        if (!axis)
-            return false;
-
-        return value >= axis->min() && value <= axis->max();
-    }
-
-    // Update tooltip with mouse position in chart coordinates.
-    void mouseMoveEvent(QMouseEvent *event) override
-    {
-        Q_ASSERT(chart());
-        bool showTip = false;
-        QString text;
-
-        if (!chart()->series().empty())
-        {
-            const auto *axisX = getAxisX(chart());
-            const auto *axisY = getAxisY(chart());
-            const QPointF value = chart()->mapToValue(event->position());
-
-            if (inAxisRange(value.x(), axisX) && inAxisRange(value.y(), axisY))
-            {
-                text = QString::asprintf("%.3f V, %.3f mA", value.x(), value.y());
-                showTip = true;
-            }
-        }
-
-        if (showTip)
-            QToolTip::showText(event->globalPosition().toPoint(), text, this);
-        else
-            QToolTip::hideText();
-
-        QChartView::mouseMoveEvent(event);
-    }
-
-    // Cleans up tooltip state when the cursor leaves the widget.
-    void leaveEvent(QEvent *event) override
-    {
-        QToolTip::hideText();
-        QChartView::leaveEvent(event);
-    }
-
-    // Handles mouse wheel input to zoom the chart view.
-    void wheelEvent(QWheelEvent *event) override
-    {
-        Q_ASSERT(chart());
-
-        if (event->angleDelta().y() > 0)
-            chart()->zoom(ZoomFactor); // zoom in
-        else
-            chart()->zoom(1.0 / ZoomFactor); // zoom out
-
-        event->accept();
-    }
-
-    // Keyboard-based scrolling and zooming.
-    void keyPressEvent(QKeyEvent *event) override
-    {
-        Q_ASSERT(chart());
-        bool handled = true;
-
-        switch (event->key())
-        {
-        case Qt::Key_Down:
-            chart()->scroll(0, ScrollStep);
-            break;
-        case Qt::Key_Up:
-            chart()->scroll(0, -ScrollStep);
-            break;
-        case Qt::Key_Right:
-            chart()->scroll(-ScrollStep, 0);
-            break;
-        case Qt::Key_Left:
-            chart()->scroll(ScrollStep, 0);
-            break;
-        case Qt::Key_Plus:
-            chart()->zoom(ZoomFactor);
-            break;
-        case Qt::Key_Minus:
-            chart()->zoom(1.0 / ZoomFactor);
-            break;
-        default:
-            handled = false;
-            break;
-        }
-
-        if (handled)
-            event->accept();
-        else
-            QGraphicsView::keyPressEvent(event);
-    }
-};
-
-// ---------------------------------------------------------------------------
-//  MainWindow:
-//  Main application window for the DiodeScout UI.
-// ---------------------------------------------------------------------------
 
 // Constructs the main window and initializes UI components.
 MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
@@ -282,8 +139,8 @@ void MainWindow::onComputePWL()
     pen.setColor(Qt::red);
     line->setPen(pen);
 
-    auto *axisX = getAxisX(chart_);
-    auto *axisY = getAxisY(chart_);
+    auto *axisX = chartView_->getAxisX();
+    auto *axisY = chartView_->getAxisY();
     if (axisX && axisY)
     {
         line->attachAxis(axisX);
@@ -438,8 +295,8 @@ void MainWindow::rebuildChart()
     double maxVoltage, maxCurrent;
     dataManager_.getMaxVoltageAndCurrent(maxVoltage, maxCurrent);
 
-    auto *axisX = getAxisX(chart_);
-    auto *axisY = getAxisY(chart_);
+    auto *axisX = chartView_->getAxisX();
+    auto *axisY = chartView_->getAxisY();
     if (axisX && axisY)
     {
         axisX->setTitleText("Volt (V)");

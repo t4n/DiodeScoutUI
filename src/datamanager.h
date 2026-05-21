@@ -11,6 +11,7 @@
 
 #pragma once
 
+// Portable core module, no Qt dependencies.
 #include "coredatatypes.h"
 #include <cstddef>
 #include <string>
