@@ -13,8 +13,8 @@
 #include <algorithm>
 #include <locale>
 
-// Configures xyStream_ to use the classic C locale,
-// so floating-point parsing is independent of the system locale.
+// Constructor: Initializes xyStream_ with the classic C locale
+// to ensure locale-independent floating-point parsing.
 SerialParser::SerialParser()
 {
     xyStream_.imbue(std::locale::classic());

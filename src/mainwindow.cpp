@@ -20,7 +20,8 @@
 #include <QToolBar>
 
 // Main window constructor.
-MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
+MainWindow::MainWindow(QSerialPort &diodeScoutPort) :
+    serial_(diodeScoutPort)
 {
     // Initialize the main window UI, including toolbar and actions.
     setupUI();

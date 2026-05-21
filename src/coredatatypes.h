@@ -22,8 +22,9 @@ struct MeasurementPoint
     double currentMilliAmp; // y-value
 
     // Constructs a MeasurementPoint from voltage and current.
-    explicit MeasurementPoint(double voltageV, double currentmA) noexcept
-        : voltageVolt(voltageV), currentMilliAmp(currentmA)
+    explicit MeasurementPoint(double voltage, double current) noexcept :
+        voltageVolt(voltage),
+        currentMilliAmp(current)
     {
     }
 };

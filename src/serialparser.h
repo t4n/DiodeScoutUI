@@ -43,8 +43,8 @@ class SerialParser
     static constexpr std::size_t MaxLineLength = 100;
 
   public:
-    // Configures xyStream_ to use the classic C locale,
-    // so floating-point parsing is independent of the system locale.
+    // Constructor: Initializes xyStream_ with the classic C locale
+    // to ensure locale-independent floating-point parsing.
     SerialParser();
 
     // Returns the number of points collected in the current series.

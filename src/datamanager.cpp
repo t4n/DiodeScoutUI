@@ -27,7 +27,8 @@ class CSVNumberFormatter
 {
   public:
     // Initializes the formatter with a specific decimal separator.
-    explicit CSVNumberFormatter(char decimalSeparator) : decimalSeparator_(decimalSeparator)
+    explicit CSVNumberFormatter(char decimalSeparator) :
+        decimalSeparator_(decimalSeparator)
     {
         stream_.imbue(std::locale::classic());
         stream_ << std::fixed << std::setprecision(6);

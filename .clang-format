@@ -29,3 +29,8 @@ ReflowComments: false
 # Do not align arguments under the opening bracket
 AlignAfterOpenBracket: DontAlign
 AllowAllArgumentsOnNextLine: false
+
+# Initializer Lists
+BreakConstructorInitializers: AfterColon
+PackConstructorInitializers: Never
+ConstructorInitializerIndentWidth: 4
