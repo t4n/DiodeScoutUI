@@ -27,9 +27,8 @@ class CSVNumberFormatter
 {
   public:
     // Initializes the formatter with a specific decimal separator.
-    explicit CSVNumberFormatter(char decimalSeparator)
+    explicit CSVNumberFormatter(char decimalSeparator) : decimalSeparator_(decimalSeparator)
     {
-        decimalSeparator_ = decimalSeparator;
         stream_.imbue(std::locale::classic());
         stream_ << std::fixed << std::setprecision(6);
     }
@@ -37,7 +36,7 @@ class CSVNumberFormatter
     // Formats a floating-point value into a CSV-compliant string.
     void operator()(double value, std::string &out)
     {
-        stream_.str(std::string());
+        stream_.str("");
         stream_.clear();
 
         stream_ << value;

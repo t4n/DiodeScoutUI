@@ -11,13 +11,13 @@
 
 #include "mainwindow.h"
 #include "mychartview.h"
+#include <QDebug>
 #include <QFileDialog>
 #include <QLineSeries>
 #include <QMessageBox>
 #include <QSplineSeries>
 #include <QStatusBar>
 #include <QToolBar>
-#include <QDebug>
 
 // Main window constructor.
 MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)

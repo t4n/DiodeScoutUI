@@ -28,9 +28,8 @@ struct CSVSettings
 
     // Constructs CSVSettings, sets decimal and field separator.
     explicit CSVSettings(char decimalSep, char fieldSep) noexcept
+        : decimalSeparator(decimalSep), fieldSeparator(fieldSep)
     {
-        decimalSeparator = decimalSep;
-        fieldSeparator = fieldSep;
     }
 };
 
