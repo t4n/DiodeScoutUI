@@ -17,6 +17,7 @@
 #include <QSplineSeries>
 #include <QStatusBar>
 #include <QToolBar>
+#include <QDebug>
 
 // Main window constructor.
 MainWindow::MainWindow(QSerialPort &diodeScoutPort) : serial_(diodeScoutPort)
@@ -79,7 +80,11 @@ void MainWindow::onComputePWL()
     // Ensure that only the diode I–V curve is visible
     Q_ASSERT(!chart_->series().empty());
     while (chart_->series().size() > 1)
-        chart_->removeSeries(chart_->series().at(1));
+    {
+        auto *tmpSeries = chart_->series().at(1);
+        chart_->removeSeries(tmpSeries);
+        delete tmpSeries; // removeSeries() releases ownership!
+    }
 
     // Plot piecewise-linear approximation of diode I–V curve
     double maxV, maxI;
