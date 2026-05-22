@@ -251,9 +251,10 @@ std::string MeasurementDataManager::formatDouble(double d, char decimalSeparator
     if (n < 0)
         return "#ERR";
 
-    for (size_t idx = 0; buf[idx] != 0; ++idx)
-        if (buf[idx] == '.')
-            buf[idx] = decimalSeparator;
+    size_t pos;
+    for (pos = 0; buf[pos] != 0; ++pos)
+        if (buf[pos] == '.')
+            buf[pos] = decimalSeparator;
 
-    return std::string(buf);
+    return std::string(buf, pos);
 }
