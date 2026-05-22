@@ -14,51 +14,8 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdio>
 #include <fstream>
-#include <iomanip>
-#include <locale>
-#include <sstream>
-
-// ---------------------------------------------------------------------------
-//  CSVNumberFormatter:
-//  Formats floating-point values using a configurable decimal separator.
-// ---------------------------------------------------------------------------
-class CSVNumberFormatter
-{
-  public:
-    // Initializes the formatter with a specific decimal separator.
-    explicit CSVNumberFormatter(char decimalSeparator) :
-        decimalSeparator_(decimalSeparator)
-    {
-        stream_.imbue(std::locale::classic());
-        stream_ << std::fixed << std::setprecision(6);
-    }
-
-    // Formats a floating-point value into a CSV-compliant string.
-    void operator()(double value, std::string &out)
-    {
-        stream_.str("");
-        stream_.clear();
-
-        stream_ << value;
-        out = stream_.str();
-
-        if (decimalSeparator_ != '.')
-            std::replace(out.begin(), out.end(), '.', decimalSeparator_);
-    }
-
-  private:
-    // Decimal separator used for formatting.
-    char decimalSeparator_;
-
-    // Internal stream reused for string conversion.
-    std::ostringstream stream_;
-};
-
-// ---------------------------------------------------------------------------
-//  MeasurementDataManager:
-//  Stores and manages all acquired measurement series.
-// ---------------------------------------------------------------------------
 
 // Returns the number of stored measurement series.
 std::size_t MeasurementDataManager::seriesCount() const noexcept
@@ -153,32 +110,26 @@ void MeasurementDataManager::getMaxVoltageAndCurrent(double &maxV, double &maxI)
 
 // Exports all stored measurement series to a CSV file.
 // Returns true on success.
-bool MeasurementDataManager::exportCSV(const std::string &filePath, CSVSettings csv) const
+bool MeasurementDataManager::exportCSV(const std::string &filePath, const CSVSettings &csv) const
 {
     std::ofstream out(filePath);
     if (!out)
         return false;
 
-    CSVNumberFormatter format(csv.decimalSeparator);
     for (std::size_t i = 0; i < series_.size(); ++i)
     {
         const auto &s = series_[i];
         out << "Series " << (i + 1) << "\n";
         out << "Volt (V)" << csv.fieldSeparator << "Milliampere (mA)\n";
 
-        std::string tmp;
         for (const auto &p : s.points())
         {
-            format(p.voltageVolt, tmp);
-            out << tmp << csv.fieldSeparator;
-
-            format(p.currentMilliAmp, tmp);
-            out << tmp << "\n";
+            out << formatDouble(p.voltageVolt, csv.decimalSeparator) << csv.fieldSeparator;
+            out << formatDouble(p.currentMilliAmp, csv.decimalSeparator) << "\n";
         }
         out << "\n";
     }
 
-    out.flush();
     return out.good();
 }
 
@@ -189,9 +140,6 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
     std::ofstream out(filePath);
     if (!out)
         return false;
-
-    out.imbue(std::locale::classic());
-    out << std::fixed << std::setprecision(6);
 
     // Header
     out << "#!/usr/bin/env python3\n";
@@ -209,7 +157,7 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
         for (std::size_t j = 0; j < s.points().size(); ++j)
         {
             const auto &p = s.points()[j];
-            out << p.voltageVolt;
+            out << formatDouble(p.voltageVolt, '.'); // Python expects dot
             if (j + 1 < s.points().size())
                 out << ", ";
         }
@@ -220,7 +168,7 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
         for (std::size_t j = 0; j < s.points().size(); ++j)
         {
             const auto &p = s.points()[j];
-            out << p.currentMilliAmp;
+            out << formatDouble(p.currentMilliAmp, '.'); // Python expects dot
             if (j + 1 < s.points().size())
                 out << ", ";
         }
@@ -239,7 +187,6 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
     out << "# plt.savefig('plot.png', dpi=300)\n";
     out << "plt.show()\n";
 
-    out.flush();
     return out.good();
 }
 
@@ -293,4 +240,20 @@ bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
         return false;
 
     return true;
+}
+
+// Converts double to string and replaces decimal decimal separator.
+std::string MeasurementDataManager::formatDouble(double d, char decimalSeparator) const
+{
+    char buf[64];
+    auto n = std::snprintf(buf, sizeof(buf), "%.6f", d);
+
+    if (n < 0)
+        return "#ERR";
+
+    for (size_t idx = 0; buf[idx] != 0; ++idx)
+        if (buf[idx] == '.')
+            buf[idx] = decimalSeparator;
+
+    return std::string(buf);
 }

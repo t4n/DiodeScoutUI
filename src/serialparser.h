@@ -12,7 +12,6 @@
 
 // Portable core module, no Qt dependencies.
 #include "coredatatypes.h"
-#include <sstream>
 #include <string>
 
 // ---------------------------------------------------------------------------
@@ -43,10 +42,6 @@ class SerialParser
     static constexpr std::size_t MaxLineLength = 100;
 
   public:
-    // Constructor: Initializes xyStream_ with the classic C locale
-    // to ensure locale-independent floating-point parsing.
-    SerialParser();
-
     // Returns the number of points collected in the current series.
     std::size_t currentSeriesSize() const noexcept;
 
@@ -73,9 +68,6 @@ class SerialParser
 
     // Buffer for the line currently being received.
     std::string lineBuffer_;
-
-    // Used by extractXYData() to parse XY data points.
-    std::istringstream xyStream_;
 
     // Returns a copy of s with leading and trailing whitespace removed.
     static std::string trim(const std::string &s);

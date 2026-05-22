@@ -11,14 +11,7 @@
 // Portable core module, no Qt dependencies.
 #include "serialparser.h"
 #include <algorithm>
-#include <locale>
-
-// Constructor: Initializes xyStream_ with the classic C locale
-// to ensure locale-independent floating-point parsing.
-SerialParser::SerialParser()
-{
-    xyStream_.imbue(std::locale::classic());
-}
+#include <cstdlib>
 
 // Returns the number of points collected in the current series.
 std::size_t SerialParser::currentSeriesSize() const noexcept
@@ -45,7 +38,7 @@ ParseResult SerialParser::processReceivedChar(char c)
 
     if (c == '\r')
     {
-        // Ignore \r
+        // CRLF normalization
         return ParseResult::Nothing;
     }
 
@@ -116,20 +109,24 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
 // Extracts an XY data point and appends it to currentSeries_.
 ParseResult SerialParser::extractXYData(const std::string &data)
 {
-    double x = 0.0;
-    double y = 0.0;
+    if (currentSeriesSize() >= MaxPointsCount)
+        return ParseResult::ParseError;
 
-    xyStream_.clear();
-    xyStream_.str(data);
-    xyStream_ >> x >> y; // ignore any trailing garbage
+    const char *p = data.c_str();
+    char *end = nullptr;
+    double x = std::strtod(p, &end);
 
-    if (!xyStream_)
+    if (p == end)
         return ParseResult::ParseError;
     if (x < VoltageRangeMin || x > VoltageRangeMax)
         return ParseResult::ParseError;
-    if (y < CurrentRangeMin || y > CurrentRangeMax)
+
+    p = end;
+    double y = std::strtod(p, &end);
+
+    if (p == end)
         return ParseResult::ParseError;
-    if (currentSeriesSize() >= MaxPointsCount)
+    if (y < CurrentRangeMin || y > CurrentRangeMax)
         return ParseResult::ParseError;
 
     currentSeries_.addPoint(x, y);

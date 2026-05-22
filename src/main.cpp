@@ -13,6 +13,7 @@
 #include <QPalette>
 #include <QSerialPortInfo>
 #include <QStyleFactory>
+#include <clocale>
 
 // ---------------------------------------------------------------------------
 //  DiodeScoutSerialConnector:
@@ -81,6 +82,10 @@ int main(int argc, char *argv[])
 {
     // Initialize the main application framework
     QApplication application(argc, argv);
+
+    // Avoid locale-dependent number parsing issues on Linux,
+    // see Qt docs: https://doc.qt.io/qt-6/qcoreapplication.html
+    std::setlocale(LC_NUMERIC, "C");
 
     // Background colors
     QPalette darkPalette;
