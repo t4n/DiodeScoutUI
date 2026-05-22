@@ -64,7 +64,7 @@ class MeasurementDataManager
 
     // Exports all stored measurement series to a CSV file.
     // Returns true on success.
-    bool exportCSV(const std::string &filePath, const CSVSettings& csv) const;
+    bool exportCSV(const std::string &filePath, const CSVSettings &csv) const;
 
     // Exports all stored measurement series to a Python script.
     // Returns true on success.
@@ -78,6 +78,7 @@ class MeasurementDataManager
     // Collection of all acquired measurement series.
     std::vector<MeasurementSeries> series_;
 
-    // Converts double to string and replaces decimal separator.
+    // Converts double to string and replaces decimal separator;
+    // fixed-format output, limited range, 6 decimals.
     std::string formatDouble(double d, char decimalSeparator) const;
 };
