@@ -252,9 +252,7 @@ std::string MeasurementDataManager::formatDouble(double d, char decimalSeparator
     if (n < 0 || n >= (int)sizeof(buf))
         return "#ERR";
 
-    for (int idx = 0; idx < n; ++idx)
-        if (buf[idx] == '.')
-            buf[idx] = decimalSeparator;
-
-    return std::string(buf, n);
+    std::string out(buf, n);
+    std::replace(out.begin(), out.end(), '.', decimalSeparator);
+    return out;
 }
