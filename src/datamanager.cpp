@@ -242,7 +242,7 @@ bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
     return true;
 }
 
-// Converts double to string and replaces decimal decimal separator.
+// Converts double to string and replaces decimal separator.
 std::string MeasurementDataManager::formatDouble(double d, char decimalSeparator) const
 {
     char buf[64];
