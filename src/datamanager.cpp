@@ -252,6 +252,8 @@ std::string MeasurementDataManager::formatDouble(double d, char decimalSeparator
     if (n < 0 || n >= BufSize)
         return "#ERR";
 
-    std::replace(buf, buf + n, '.', decimalSeparator);
+    if (decimalSeparator != '.')
+        std::replace(buf, buf + n, '.', decimalSeparator);
+
     return std::string(buf, n);
 }
