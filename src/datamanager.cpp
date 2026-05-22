@@ -242,14 +242,14 @@ bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
     return true;
 }
 
-// Converts double to string and replaces decimal separator;
-// fixed-format output, limited range, 6 decimals.
+// Converts double to string and replaces decimal separator.
 std::string MeasurementDataManager::formatDouble(double d, char decimalSeparator) const
 {
-    char buf[64];
+    static constexpr int BufSize = 64; // 6 decimals, limited range
+    char buf[BufSize];
 
-    int n = std::snprintf(buf, sizeof(buf), "%.6f", d);
-    if (n < 0 || n >= (int)sizeof(buf))
+    int n = std::snprintf(buf, BufSize, "%.6f", d);
+    if (n < 0 || n >= BufSize)
         return "#ERR";
 
     std::string out(buf, n);
