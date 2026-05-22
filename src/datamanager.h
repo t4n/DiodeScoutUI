@@ -78,6 +78,6 @@ class MeasurementDataManager
     // Collection of all acquired measurement series.
     std::vector<MeasurementSeries> series_;
 
-    // Converts double to string and replaces decimal separator.
+    // Converts a double to a string and replaces the decimal separator.
     std::string formatDouble(double d, char decimalSeparator) const;
 };
