@@ -10,7 +10,6 @@
 
 // Portable core module, no Qt dependencies.
 #include "serialparser.h"
-#include <algorithm>
 #include <cstdlib>
 
 // Returns the number of points collected in the current series.
