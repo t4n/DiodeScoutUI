@@ -52,17 +52,6 @@ ParseResult SerialParser::processReceivedChar(char c)
     return ParseResult::Nothing;
 }
 
-// Returns a copy of s with leading and trailing whitespace removed.
-std::string SerialParser::trim(const std::string &s)
-{
-    const auto first = s.find_first_not_of(" \t\n\r");
-    if (first == std::string::npos)
-        return {};
-
-    const auto last = s.find_last_not_of(" \t\n\r");
-    return s.substr(first, last - first + 1);
-}
-
 // Processes a fully received line and updates the parser state.
 ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
 {
@@ -127,4 +116,15 @@ ParseResult SerialParser::extractXYData(const char *data)
 
     currentSeries_.addPoint(x, y);
     return ParseResult::DataPointAdded;
+}
+
+// Returns a copy of s with leading and trailing whitespace removed.
+std::string SerialParser::trim(const std::string &s)
+{
+    const auto first = s.find_first_not_of(" \t\n\r");
+    if (first == std::string::npos)
+        return {};
+
+    const auto last = s.find_last_not_of(" \t\n\r");
+    return s.substr(first, last - first + 1);
 }

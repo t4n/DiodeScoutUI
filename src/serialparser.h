@@ -69,12 +69,12 @@ class SerialParser
     // Buffer for the line currently being received.
     std::string lineBuffer_;
 
-    // Returns a copy of s with leading and trailing whitespace removed.
-    static std::string trim(const std::string &s);
-
     // Processes a fully received line and updates the parser state.
     ParseResult handleCompletedLine(const std::string &rawLine);
 
     // Extracts an XY data point and appends it to currentSeries_.
     ParseResult extractXYData(const char *data);
+
+    // Returns a copy of s with leading and trailing whitespace removed.
+    static std::string trim(const std::string &s);
 };
