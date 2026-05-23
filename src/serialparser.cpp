@@ -89,9 +89,7 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
         }
         else if (line.rfind("DATA ", 0) == 0)
         {
-            std::string payload = line.substr(5); // skip "DATA "
-            std::replace(payload.begin(), payload.end(), ',', '.');
-            result = extractXYData(payload);
+            result = extractXYData(line.c_str() + 5); // skip "DATA "
             state_ = ParserState::ReceivingSeries;
         }
         else if (line == "BEGIN")
@@ -107,24 +105,23 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
 }
 
 // Extracts an XY data point and appends it to currentSeries_.
-ParseResult SerialParser::extractXYData(const std::string &data)
+ParseResult SerialParser::extractXYData(const char *data)
 {
     if (currentSeriesSize() >= MaxPointsCount)
         return ParseResult::ParseError;
 
-    const char *p = data.c_str();
     char *end = nullptr;
-    double x = std::strtod(p, &end);
+    double x = std::strtod(data, &end);
 
-    if (p == end)
+    if (data == end)
         return ParseResult::ParseError;
     if (x < VoltageRangeMin || x > VoltageRangeMax)
         return ParseResult::ParseError;
 
-    p = end;
-    double y = std::strtod(p, &end);
+    data = end;
+    double y = std::strtod(data, &end);
 
-    if (p == end)
+    if (data == end)
         return ParseResult::ParseError;
     if (y < CurrentRangeMin || y > CurrentRangeMax)
         return ParseResult::ParseError;

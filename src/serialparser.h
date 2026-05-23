@@ -76,5 +76,5 @@ class SerialParser
     ParseResult handleCompletedLine(const std::string &rawLine);
 
     // Extracts an XY data point and appends it to currentSeries_.
-    ParseResult extractXYData(const std::string &data);
+    ParseResult extractXYData(const char *data);
 };
