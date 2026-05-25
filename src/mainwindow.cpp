@@ -36,8 +36,8 @@ MainWindow::MainWindow(QSerialPort &diodeScoutPort) :
     }
     else
     {
-        QString prettyName = serial_.portName().remove("\\\\.\\");
         connect(&serial_, &QSerialPort::readyRead, this, &MainWindow::onSerialDataReceived, Qt::QueuedConnection);
+        QString prettyName = serial_.portName().remove("\\\\.\\");
         statusBar()->showMessage(QString("DiodeScout at %1").arg(prettyName));
         chart_->setTitle("Press the button on the DiodeScout ...");
     }
