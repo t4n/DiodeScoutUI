@@ -100,6 +100,7 @@ ParseResult SerialParser::extractXYData(const char *data)
 
     char *end = nullptr;
     double x = std::strtod(data, &end);
+    // main() sets std::setlocale(LC_NUMERIC, "C")
 
     if (data == end)
         return ParseResult::ParseError;

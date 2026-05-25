@@ -92,22 +92,22 @@ void MainWindow::onComputePWL()
     dataManager_.getMaxVoltageAndCurrent(maxV, maxI);
     maxI /= 1000.0; // convert mA to A
 
-    auto *line = new QLineSeries(chart_);
-    line->append(0.0, 0.0);
-    line->append(forwardV, 0.0);
-    line->append(forwardV + seriesR * maxI, maxI * 1000.0);
-    chart_->addSeries(line);
+    auto *pwlSeries = new QLineSeries(chart_);
+    pwlSeries->append(0.0, 0.0);
+    pwlSeries->append(forwardV, 0.0);
+    pwlSeries->append(forwardV + seriesR * maxI, maxI * 1000.0);
+    chart_->addSeries(pwlSeries);
 
-    QPen pen = line->pen();
+    QPen pen = pwlSeries->pen();
     pen.setColor(Qt::red);
-    line->setPen(pen);
+    pwlSeries->setPen(pen);
 
     auto *axisX = chartView_->getAxisX();
     auto *axisY = chartView_->getAxisY();
     if (axisX && axisY)
     {
-        line->attachAxis(axisX);
-        line->attachAxis(axisY);
+        pwlSeries->attachAxis(axisX);
+        pwlSeries->attachAxis(axisY);
     }
 
     // Show model parameters in status bar
