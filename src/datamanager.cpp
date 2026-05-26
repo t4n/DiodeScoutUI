@@ -248,7 +248,7 @@ std::string MeasurementDataManager::formatDouble(double d, char decimalSeparator
     constexpr int BufSize = 64; // oversized for typical V/I values
     char buf[BufSize];
 
-    // main() sets LC_NUMERIC="C" ('.' decimal separator).
+    // main() sets LC_NUMERIC to "C"; '.' is guaranteed as decimal separator.
     int n = std::snprintf(buf, BufSize, "%.6f", d);
     if (n < 0 || n >= BufSize)
         return "#ERR";
