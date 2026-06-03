@@ -1,9 +1,9 @@
 // ---------------------------------------------------------------------------
-//  Entry point of the DiodeScout application. Initializes the Qt environment,
-//  applies the dark Fusion theme, loads the application icon, establishes the
-//  serial connection to the DiodeScout device, and launches the main window.
+//  Entry point of the DiodeScout application. Initializes Qt, applies the
+//  dark Fusion theme, loads the application icon, establishes the serial
+//  connection to the DiodeScout device, and launches the main window.
 //
-//  All UI logic and serial communication are handled inside MainWindow.
+//  All UI logic and serial communication are handled by MainWindow.
 // ---------------------------------------------------------------------------
 
 #include "mainwindow.h"
@@ -22,7 +22,8 @@
 class DiodeScoutSerialConnector
 {
   public:
-    // Detect the DiodeScout device and open the serial connection.
+    // Opens a DiodeScout serial connection via auto-detection
+    // or by prompting the user to select a serial port.
     static bool FindAndOpen(QSerialPort &serial)
     {
         // 1) Try automatic detection
@@ -76,6 +77,33 @@ class DiodeScoutSerialConnector
 };
 
 // ---------------------------------------------------------------------------
+//  Populates a QPalette with the application's dark Fusion color scheme.
+// ---------------------------------------------------------------------------
+static void FillDarkPalette(QPalette &palette)
+{
+    // Background colors
+    palette.setColor(QPalette::Window, QColor(53, 53, 53)); // Window background
+    palette.setColor(QPalette::WindowText, Qt::white); // Window text
+    palette.setColor(QPalette::Base, QColor(30, 30, 30)); // Input fields / text areas
+    palette.setColor(QPalette::AlternateBase, QColor(45, 45, 45)); // Alternating rows (tables)
+    palette.setColor(QPalette::ToolTipBase, QColor(53, 53, 53)); // Tooltip background
+    palette.setColor(QPalette::ToolTipText, Qt::white); // Tooltip text
+
+    // Text colors
+    palette.setColor(QPalette::Text, Qt::white); // Default text
+    palette.setColor(QPalette::BrightText, Qt::red); // Warnings / emphasis
+    palette.setColor(QPalette::HighlightedText, Qt::white); // Text on blue highlight
+
+    // Buttons
+    palette.setColor(QPalette::Button, QColor(60, 60, 60)); // Button background slightly lighter
+    palette.setColor(QPalette::ButtonText, Qt::white); // Button text
+
+    // Links / selection
+    palette.setColor(QPalette::Link, QColor(42, 130, 218)); // Links / clickable elements
+    palette.setColor(QPalette::Highlight, QColor(42, 130, 218)); // Selection / highlight
+}
+
+// ---------------------------------------------------------------------------
 //  Application entry point.
 // ---------------------------------------------------------------------------
 int main(int argc, char *argv[])
@@ -83,35 +111,18 @@ int main(int argc, char *argv[])
     // Initialize the main application framework
     QApplication application(argc, argv);
 
-    // Avoid locale-dependent number parsing issues on Linux,
+    // Force locale-independent decimal separator ('.'),
+    // required by MeasurementDataManager and SerialParser,
     // see Qt docs: https://doc.qt.io/qt-6/qcoreapplication.html
     std::setlocale(LC_NUMERIC, "C");
+    Q_ASSERT(std::strcmp(std::setlocale(LC_NUMERIC, nullptr), "C") == 0);
 
-    // Background colors
-    QPalette darkPalette;
-    darkPalette.setColor(QPalette::Window, QColor(53, 53, 53)); // Window background
-    darkPalette.setColor(QPalette::WindowText, Qt::white); // Window text
-    darkPalette.setColor(QPalette::Base, QColor(30, 30, 30)); // Input fields / text areas
-    darkPalette.setColor(QPalette::AlternateBase, QColor(45, 45, 45)); // Alternating rows (tables)
-    darkPalette.setColor(QPalette::ToolTipBase, QColor(53, 53, 53)); // Tooltip background
-    darkPalette.setColor(QPalette::ToolTipText, Qt::white); // Tooltip text
-
-    // Text colors
-    darkPalette.setColor(QPalette::Text, Qt::white); // Default text
-    darkPalette.setColor(QPalette::BrightText, Qt::red); // Warnings / emphasis
-    darkPalette.setColor(QPalette::HighlightedText, Qt::white); // Text on blue highlight
-
-    // Buttons
-    darkPalette.setColor(QPalette::Button, QColor(60, 60, 60)); // Button background slightly lighter
-    darkPalette.setColor(QPalette::ButtonText, Qt::white); // Button text
-
-    // Links / selection
-    darkPalette.setColor(QPalette::Link, QColor(42, 130, 218)); // Links / clickable elements
-    darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218)); // Selection / highlight
-
-    // Make it look good
+    // Apply application theme
     QStyle *fusion = QStyleFactory::create("Fusion");
     Q_ASSERT(fusion);
+
+    QPalette darkPalette;
+    FillDarkPalette(darkPalette);
 
     application.setStyle(fusion);
     application.setPalette(darkPalette);
@@ -129,7 +140,7 @@ int main(int argc, char *argv[])
             return EXIT_SUCCESS;
     }
 
-    // MainWindow enters Simulation Mode if the serial port is not open
+    // MainWindow enters simulation mode if the serial port is not open
     MainWindow w(diodeScoutPort);
     w.resize(800, 600);
     w.show();
