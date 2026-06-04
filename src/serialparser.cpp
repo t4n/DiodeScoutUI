@@ -93,7 +93,7 @@ ParseResult SerialParser::extractXYData(const char *data)
     char *end = nullptr;
     double x = std::strtod(data, &end);
 
-    if (data == end || *end != ' ')
+    if (end == data || *end != ' ')
         return ParseResult::ParseError;
     if (x < VoltageRangeMin || x > VoltageRangeMax)
         return ParseResult::ParseError;
@@ -101,7 +101,7 @@ ParseResult SerialParser::extractXYData(const char *data)
     data = end;
     double y = std::strtod(data, &end);
 
-    if (data == end || *end != '\0')
+    if (end == data || *end != '\0')
         return ParseResult::ParseError;
     if (y < CurrentRangeMin || y > CurrentRangeMax)
         return ParseResult::ParseError;
