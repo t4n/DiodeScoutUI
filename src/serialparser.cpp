@@ -95,12 +95,9 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
 // Extracts an XY data point and appends it to currentSeries_.
 ParseResult SerialParser::extractXYData(const char *data)
 {
-    if (currentSeriesSize() >= MaxPointsCount)
-        return ParseResult::ParseError;
-
+    // main() sets LC_NUMERIC to "C"; '.' is guaranteed as decimal separator
     char *end = nullptr;
     double x = std::strtod(data, &end);
-    // main() sets LC_NUMERIC to "C"; '.' is guaranteed as decimal separator
 
     if (data == end)
         return ParseResult::ParseError;
@@ -113,6 +110,10 @@ ParseResult SerialParser::extractXYData(const char *data)
     if (data == end)
         return ParseResult::ParseError;
     if (y < CurrentRangeMin || y > CurrentRangeMax)
+        return ParseResult::ParseError;
+
+    // Series exceeds expected size
+    if (currentSeriesSize() >= MaxPointsCount)
         return ParseResult::ParseError;
 
     currentSeries_.addPoint(x, y);
