@@ -12,12 +12,6 @@
 #include "serialparser.h"
 #include <cstdlib>
 
-// Returns the number of points collected in the current series.
-std::size_t SerialParser::currentSeriesSize() const noexcept
-{
-    return currentSeries_.size();
-}
-
 // Provides read-only access to the current measurement series.
 const MeasurementSeries &SerialParser::currentSeries() const noexcept
 {
@@ -113,7 +107,7 @@ ParseResult SerialParser::extractXYData(const char *data)
         return ParseResult::ParseError;
 
     // Series exceeds expected size
-    if (currentSeriesSize() >= MaxPointsCount)
+    if (currentSeries_.size() >= MaxPointsCount)
         return ParseResult::ParseError;
 
     currentSeries_.addPoint(x, y);

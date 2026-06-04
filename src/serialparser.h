@@ -42,9 +42,6 @@ class SerialParser
     static constexpr std::size_t MaxLineLength = 100;
 
   public:
-    // Returns the number of points collected in the current series.
-    std::size_t currentSeriesSize() const noexcept;
-
     // Provides read-only access to the current measurement series.
     const MeasurementSeries &currentSeries() const noexcept;
 

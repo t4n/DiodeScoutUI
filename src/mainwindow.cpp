@@ -210,7 +210,7 @@ void MainWindow::onSerialDataReceived()
 
         case ParseResult::DataPointAdded:
             // Update progress indicator in status bar
-            n = serialParser_.currentSeriesSize();
+            n = serialParser_.currentSeries().size();
             statusBar()->showMessage(QString("Receiving data ") + QString(n, '.'));
             break;
 
