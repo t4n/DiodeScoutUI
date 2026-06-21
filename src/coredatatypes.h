@@ -4,7 +4,7 @@
 //  Defines the core data structures used throughout the DiodeScout UI.
 //  They represent individual measurement points and complete measurement
 //  series as produced by the parser, stored by the data manager, and used
-//  by the UI and export functionality.
+//  by the UI and export features.
 // ---------------------------------------------------------------------------
 
 #pragma once
@@ -31,22 +31,29 @@ struct MeasurementPoint
 
 // ---------------------------------------------------------------------------
 //  MeasurementSeries:
-//  A complete set of measurement points forming one I–V curve. Built by
-//  the parser and later used for visualization, analysis, and export.
+//  A complete set of measurement points forming a single I–V curve. Built
+//  by the parser and later used for visualization, analysis, and export.
 // ---------------------------------------------------------------------------
 class MeasurementSeries
 {
+  private:
+    // Expected number of measurement points per series.
+    static constexpr size_t ExpectedPointsPerSeries = 64;
+
   public:
+    // Constructs an empty measurement series.
+    MeasurementSeries();
+
     // Adds a new measurement point.
     void addPoint(double voltage, double currentMilliAmp);
 
-    // Returns all measurement points.
+    // Returns a read-only reference to the measurement points.
     const std::vector<MeasurementPoint> &points() const noexcept;
 
     // Returns the number of measurement points.
     std::size_t size() const noexcept;
 
-    // Checks whether the series is empty.
+    // Returns true if the series is empty.
     bool empty() const noexcept;
 
   private:
