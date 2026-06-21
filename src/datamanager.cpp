@@ -43,9 +43,9 @@ void MeasurementDataManager::removeLastSeries()
 }
 
 // Adds a completed measurement series to the collection.
-void MeasurementDataManager::appendSeries(MeasurementSeries series)
+void MeasurementDataManager::appendSeries(const MeasurementSeries& series)
 {
-    series_.push_back(std::move(series));
+    series_.push_back(series);
 }
 
 // Appends simulated diode I–V characteristics to the collection.

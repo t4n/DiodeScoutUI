@@ -54,7 +54,7 @@ class MeasurementDataManager
     void removeLastSeries();
 
     // Adds a completed measurement series to the collection.
-    void appendSeries(MeasurementSeries series);
+    void appendSeries(const MeasurementSeries& series);
 
     // Appends simulated diode I–V characteristics to the collection.
     void appendSimulatedSeries();
