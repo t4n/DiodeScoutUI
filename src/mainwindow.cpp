@@ -313,6 +313,8 @@ void MainWindow::setupUI()
     auto *spacer2 = new QWidget(toolbar);
     spacer1->setFixedWidth(20);
     spacer2->setFixedWidth(20);
+    spacer1->setFixedHeight(20);
+    spacer2->setFixedHeight(20);
 
     restoreViewAct_ = toolbar->addAction(QIcon(":/icons/restoreview.svg"), "Restore default view");
     lightModeAct_ = toolbar->addAction(QIcon(":/icons/lightmode.svg"), "Light mode");
