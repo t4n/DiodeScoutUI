@@ -43,7 +43,7 @@ void MeasurementDataManager::removeLastSeries()
 }
 
 // Adds a completed measurement series to the collection.
-void MeasurementDataManager::appendSeries(const MeasurementSeries& series)
+void MeasurementDataManager::appendSeries(const MeasurementSeries &series)
 {
     series_.push_back(series);
 }
