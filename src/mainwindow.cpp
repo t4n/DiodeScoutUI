@@ -304,15 +304,18 @@ void MainWindow::setChartTitleFont()
 // Initializes the main window UI, including toolbar and actions.
 void MainWindow::setupUI()
 {
+    constexpr auto ToolBarIconSize = 24;
+    constexpr auto ToolBarSpacerSize = ToolBarIconSize / 2;
+
     // Toolbar
     auto *toolbar = new QToolBar("Main Toolbar", this);
-    toolbar->setIconSize(QSize(24, 24));
+    toolbar->setIconSize(QSize(ToolBarIconSize, ToolBarIconSize));
     addToolBar(Qt::TopToolBarArea, toolbar);
 
     auto *spacer1 = new QWidget(toolbar);
     auto *spacer2 = new QWidget(toolbar);
-    spacer1->setFixedSize(20, 20);
-    spacer2->setFixedSize(20, 20);
+    spacer1->setFixedSize(ToolBarSpacerSize, ToolBarSpacerSize);
+    spacer2->setFixedSize(ToolBarSpacerSize, ToolBarSpacerSize);
 
     restoreViewAct_ = toolbar->addAction(QIcon(":/icons/restoreview.svg"), "Restore default view");
     lightModeAct_ = toolbar->addAction(QIcon(":/icons/lightmode.svg"), "Light mode");
