@@ -38,7 +38,7 @@ class MeasurementSeries
 {
   private:
     // Expected number of measurement points per series.
-    static constexpr size_t ExpectedPointsPerSeries = 64;
+    static constexpr std::size_t ExpectedPointsPerSeries = 64;
 
   public:
     // Constructs an empty measurement series.
