@@ -65,8 +65,8 @@ class DiodeScoutSerialConnector
     {
         serial.setPortName(info.portName());
 
-        // Serial parameters are defined by the DiodeScout firmware.
-        // Do not modify unless the device protocol changes.
+        // Serial parameters are defined by the DiodeScout firmware;
+        // do not modify unless the device protocol changes.
         serial.setBaudRate(QSerialPort::Baud9600);
         serial.setDataBits(QSerialPort::Data8);
         serial.setParity(QSerialPort::NoParity);
