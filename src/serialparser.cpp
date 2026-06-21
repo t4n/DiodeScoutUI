@@ -50,7 +50,7 @@ ParseResult SerialParser::processReceivedChar(char c)
 ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
 {
     auto result = ParseResult::Nothing; // default return value
-    std::string line = trim(rawLine);
+    const std::string line = trim(rawLine);
 
     switch (state_)
     {
