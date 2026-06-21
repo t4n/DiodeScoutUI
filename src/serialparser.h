@@ -42,7 +42,8 @@ class SerialParser
     static constexpr std::size_t MaxLineLength = 100;
 
   public:
-    // Provides read-only access to the current measurement series.
+    // Returns a read-only reference to the current measurement series.
+    // The series is parser-owned and may change as parsing continues.
     const MeasurementSeries &currentSeries() const noexcept;
 
     // Returns DataPointAdded when a DATA line is parsed, SeriesCompleted when

@@ -12,7 +12,8 @@
 #include "serialparser.h"
 #include <cstdlib>
 
-// Provides read-only access to the current measurement series.
+// Returns a read-only reference to the current measurement series.
+// The series is parser-owned and may change as parsing continues.
 const MeasurementSeries &SerialParser::currentSeries() const noexcept
 {
     return currentSeries_;
