@@ -63,16 +63,16 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
         break;
 
     case ParserState::ReceivingSeries:
-        if (line == "END")
+        if (line.rfind("DATA ", 0) == 0)
+        {
+            result = extractXYData(line.c_str() + 5); // skip "DATA "
+            state_ = ParserState::ReceivingSeries;
+        }
+        else if (line == "END")
         {
             if (!currentSeries_.empty())
                 result = ParseResult::SeriesCompleted;
             state_ = ParserState::Idle;
-        }
-        else if (line.rfind("DATA ", 0) == 0)
-        {
-            result = extractXYData(line.c_str() + 5); // skip "DATA "
-            state_ = ParserState::ReceivingSeries;
         }
         else if (line == "BEGIN")
         {
@@ -89,7 +89,8 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
 // Extracts an XY data point and appends it to currentSeries_.
 ParseResult SerialParser::extractXYData(const char *data)
 {
-    // main() sets LC_NUMERIC to "C"; '.' is guaranteed as decimal separator
+    // main() sets LC_NUMERIC to "C";
+    // '.' is guaranteed as decimal separator
     char *end = nullptr;
     double x = std::strtod(data, &end);
 
