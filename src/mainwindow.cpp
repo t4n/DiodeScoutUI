@@ -304,8 +304,8 @@ void MainWindow::setChartTitleFont()
 // Initializes the main window UI, including toolbar and actions.
 void MainWindow::setupUI()
 {
-    constexpr auto ToolBarIconSize = 24;
-    constexpr auto ToolBarSpacerSize = ToolBarIconSize / 2;
+    constexpr int ToolBarIconSize = 24;
+    constexpr int ToolBarSpacerSize = ToolBarIconSize * 2 / 3;
 
     // Toolbar
     auto *toolbar = new QToolBar("Main Toolbar", this);
