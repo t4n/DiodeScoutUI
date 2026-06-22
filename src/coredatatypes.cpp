@@ -13,7 +13,7 @@
 // Constructs an empty measurement series.
 MeasurementSeries::MeasurementSeries()
 {
-    points_.reserve(ExpectedPointsPerSeries);
+    points_.reserve(InitialPointCapacity);
 }
 
 // Adds a new measurement point.
