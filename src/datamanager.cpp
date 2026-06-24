@@ -92,20 +92,28 @@ void MeasurementDataManager::appendSimulatedSeries()
     addSeries(Voltage2, Current2);
 }
 
-// Retrieves the maximum voltage and current across all series.
-void MeasurementDataManager::getMaxVoltageAndCurrent(double &maxV, double &maxI) const noexcept
+// Retrieves the maximum voltage (V) across all series.
+double MeasurementDataManager::maxVoltage() const noexcept
 {
-    maxV = 0.0;
-    maxI = 0.0;
+    double maxV = 0.0;
 
     for (const auto &series : series_)
-    {
         for (const auto &p : series.points())
-        {
             maxV = std::max(maxV, p.voltageVolt);
+
+    return maxV;
+}
+
+// Retrieves the maximum current (mA) across all series.
+double MeasurementDataManager::maxCurrent() const noexcept
+{
+    double maxI = 0.0;
+
+    for (const auto &series : series_)
+        for (const auto &p : series.points())
             maxI = std::max(maxI, p.currentMilliAmp);
-        }
-    }
+
+    return maxI;
 }
 
 // Exports all stored measurement series to a CSV file.
@@ -195,13 +203,12 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
 bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
 {
     // Exactly one measurement series is required
-    if (series_.size() != 1 || series_[0].empty())
+    if (series_.size() != 1)
         return false;
 
     // Ignore measurement points below 0.5 * maxI (non-conducting diode)
     const double noiseFloor = 0.1; // mA
-    const double maxI = series_[0].points().back().currentMilliAmp;
-    const double threshold = std::max(0.5 * maxI, noiseFloor);
+    const double threshold = std::max(0.5 * maxCurrent(), noiseFloor);
 
     // Linear least-squares fit: V = Rs * I + Vf where
     // Rs = Effective series resistance, Vf = Forward voltage (turn-on)

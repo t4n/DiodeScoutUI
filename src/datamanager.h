@@ -59,8 +59,11 @@ class MeasurementDataManager
     // Appends simulated diode I–V characteristics to the collection.
     void appendSimulatedSeries();
 
-    // Retrieves the maximum voltage and current across all series.
-    void getMaxVoltageAndCurrent(double &maxV, double &maxI) const noexcept;
+    // Retrieves the maximum voltage (V) across all series.
+    double maxVoltage() const noexcept;
+
+    // Retrieves the maximum current (mA) across all series.
+    double maxCurrent() const noexcept;
 
     // Exports all stored measurement series to a CSV file.
     // Returns true on success.

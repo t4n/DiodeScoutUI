@@ -87,15 +87,13 @@ void MainWindow::onComputePWL()
         delete tmpSeries; // removeSeries() releases ownership!
     }
 
-    // Plot piecewise-linear approximation of diode I–V curve
-    double maxV, maxI;
-    dataManager_.getMaxVoltageAndCurrent(maxV, maxI);
-    maxI /= 1000.0; // convert mA to A
+    const double maxI = dataManager_.maxCurrent(); // mA
 
+    // Plot piecewise-linear approximation of diode I–V curve
     auto *pwlSeries = new QLineSeries(chart_);
     pwlSeries->append(0.0, 0.0);
     pwlSeries->append(forwardV, 0.0);
-    pwlSeries->append(forwardV + seriesR * maxI, maxI * 1000.0);
+    pwlSeries->append(forwardV + seriesR * maxI / 1000.0, maxI);
     chart_->addSeries(pwlSeries);
 
     QPen pen = pwlSeries->pen();
@@ -255,23 +253,20 @@ void MainWindow::rebuildChart()
     chart_->legend()->hide();
     chart_->setAnimationOptions(QChart::SeriesAnimations);
 
-    double maxVoltage, maxCurrent;
-    dataManager_.getMaxVoltageAndCurrent(maxVoltage, maxCurrent);
-
     auto *axisX = chartView_->getAxisX();
     auto *axisY = chartView_->getAxisY();
     if (axisX && axisY)
     {
         axisX->setTitleText("Volt (V)");
         axisX->setTickType(QValueAxis::TicksDynamic);
-        axisX->setRange(0, roundUpToHalf(maxVoltage));
+        axisX->setRange(0, roundUpToHalf(dataManager_.maxVoltage()));
         axisX->setTickInterval(0.5);
         axisX->setMinorTickCount(4);
 
         axisY->setLabelFormat("%.2f");
         axisY->setTitleText("\nMilliampere (mA)");
         axisY->setTickType(QValueAxis::TicksDynamic);
-        axisY->setRange(0, roundUpToHalf(maxCurrent));
+        axisY->setRange(0, roundUpToHalf(dataManager_.maxCurrent()));
         axisY->setTickInterval(1.0);
         axisY->setMinorTickCount(4);
     }
