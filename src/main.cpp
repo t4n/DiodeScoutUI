@@ -111,12 +111,6 @@ int main(int argc, char *argv[])
     // Initialize the main application framework
     QApplication application(argc, argv);
 
-    // Force locale-independent decimal separator ('.'),
-    // required by MeasurementDataManager and SerialParser,
-    // see Qt docs: https://doc.qt.io/qt-6/qcoreapplication.html
-    std::setlocale(LC_NUMERIC, "C");
-    Q_ASSERT(std::string(".") == std::localeconv()->decimal_point);
-
     // Apply application theme
     QStyle *fusion = QStyleFactory::create("Fusion");
     Q_ASSERT(fusion);

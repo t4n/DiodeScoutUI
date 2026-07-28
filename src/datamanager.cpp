@@ -13,8 +13,8 @@
 #include "datamanager.h"
 #include <algorithm>
 #include <array>
+#include <charconv>
 #include <cmath>
-#include <cstdio>
 #include <fstream>
 
 // Returns the number of stored measurement series.
@@ -255,12 +255,10 @@ std::string MeasurementDataManager::formatDouble(double d, char decimalSeparator
     constexpr int BufSize = 64; // generous for typical V/I values
     char buf[BufSize];
 
-    // main() sets LC_NUMERIC to "C";
-    // '.' is guaranteed as decimal separator
-    int n = std::snprintf(buf, BufSize, "%.6f", d);
-    if (n < 0 || n >= BufSize)
+    auto [ptr, ec] = std::to_chars(buf, buf + BufSize, d, std::chars_format::fixed, 6);
+    if (ec != std::errc{})
         return "#ERR";
 
-    std::replace(buf, buf + n, '.', decimalSeparator);
-    return std::string(buf, n);
+    std::replace(buf, ptr, '.', decimalSeparator);
+    return std::string(buf, ptr);
 }
