@@ -13,9 +13,10 @@ characteristics measured with the DiodeScout device.
 
 ## Build
 
-1. Install Qt 6 with QtSerialPort, QtCharts, and Qt Creator.
-2. Open CMakeLists.txt in Qt Creator.
-3. Select a Qt kit and build the project.
+1. DiodeScoutUI requires a C++20-compatible compiler.
+2. Install Qt 6 with QtSerialPort, QtCharts, and Qt Creator.
+3. Open CMakeLists.txt in Qt Creator.
+4. Select a Qt kit and build the project.
 
 ## Structure
 
