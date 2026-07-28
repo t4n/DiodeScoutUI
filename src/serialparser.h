@@ -13,6 +13,7 @@
 // Portable core module, no Qt dependencies.
 #include "coredatatypes.h"
 #include <string>
+#include <string_view>
 
 // ---------------------------------------------------------------------------
 //  ParseResult:
@@ -68,11 +69,11 @@ class SerialParser
     std::string lineBuffer_;
 
     // Processes a fully received line and updates the parser state.
-    ParseResult handleCompletedLine(const std::string &rawLine);
+    ParseResult handleCompletedLine(std::string_view line);
 
     // Extracts an XY data point and appends it to currentSeries_.
-    ParseResult extractXYData(const char *data);
+    ParseResult extractXYData(std::string_view data);
 
-    // Returns a copy of s with leading and trailing whitespace removed.
-    static std::string trim(const std::string &s);
+    // Returns a view of s without leading/trailing whitespace.
+    std::string_view trim(std::string_view s);
 };

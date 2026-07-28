@@ -27,7 +27,7 @@ qt_add_executable(DiodeScoutUI WIN32 MACOSX_BUNDLE
     src/mychartview.h
 )
 
-target_compile_features(DiodeScoutUI PRIVATE cxx_std_17)
+target_compile_features(DiodeScoutUI PRIVATE cxx_std_20)
 
 # Application icon (macOS bundle)
 if(APPLE)

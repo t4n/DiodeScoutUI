@@ -10,7 +10,7 @@
 
 // Portable core module, no Qt dependencies.
 #include "serialparser.h"
-#include <cstdlib>
+#include <charconv>
 
 // Returns a read-only reference to the current measurement series.
 // The series is parser-owned and may change as parsing continues.
@@ -48,10 +48,10 @@ ParseResult SerialParser::processReceivedChar(char c)
 }
 
 // Processes a fully received line and updates the parser state.
-ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
+ParseResult SerialParser::handleCompletedLine(std::string_view line)
 {
     auto result = ParseResult::Nothing; // default return value
-    const std::string line = trim(rawLine);
+    line = trim(line);
 
     switch (state_)
     {
@@ -64,9 +64,9 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
         break;
 
     case ParserState::ReceivingSeries:
-        if (line.rfind("DATA ", 0) == 0)
+        if (line.starts_with("DATA "))
         {
-            result = extractXYData(line.c_str() + 5); // skip "DATA "
+            result = extractXYData(line.substr(5)); // skip "DATA "
             state_ = ParserState::ReceivingSeries;
         }
         else if (line == "END")
@@ -88,22 +88,25 @@ ParseResult SerialParser::handleCompletedLine(const std::string &rawLine)
 }
 
 // Extracts an XY data point and appends it to currentSeries_.
-ParseResult SerialParser::extractXYData(const char *data)
+ParseResult SerialParser::extractXYData(std::string_view data)
 {
-    // main() sets LC_NUMERIC to "C";
-    // '.' is guaranteed as decimal separator
-    char *end = nullptr;
-    double x = std::strtod(data, &end);
+    const char *first = data.begin();
+    const char *last = data.end();
 
-    if (end == data || *end != ' ')
+    // Parse voltage (V)
+    double x = 0;
+    auto [sep, ec1] = std::from_chars(first, last, x);
+
+    if (ec1 != std::errc{} || sep == last || *sep != ' ')
         return ParseResult::ParseError;
     if (x < VoltageRangeMin || x > VoltageRangeMax)
         return ParseResult::ParseError;
 
-    data = end;
-    double y = std::strtod(data, &end);
+    // Parse current (mA)
+    double y = 0;
+    auto [ptr, ec2] = std::from_chars(sep + 1, last, y);
 
-    if (end == data || *end != '\0')
+    if (ec2 != std::errc{} || ptr != last)
         return ParseResult::ParseError;
     if (y < CurrentRangeMin || y > CurrentRangeMax)
         return ParseResult::ParseError;
@@ -116,11 +119,11 @@ ParseResult SerialParser::extractXYData(const char *data)
     return ParseResult::DataPointAdded;
 }
 
-// Returns a copy of s with leading and trailing whitespace removed.
-std::string SerialParser::trim(const std::string &s)
+// Returns a view of s without leading/trailing whitespace.
+std::string_view SerialParser::trim(std::string_view s)
 {
     const auto first = s.find_first_not_of(" \t\n\r");
-    if (first == std::string::npos)
+    if (first == std::string_view::npos)
         return {};
 
     const auto last = s.find_last_not_of(" \t\n\r");
