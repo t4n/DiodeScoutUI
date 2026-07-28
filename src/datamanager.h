@@ -56,7 +56,7 @@ class MeasurementDataManager
     // Adds a completed measurement series to the collection.
     void appendSeries(const MeasurementSeries &series);
 
-    // Appends simulated diode I–V characteristics to the collection.
+    // Appends simulated measurement series to the collection.
     void appendSimulatedSeries();
 
     // Retrieves the maximum voltage (V) across all series.
@@ -65,22 +65,19 @@ class MeasurementDataManager
     // Retrieves the maximum current (mA) across all series.
     double maxCurrent() const noexcept;
 
-    // Exports all stored measurement series to a CSV file.
-    // Returns true on success.
+    // Exports all measurement series to CSV; true if successful.
     bool exportCSV(const std::string &filePath, const CSVSettings &csv) const;
 
-    // Exports all stored measurement series to a Python script.
-    // Returns true on success.
+    // Exports all measurement series to Python; true if successful.
     bool exportPython(const std::string &filePath) const;
 
-    // Computes piecewise-linear diode parameters (Vf, Rs).
-    // Returns true on success.
+    // Computes the piecewise-linear diode model; true if successful.
     bool computePWL(double &forwardV, double &seriesR) const;
 
   private:
     // Collection of all acquired measurement series.
     std::vector<MeasurementSeries> series_;
 
-    // Converts a double to a string and replaces the decimal separator.
+    // Converts a double to a string using the configured decimal separator.
     std::string formatDouble(double d, char decimalSeparator) const;
 };

@@ -48,7 +48,7 @@ void MeasurementDataManager::appendSeries(const MeasurementSeries &series)
     series_.push_back(series);
 }
 
-// Appends simulated diode I–V characteristics to the collection.
+// Appends simulated measurement series to the collection.
 void MeasurementDataManager::appendSimulatedSeries()
 {
     static constexpr std::array Voltage1 = {0.000000, 0.193000, 0.290000, 0.389000, 0.489000, 0.552000, 0.603000,
@@ -116,8 +116,7 @@ double MeasurementDataManager::maxCurrent() const noexcept
     return maxI;
 }
 
-// Exports all stored measurement series to a CSV file.
-// Returns true on success.
+// Exports all measurement series to CSV; true if successful.
 bool MeasurementDataManager::exportCSV(const std::string &filePath, const CSVSettings &csv) const
 {
     std::ofstream out(filePath);
@@ -141,8 +140,7 @@ bool MeasurementDataManager::exportCSV(const std::string &filePath, const CSVSet
     return out.good();
 }
 
-// Exports all stored measurement series to a Python script.
-// Returns true on success.
+// Exports all measurement series to Python; true if successful.
 bool MeasurementDataManager::exportPython(const std::string &filePath) const
 {
     std::ofstream out(filePath);
@@ -198,8 +196,7 @@ bool MeasurementDataManager::exportPython(const std::string &filePath) const
     return out.good();
 }
 
-// Computes piecewise-linear diode parameters (Vf, Rs).
-// Returns true on success.
+// Computes the piecewise-linear diode model; true if successful.
 bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
 {
     // Exactly one measurement series is required
@@ -249,7 +246,7 @@ bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
     return true;
 }
 
-// Converts a double to a string and replaces the decimal separator.
+// Converts a double to a string using the configured decimal separator.
 std::string MeasurementDataManager::formatDouble(double d, char decimalSeparator) const
 {
     constexpr int BufSize = 64; // generous for typical V/I values
