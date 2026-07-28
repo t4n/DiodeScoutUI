@@ -13,7 +13,6 @@
 #include <QPalette>
 #include <QSerialPortInfo>
 #include <QStyleFactory>
-#include <clocale>
 
 // ---------------------------------------------------------------------------
 //  DiodeScoutSerialConnector:
