@@ -16,7 +16,7 @@
 
 // ---------------------------------------------------------------------------
 //  DiodeScoutSerialConnector:
-//  Utility class for detecting and opening a DiodeScout serial connection.
+//  Utility class for detecting and opening the DiodeScout serial connection.
 // ---------------------------------------------------------------------------
 class DiodeScoutSerialConnector
 {
@@ -25,30 +25,31 @@ class DiodeScoutSerialConnector
     // or by prompting the user to select a serial port.
     static bool FindAndOpen(QSerialPort &serial)
     {
-        // 1) Try automatic detection
+        // 1) Try automatic device identification
         const QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
         for (const QSerialPortInfo &p : ports)
         {
-            QString hw = p.description() + ' ' + p.manufacturer();
-            hw += ' ' + p.serialNumber() + ' ' + p.systemLocation();
+            QString identification = p.description() + ' ' + p.manufacturer();
+            identification += ' ' + p.serialNumber() + ' ' + p.systemLocation();
 
-            if (hw.contains("DIODESCOUT", Qt::CaseInsensitive))
+            if (identification.contains("DIODESCOUT", Qt::CaseInsensitive))
                 return Open(serial, p);
         }
 
-        // 2) Ask user to select port
+        // 2) Let the user choose a serial port
         QStringList portNames;
         for (const QSerialPortInfo &p : ports)
         {
-            QString prettyName = p.systemLocation().remove("\\\\.\\");
+            QString prettyName = p.systemLocation();
+            prettyName.remove("\\\\.\\");
             portNames << prettyName + "   (" + p.description() + ")";
         }
 
         bool ok = false;
         const QString choice = QInputDialog::getItem(nullptr, "DiodeScoutUI",
-            "No DiodeScout device detected.\nPlease select the correct serial port:", portNames, 0, false, &ok);
+            "Select the serial port DiodeScout is connected to:", portNames, 0, false, &ok);
 
-        if (ok)
+        if (ok && !choice.isEmpty())
         {
             int index = portNames.indexOf(choice);
             if (index >= 0)
