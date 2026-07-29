@@ -41,7 +41,10 @@ QAbstractSeries *MyChartView::getFirstSeries() const
     Q_ASSERT(chart());
     const auto series = chart()->series();
 
-    return series.isEmpty() ? nullptr : series.first();
+    if (series.empty())
+        return nullptr;
+
+    return series.first();
 }
 
 // Checks if value is within the axis limits.
