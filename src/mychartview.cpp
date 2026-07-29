@@ -48,7 +48,6 @@ bool MyChartView::inAxisRange(qreal value, const QValueAxis *axis) const
 void MyChartView::mouseMoveEvent(QMouseEvent *event)
 {
     Q_ASSERT(chart());
-    bool showTip = false;
     QString text;
 
     if (!chart()->series().empty())
@@ -58,13 +57,10 @@ void MyChartView::mouseMoveEvent(QMouseEvent *event)
         const QPointF value = chart()->mapToValue(event->position());
 
         if (inAxisRange(value.x(), axisX) && inAxisRange(value.y(), axisY))
-        {
             text = QString::asprintf("%.3f V, %.3f mA", value.x(), value.y());
-            showTip = true;
-        }
     }
 
-    if (showTip)
+    if (!text.isEmpty())
         QToolTip::showText(event->globalPosition().toPoint(), text, this);
     else
         QToolTip::hideText();
