@@ -252,10 +252,10 @@ std::string MeasurementDataManager::formatDouble(double d, char decimalSeparator
     constexpr int BufSize = 64; // generous for typical V/I values
     char buf[BufSize];
 
-    auto [ptr, ec] = std::to_chars(buf, buf + BufSize, d, std::chars_format::fixed, 6);
-    if (ec != std::errc{})
+    auto result = std::to_chars(buf, buf + BufSize, d, std::chars_format::fixed, 6);
+    if (result.ec != std::errc())
         return "#ERR";
 
-    std::replace(buf, ptr, '.', decimalSeparator);
-    return std::string(buf, ptr);
+    std::replace(buf, result.ptr, '.', decimalSeparator);
+    return std::string(buf, result.ptr);
 }
