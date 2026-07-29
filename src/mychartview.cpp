@@ -35,6 +35,15 @@ QValueAxis *MyChartView::getAxisY() const
     return qobject_cast<QValueAxis *>(axesY.first());
 }
 
+// Convenience accessor for the chart's first series.
+QAbstractSeries *MyChartView::getFirstSeries() const
+{
+    Q_ASSERT(chart());
+
+    const auto series = chart()->series();
+    return series.isEmpty() ? nullptr : series.first();
+}
+
 // Checks if value is within the axis limits.
 bool MyChartView::inAxisRange(qreal value, const QValueAxis *axis) const
 {
@@ -50,11 +59,12 @@ void MyChartView::mouseMoveEvent(QMouseEvent *event)
     Q_ASSERT(chart());
     QString text;
 
-    if (!chart()->series().empty())
+    auto *series = getFirstSeries();
+    if (series)
     {
         const auto *axisX = getAxisX();
         const auto *axisY = getAxisY();
-        const QPointF value = chart()->mapToValue(event->position());
+        const QPointF value = chart()->mapToValue(event->position(), series);
 
         if (inAxisRange(value.x(), axisX) && inAxisRange(value.y(), axisY))
             text = QString::asprintf("%.3f V, %.3f mA", value.x(), value.y());

@@ -36,6 +36,9 @@ class MyChartView final : public QChartView
     // Convenience accessor for the chart's vertical axis.
     QValueAxis *getAxisY() const;
 
+    // Convenience accessor for the chart's first series.
+    QAbstractSeries *getFirstSeries() const;
+
   protected:
     // Checks if value is within the axis limits.
     bool inAxisRange(qreal value, const QValueAxis *axis) const;

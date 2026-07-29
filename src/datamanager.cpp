@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
 //  Central data management, stores and manages all acquired measurement
 //  series and provides utilities for exporting, analyzing, and generating
-//  measurement data.
+//  simulated measurement data.
 //
 //  - Maintains a collection of measurement series
 //  - Exports data to CSV or Python format
