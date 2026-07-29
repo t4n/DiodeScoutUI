@@ -90,23 +90,23 @@ ParseResult SerialParser::handleCompletedLine(std::string_view line)
 // Extracts an XY data point and appends it to currentSeries_.
 ParseResult SerialParser::extractXYData(std::string_view data)
 {
-    const auto begin = data.begin();
-    const auto end = data.end();
+    const char *begin = data.data();
+    const char *end = begin + data.size();
 
     // Parse voltage (V)
-    double x = 0;
-    auto [sep, ec1] = std::from_chars(begin, end, x);
+    double x = 0.0;
+    auto retX = std::from_chars(begin, end, x);
 
-    if (ec1 != std::errc{} || sep == end || *sep != ' ')
+    if (retX.ec != std::errc() || retX.ptr == end || *retX.ptr != ' ')
         return ParseResult::ParseError;
     if (x < VoltageRangeMin || x > VoltageRangeMax)
         return ParseResult::ParseError;
 
     // Parse current (mA)
-    double y = 0;
-    auto [ptr, ec2] = std::from_chars(sep + 1, end, y);
+    double y = 0.0;
+    auto retY = std::from_chars(retX.ptr + 1, end, y);
 
-    if (ec2 != std::errc{} || ptr != end)
+    if (retY.ec != std::errc() || retY.ptr != end)
         return ParseResult::ParseError;
     if (y < CurrentRangeMin || y > CurrentRangeMax)
         return ParseResult::ParseError;
