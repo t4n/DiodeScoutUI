@@ -32,9 +32,15 @@ A small add-on circuit also allows capturing and visualizing transistor characte
 
 ## Personal Homepage & Projects
 
-👉 [Homepage at HM Munich University of Applied Sciences](https://kuepper.userweb.mwn.de)  
+👉 [Author's Homepage at HM Munich University of Applied Sciences](https://kuepper.userweb.mwn.de)  
 
 👉 [50 Ω Driver Circuits – Research Article (Heliyon, 2021)](https://doi.org/10.1016/j.heliyon.2021.e07674)
+
+This project originated from scientific research conducted at HM Munich University of Applied Sciences.
+The software is maintained by the author as an independent open-source project.
+This website is not an official web presence of HM Munich University of Applied Sciences.
+
+For contact information, please refer to my personal homepage linked above.
 
 ## License
 
