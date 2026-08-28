@@ -209,11 +209,11 @@ bool MeasurementDataManager::computePWL(double &forwardV, double &seriesR) const
 
     // Linear least-squares fit: V = Rs * I + Vf where
     // Rs = Effective series resistance, Vf = Forward voltage (turn-on)
-    int n = 0;
     double sumI = 0.0;
     double sumV = 0.0;
     double sumIV = 0.0;
     double sumII = 0.0;
+    int n = 0;
 
     for (const auto &p : series_[0].points())
     {

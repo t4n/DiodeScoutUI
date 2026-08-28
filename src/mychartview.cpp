@@ -47,6 +47,20 @@ QAbstractSeries *MyChartView::getFirstSeries() const
     return series.first();
 }
 
+// Removes and deletes all chart series except the first one.
+void MyChartView::keepFirstSeriesOnly()
+{
+    Q_ASSERT(chart());
+    Q_ASSERT(!chart()->series().empty());
+
+    while (chart()->series().size() > 1)
+    {
+        auto *tmpSeries = chart()->series().at(1);
+        chart()->removeSeries(tmpSeries);
+        delete tmpSeries; // removeSeries() releases ownership!
+    }
+}
+
 // Checks if value is within the axis limits.
 bool MyChartView::inAxisRange(qreal value, const QValueAxis *axis) const
 {

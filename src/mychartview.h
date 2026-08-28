@@ -39,6 +39,9 @@ class MyChartView final : public QChartView
     // Convenience accessor for the chart's first series.
     QAbstractSeries *getFirstSeries() const;
 
+    // Removes and deletes all chart series except the first one.
+    void keepFirstSeriesOnly();
+
   protected:
     // Checks if value is within the axis limits.
     bool inAxisRange(qreal value, const QValueAxis *axis) const;

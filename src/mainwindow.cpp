@@ -79,15 +79,8 @@ void MainWindow::onComputePWL()
         return;
     }
 
-    // Ensure that only the diode I–V curve is visible
-    Q_ASSERT(!chart_->series().empty());
-    while (chart_->series().size() > 1)
-    {
-        auto *tmpSeries = chart_->series().at(1);
-        chart_->removeSeries(tmpSeries);
-        delete tmpSeries; // removeSeries() releases ownership!
-    }
-
+    // Keep only the original diode I–V curve
+    chartView_->keepFirstSeriesOnly();
     const double maxI = dataManager_.maxCurrent(); // mA
 
     // Plot piecewise-linear approximation of diode I–V curve
