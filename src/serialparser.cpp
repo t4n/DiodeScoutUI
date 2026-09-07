@@ -11,6 +11,7 @@
 // Portable core module, no Qt dependencies.
 #include "serialparser.h"
 #include <charconv>
+#include <cmath>
 
 // Returns a read-only reference to the current measurement series.
 // The series is parser-owned and may change as parsing continues.
@@ -99,7 +100,7 @@ ParseResult SerialParser::extractXYData(std::string_view data)
 
     if (retX.ec != std::errc() || retX.ptr == end || *retX.ptr != ' ')
         return ParseResult::ParseError;
-    if (x < VoltageRangeMin || x > VoltageRangeMax)
+    if (std::isnan(x) || x < VoltageRangeMin || x > VoltageRangeMax)
         return ParseResult::ParseError;
 
     // Parse current (mA)
@@ -108,7 +109,7 @@ ParseResult SerialParser::extractXYData(std::string_view data)
 
     if (retY.ec != std::errc() || retY.ptr != end)
         return ParseResult::ParseError;
-    if (y < CurrentRangeMin || y > CurrentRangeMax)
+    if (std::isnan(y) || y < CurrentRangeMin || y > CurrentRangeMax)
         return ParseResult::ParseError;
 
     // Series exceeds expected size
