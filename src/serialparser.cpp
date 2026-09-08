@@ -105,7 +105,7 @@ ParseResult SerialParser::extractXYData(std::string_view data)
 
     // Parse current (mA)
     double y = 0.0;
-    auto retY = std::from_chars(retX.ptr + 1, end, y);
+    auto retY = std::from_chars(retX.ptr + 1, end, y); // skip delimiter
 
     if (retY.ec != std::errc() || retY.ptr != end)
         return ParseResult::ParseError;

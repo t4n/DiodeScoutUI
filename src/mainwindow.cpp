@@ -330,12 +330,12 @@ void MainWindow::setupUI()
     connect(removeAllAct_, &QAction::triggered, this, &MainWindow::onRemoveAllClicked);
     connect(quitAct_, &QAction::triggered, this, &MainWindow::onQuitClicked);
 
-    // Chart: chartView_ takes ownership of chart_
+    // Chart
     chart_ = new QChart();
     chart_->setTheme(QChart::ChartThemeBlueCerulean);
     setChartTitleFont();
 
-    chartView_ = new MyChartView(chart_);
+    chartView_ = new MyChartView(chart_); // chartView_ takes ownership of chart_
     chartView_->setMouseTracking(true);
     chartView_->setRenderHint(QPainter::Antialiasing);
     chartView_->setRubberBand(QChartView::RectangleRubberBand);
