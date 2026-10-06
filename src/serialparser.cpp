@@ -69,7 +69,7 @@ ParseResult SerialParser::handleCompletedLine(std::string_view line)
         {
             result = extractXYData(line.substr(5)); // skip "DATA "
             if (result != ParseResult::DataPointAdded)
-                state_ = ParserState::Idle;
+                state_ = ParserState::Idle; // format error, abort
         }
         else if (line == "END")
         {
