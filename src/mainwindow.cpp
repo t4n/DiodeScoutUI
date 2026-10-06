@@ -208,6 +208,7 @@ void MainWindow::onSerialDataReceived()
 
         case ParseResult::ParseError:
             qWarning() << "ParseError: " << data;
+            statusBar()->showMessage("Data format error");
             break;
 
         case ParseResult::Nothing:
