@@ -4,8 +4,8 @@
 //  MeasurementSeries from the incoming character stream.
 //
 //  - Call processReceivedChar() for each incoming character.
-//  - When SeriesCompleted is returned, the current series
-//    contains a fully parsed measurement sequence.
+//  - If ParseResult::SeriesCompleted is returned, the current
+//    series contains a fully parsed measurement sequence.
 // ---------------------------------------------------------------------------
 
 // Portable core module, no Qt dependencies.
@@ -30,12 +30,6 @@ ParseResult SerialParser::processReceivedChar(char c)
         auto result = handleCompletedLine(trimmedLine);
         lineBuffer_.clear();
         return result;
-    }
-
-    if (c == '\r')
-    {
-        // CRLF normalization
-        return ParseResult::Nothing;
     }
 
     if (lineBuffer_.size() >= MaxLineLength)

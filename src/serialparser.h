@@ -4,8 +4,8 @@
 //  MeasurementSeries from the incoming character stream.
 //
 //  - Call processReceivedChar() for each incoming character.
-//  - When SeriesCompleted is returned, the current series
-//    contains a fully parsed measurement sequence.
+//  - If ParseResult::SeriesCompleted is returned, the current
+//    series contains a fully parsed measurement sequence.
 // ---------------------------------------------------------------------------
 
 #pragma once
