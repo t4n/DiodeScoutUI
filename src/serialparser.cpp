@@ -26,7 +26,8 @@ ParseResult SerialParser::processReceivedChar(char c)
 {
     if (c == '\n')
     {
-        auto result = handleCompletedLine(lineBuffer_);
+        std::string_view trimmedLine = trim(lineBuffer_);
+        auto result = handleCompletedLine(trimmedLine);
         lineBuffer_.clear();
         return result;
     }
@@ -52,7 +53,6 @@ ParseResult SerialParser::processReceivedChar(char c)
 ParseResult SerialParser::handleCompletedLine(std::string_view line)
 {
     auto result = ParseResult::Nothing; // default return value
-    line = trim(line);
 
     switch (state_)
     {
@@ -68,7 +68,8 @@ ParseResult SerialParser::handleCompletedLine(std::string_view line)
         if (line.starts_with("DATA "))
         {
             result = extractXYData(line.substr(5)); // skip "DATA "
-            state_ = ParserState::ReceivingSeries;
+            if(result != ParseResult::DataPointAdded)
+                state_ = ParserState::Idle;
         }
         else if (line == "END")
         {
@@ -80,7 +81,6 @@ ParseResult SerialParser::handleCompletedLine(std::string_view line)
         {
             // Resync, discard incomplete series and start fresh
             currentSeries_ = MeasurementSeries{};
-            state_ = ParserState::ReceivingSeries;
         }
         break;
     }
