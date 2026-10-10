@@ -69,7 +69,7 @@ class SerialParser
     std::string lineBuffer_;
 
     // Processes a fully received line and updates the parser state.
-    ParseResult handleCompletedLine(std::string_view line);
+    ParseResult handleCompletedLine();
 
     // Extracts an XY data point and appends it to currentSeries_.
     ParseResult extractXYData(std::string_view data);

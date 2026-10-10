@@ -26,8 +26,7 @@ ParseResult SerialParser::processReceivedChar(char c)
 {
     if (c == '\n')
     {
-        std::string_view trimmedLine = trim(lineBuffer_);
-        auto result = handleCompletedLine(trimmedLine);
+        auto result = handleCompletedLine();
         lineBuffer_.clear();
         return result;
     }
@@ -44,9 +43,10 @@ ParseResult SerialParser::processReceivedChar(char c)
 }
 
 // Processes a fully received line and updates the parser state.
-ParseResult SerialParser::handleCompletedLine(std::string_view line)
+ParseResult SerialParser::handleCompletedLine()
 {
     auto result = ParseResult::Nothing; // default return value
+    const std::string_view line = trim(lineBuffer_);
 
     switch (state_)
     {
