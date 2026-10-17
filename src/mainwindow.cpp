@@ -111,8 +111,8 @@ void MainWindow::onComputePWL()
 // Triggered when the user selects "Export CSV".
 void MainWindow::onExportCSVClicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Export CSV", QDir::homePath() + "/dscout.csv",
-        "CSV file (*.csv)", nullptr, QFileDialog::DontUseNativeDialog);
+    QString fileName =
+        QFileDialog::getSaveFileName(this, "Export CSV", QDir::homePath() + "/dscout.csv", "CSV file (*.csv)");
 
     if (!fileName.isEmpty())
     {
@@ -131,7 +131,7 @@ void MainWindow::onExportCSVClicked()
 void MainWindow::onExportPythonClicked()
 {
     QString fileName = QFileDialog::getSaveFileName(this, "Export Python script", QDir::homePath() + "/dscout.py",
-        "Python script (*.py)", nullptr, QFileDialog::DontUseNativeDialog);
+        "Python script (*.py)");
 
     if (!fileName.isEmpty())
     {
@@ -143,8 +143,8 @@ void MainWindow::onExportPythonClicked()
 // Triggered when the user selects "Export PNG".
 void MainWindow::onExportPNGClicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Export PNG", QDir::homePath() + "/dscout.png",
-        "PNG file (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
+    QString fileName =
+        QFileDialog::getSaveFileName(this, "Export PNG", QDir::homePath() + "/dscout.png", "PNG file (*.png)");
 
     if (!fileName.isEmpty())
     {

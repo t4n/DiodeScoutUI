@@ -108,6 +108,10 @@ static void FillDarkPalette(QPalette &palette)
 // ---------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
+    // Ensure DarkPalette styling across platforms and avoid
+    // rare macOS native-dialog crashes when launched via "open"
+    QApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
+
     // Initialize the main application framework
     QApplication application(argc, argv);
 
@@ -138,5 +142,6 @@ int main(int argc, char *argv[])
     MainWindow w(diodeScoutPort);
     w.resize(800, 600);
     w.show();
+
     return application.exec();
 }
