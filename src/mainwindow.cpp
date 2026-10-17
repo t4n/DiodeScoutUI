@@ -74,7 +74,7 @@ void MainWindow::onComputePWL()
         QMessageBox::warning(this, "Piecewise-linear diode model",
             "Please ensure that:\n"
             "- Exactly one measurement series is loaded\n"
-            "- The diode is connected with the correct polarity\n"
+            "- The diode has the correct polarity\n"
             "- A measurable forward current is present");
         return;
     }
