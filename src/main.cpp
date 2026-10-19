@@ -108,20 +108,22 @@ static void FillDarkPalette(QPalette &palette)
 }
 
 // ---------------------------------------------------------------------------
-//  Displays a Yes/No question dialog with the application icon.
+//  Displays a Yes/No dialog with the application icon;
+//  returns true if the user selects Yes.
 // ---------------------------------------------------------------------------
-QMessageBox::StandardButton Question(const QString &title, const QString &msg)
+static bool Question(const QString &title, const QString &msg)
 {
     constexpr int PixmapSize = 48;
+    const QIcon appIcon = QApplication::windowIcon();
     QMessageBox msgBox(nullptr);
 
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox.setDefaultButton(QMessageBox::Yes);
-    msgBox.setIconPixmap(QIcon(":/icons/appicon.svg").pixmap(PixmapSize, PixmapSize));
+    msgBox.setIconPixmap(appIcon.pixmap(PixmapSize, PixmapSize));
     msgBox.setWindowTitle(title);
     msgBox.setText(msg);
 
-    return msgBox.exec() == QMessageBox::Yes ? QMessageBox::Yes : QMessageBox::No;
+    return msgBox.exec() == QMessageBox::Yes;
 }
 
 // ---------------------------------------------------------------------------
@@ -151,9 +153,9 @@ int main(int argc, char *argv[])
     QSerialPort diodeScoutPort;
     if (!DiodeScoutSerialConnector::FindAndOpen(diodeScoutPort))
     {
-        auto result = Question("DiodeScoutUI", "No DiodeScout device detected.\n"
-                                               "Do you want to start in simulation mode?");
-        if (result == QMessageBox::No)
+        const bool simulation = Question("DiodeScoutUI", "No DiodeScout device detected.\n"
+                                                         "Do you want to start in simulation mode?");
+        if (!simulation)
             return EXIT_SUCCESS;
     }
 
