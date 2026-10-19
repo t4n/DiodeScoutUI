@@ -131,8 +131,8 @@ static bool Question(const QString &title, const QString &msg)
 // ---------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-    // Ensure DarkPalette styling across platforms and avoid
-    // rare macOS native-dialog crashes when launched via "open"
+    // Use DarkPalette for consistent cross-platform styling and to
+    // avoid rare macOS native-dialog crashes when launched via "open"
     QApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
 
     // Initialize the main application framework
@@ -153,8 +153,8 @@ int main(int argc, char *argv[])
     QSerialPort diodeScoutPort;
     if (!DiodeScoutSerialConnector::FindAndOpen(diodeScoutPort))
     {
-        const bool simulation = Question("DiodeScoutUI", "No DiodeScout device detected.\n"
-                                                         "Do you want to start in simulation mode?");
+        const bool simulation = Question("DiodeScoutUI", "No DiodeScout detected.\n"
+                                                         "Start in simulation mode?");
         if (!simulation)
             return EXIT_SUCCESS;
     }
