@@ -11,6 +11,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QPalette>
+#include <QSerialPort>
 #include <QSerialPortInfo>
 #include <QStyleFactory>
 
@@ -25,8 +26,11 @@ class DiodeScoutSerialConnector
     // or by prompting the user to select a serial port.
     static bool FindAndOpen(QSerialPort &serial)
     {
-        // 1) Try automatic device identification
         const QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
+        if (ports.isEmpty())
+            return false;
+
+        // 1) Try automatic device identification
         for (const QSerialPortInfo &p : ports)
         {
             QString identification = p.description() + ' ' + p.manufacturer();
@@ -104,6 +108,23 @@ static void FillDarkPalette(QPalette &palette)
 }
 
 // ---------------------------------------------------------------------------
+//  Displays a Yes/No question dialog with the application icon.
+// ---------------------------------------------------------------------------
+QMessageBox::StandardButton Question(const QString &title, const QString &msg)
+{
+    constexpr int PixmapSize = 48;
+    QMessageBox msgBox(nullptr);
+
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+    msgBox.setIconPixmap(QIcon(":/icons/appicon.svg").pixmap(PixmapSize, PixmapSize));
+    msgBox.setWindowTitle(title);
+    msgBox.setText(msg);
+
+    return msgBox.exec() == QMessageBox::Yes ? QMessageBox::Yes : QMessageBox::No;
+}
+
+// ---------------------------------------------------------------------------
 //  Application entry point.
 // ---------------------------------------------------------------------------
 int main(int argc, char *argv[])
@@ -130,10 +151,8 @@ int main(int argc, char *argv[])
     QSerialPort diodeScoutPort;
     if (!DiodeScoutSerialConnector::FindAndOpen(diodeScoutPort))
     {
-        auto result = QMessageBox::question(nullptr, "DiodeScoutUI",
-            "No DiodeScout device detected.\nDo you want to start in simulation mode?",
-            QMessageBox::Yes | QMessageBox::No);
-
+        auto result = Question("DiodeScoutUI", "No DiodeScout device detected.\n"
+                                               "Do you want to start in simulation mode?");
         if (result == QMessageBox::No)
             return EXIT_SUCCESS;
     }
