@@ -24,7 +24,7 @@ class DiodeScoutSerialConnector
   public:
     // Opens a DiodeScout serial connection via auto-detection
     // or by prompting the user to select a serial port.
-    static bool FindAndOpen(QSerialPort &serial)
+    static bool findAndOpen(QSerialPort &serial)
     {
         const QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
         if (ports.isEmpty())
@@ -37,7 +37,7 @@ class DiodeScoutSerialConnector
             identification += ' ' + p.serialNumber() + ' ' + p.systemLocation();
 
             if (identification.contains("DIODESCOUT", Qt::CaseInsensitive))
-                return Open(serial, p);
+                return open(serial, p);
         }
 
         // 2) Let the user choose a serial port
@@ -57,7 +57,7 @@ class DiodeScoutSerialConnector
         {
             int index = portNames.indexOf(choice);
             if (index >= 0)
-                return Open(serial, ports.at(index));
+                return open(serial, ports.at(index));
         }
 
         return false;
@@ -65,7 +65,7 @@ class DiodeScoutSerialConnector
 
   private:
     // Configures and opens the serial port.
-    static bool Open(QSerialPort &serial, const QSerialPortInfo &info)
+    static bool open(QSerialPort &serial, const QSerialPortInfo &info)
     {
         serial.setPortName(info.portName());
 
@@ -83,7 +83,7 @@ class DiodeScoutSerialConnector
 // ---------------------------------------------------------------------------
 //  Populates a QPalette with the application's dark Fusion color scheme.
 // ---------------------------------------------------------------------------
-static void FillDarkPalette(QPalette &palette)
+static void fillDarkPalette(QPalette &palette)
 {
     // Background colors
     palette.setColor(QPalette::Window, QColor(53, 53, 53)); // Window background
@@ -111,7 +111,7 @@ static void FillDarkPalette(QPalette &palette)
 //  Displays a Yes/No dialog with the application icon;
 //  returns true if the user selects Yes.
 // ---------------------------------------------------------------------------
-static bool Question(const QString &title, const QString &msg)
+static bool question(const QString &title, const QString &msg)
 {
     constexpr int PixmapSize = 48;
     const QIcon appIcon = QApplication::windowIcon();
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
     Q_ASSERT(fusion);
 
     QPalette darkPalette;
-    FillDarkPalette(darkPalette);
+    fillDarkPalette(darkPalette);
 
     application.setStyle(fusion);
     application.setPalette(darkPalette);
@@ -151,9 +151,9 @@ int main(int argc, char *argv[])
 
     // Establish DiodeScout serial connection
     QSerialPort diodeScoutPort;
-    if (!DiodeScoutSerialConnector::FindAndOpen(diodeScoutPort))
+    if (!DiodeScoutSerialConnector::findAndOpen(diodeScoutPort))
     {
-        const bool simulation = Question("DiodeScoutUI", "No DiodeScout detected.\n"
+        const bool simulation = question("DiodeScoutUI", "No DiodeScout detected.\n"
                                                          "Start in simulation mode?");
         if (!simulation)
             return EXIT_SUCCESS;
