@@ -108,11 +108,14 @@ static void fillDarkPalette(QPalette &palette)
 }
 
 // ---------------------------------------------------------------------------
-//  Displays a Yes/No dialog with the application icon;
-//  returns true if the user selects Yes.
+//  Displays a Yes/No dialog; returns true if the user selects Yes.
 // ---------------------------------------------------------------------------
 static bool question(const QString &title, const QString &msg)
 {
+    // Use a custom dialog instead of QMessageBox::question() because
+    // native dialogs have caused rare crashes on macOS when the app is
+    // launched from Terminal via "open". Native dialogs are disabled
+    // globally. This implementation also displays the application icon.
     constexpr int PixmapSize = 48;
     const QIcon appIcon = QApplication::windowIcon();
     QMessageBox msgBox(nullptr);
@@ -131,7 +134,7 @@ static bool question(const QString &title, const QString &msg)
 // ---------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-    // Use DarkPalette for consistent cross-platform styling and to
+    // Use Qt dialogs for consistent cross-platform styling and to
     // avoid rare macOS native-dialog crashes when launched via "open"
     QApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
 
