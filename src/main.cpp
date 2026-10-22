@@ -112,10 +112,9 @@ static void fillDarkPalette(QPalette &palette)
 // ---------------------------------------------------------------------------
 static bool question(const QString &title, const QString &msg)
 {
-    // Use a custom dialog instead of QMessageBox::question() because
-    // native dialogs have caused rare crashes on macOS when the app is
-    // launched from Terminal via "open". Native dialogs are disabled
-    // globally. This implementation also displays the application icon.
+    // Use a custom dialog instead of QMessageBox::question() because native
+    // dialogs have caused rare crashes on macOS when the app is launched
+    // from Terminal via "open". Native dialogs are disabled globally now.
     constexpr int PixmapSize = 48;
     const QIcon appIcon = QApplication::windowIcon();
     QMessageBox msgBox(nullptr);
