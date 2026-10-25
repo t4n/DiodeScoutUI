@@ -14,6 +14,7 @@
 #include <QSerialPort>
 #include <QSerialPortInfo>
 #include <QStyleFactory>
+#include <cstdlib>
 
 // ---------------------------------------------------------------------------
 //  DiodeScoutSerialConnector:
@@ -110,7 +111,7 @@ static void fillDarkPalette(QPalette &palette)
 // ---------------------------------------------------------------------------
 //  Displays a Yes/No dialog; returns true if the user selects Yes.
 // ---------------------------------------------------------------------------
-static bool question(const QString &title, const QString &msg)
+static bool question(const QString &title, const QString &text)
 {
     // Use a custom dialog instead of QMessageBox::question() because native
     // dialogs have caused rare crashes on macOS when the app is launched
@@ -123,7 +124,7 @@ static bool question(const QString &title, const QString &msg)
     msgBox.setDefaultButton(QMessageBox::Yes);
     msgBox.setIconPixmap(appIcon.pixmap(PixmapSize, PixmapSize));
     msgBox.setWindowTitle(title);
-    msgBox.setText(msg);
+    msgBox.setText(text);
 
     return msgBox.exec() == QMessageBox::Yes;
 }
@@ -155,9 +156,9 @@ int main(int argc, char *argv[])
     QSerialPort diodeScoutPort;
     if (!DiodeScoutSerialConnector::findAndOpen(diodeScoutPort))
     {
-        const bool simulation = question("DiodeScoutUI", "No DiodeScout detected.\n"
-                                                         "Start in simulation mode?");
-        if (!simulation)
+        const QString txt = "No DiodeScout detected.\nStart in simulation mode?";
+        const bool simulationRequested = question("DiodeScoutUI", txt);
+        if (!simulationRequested)
             return EXIT_SUCCESS;
     }
 
