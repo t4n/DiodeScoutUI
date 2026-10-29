@@ -9,26 +9,35 @@
 // ---------------------------------------------------------------------------
 
 #include "serialconnector.h"
+#include <QDebug>
 #include <QInputDialog>
 #include <QSerialPort>
 #include <QSerialPortInfo>
 
-// Opens a DiodeScout serial connection via auto-detection
-// or by prompting the user to select a serial port.
-bool DiodeScoutSerialConnector::findAndOpen(QSerialPort &serial)
+// Attempts to connect to the DiodeScout. If automatic connection fails,
+// prompts the user to select a serial port. Returns Connected on success,
+// OpenFailed if opening the selected port fails, NoConnection if no ports
+// are available or the port selection dialog is cancelled.
+ConnectionStatus DiodeScoutSerialConnector::findAndOpen(QSerialPort &serial)
 {
     const QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
     if (ports.isEmpty())
-        return false;
+        return ConnectionStatus::NoConnection;
 
-    // 1) Try automatic device identification
+    // 1) Try automatic device identification and connection
     for (const QSerialPortInfo &p : ports)
     {
         QString identification = p.description() + ' ' + p.manufacturer();
         identification += ' ' + p.serialNumber() + ' ' + p.systemLocation();
 
         if (identification.contains("DIODESCOUT", Qt::CaseInsensitive))
-            return open(serial, p);
+        {
+            serial.close();
+            serial.clearError();
+
+            if (open(serial, p))
+                return ConnectionStatus::Connected;
+        }
     }
 
     // 2) Let the user choose a serial port
@@ -48,10 +57,20 @@ bool DiodeScoutSerialConnector::findAndOpen(QSerialPort &serial)
     {
         int index = portNames.indexOf(choice);
         if (index >= 0)
-            return open(serial, ports.at(index));
+        {
+            serial.close();
+            serial.clearError();
+
+            if (open(serial, ports.at(index)))
+                return ConnectionStatus::Connected;
+
+            qWarning() << "Failed to open" << serial.portName();
+            qWarning() << serial.errorString();
+            return ConnectionStatus::OpenFailed;
+        }
     }
 
-    return false;
+    return ConnectionStatus::NoConnection;
 }
 
 // Configures and opens the serial port.

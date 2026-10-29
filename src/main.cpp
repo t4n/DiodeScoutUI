@@ -88,10 +88,17 @@ int main(int argc, char *argv[])
 
     // Establish DiodeScout serial connection
     QSerialPort diodeScoutPort;
-    if (!DiodeScoutSerialConnector::findAndOpen(diodeScoutPort))
+    auto status = DiodeScoutSerialConnector::findAndOpen(diodeScoutPort);
+
+    if (status != ConnectionStatus::Connected)
     {
-        const QString txt = "No DiodeScout detected.\nStart in simulation mode?";
-        const bool simulationRequested = question("DiodeScoutUI", txt);
+        QString text;
+        if (status == ConnectionStatus::OpenFailed)
+            text = "Connection failed.\nStart in simulation mode?";
+        else
+            text = "No connection established.\nStart in simulation mode?";
+
+        const bool simulationRequested = question("DiodeScoutUI", text);
         if (!simulationRequested)
             return EXIT_SUCCESS;
     }
