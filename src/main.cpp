@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
-//  Entry point of the DiodeScout application. Initializes Qt, applies the
-//  dark Fusion theme, loads the application icon, establishes the serial
-//  connection to the DiodeScout device, and launches the main window.
+//  Entry point of the DiodeScout application. Initializes Qt, applies
+//  the dark Fusion theme, establishes the DiodeScout serial connection,
+//  and launches the main window.
 //
 //  All UI logic and serial communication are handled by MainWindow.
 // ---------------------------------------------------------------------------
