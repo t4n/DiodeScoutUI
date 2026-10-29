@@ -17,9 +17,7 @@
 #include <QStyleFactory>
 #include <cstdlib>
 
-// ---------------------------------------------------------------------------
-//  Populates a QPalette with the application's dark Fusion color scheme.
-// ---------------------------------------------------------------------------
+// Populates a QPalette with the application's dark Fusion color scheme.
 static void fillDarkPalette(QPalette &palette)
 {
     // Background colors
@@ -44,9 +42,7 @@ static void fillDarkPalette(QPalette &palette)
     palette.setColor(QPalette::Highlight, QColor(42, 130, 218)); // Selection / highlight
 }
 
-// ---------------------------------------------------------------------------
-//  Displays a Yes/No dialog; returns true if the user selects Yes.
-// ---------------------------------------------------------------------------
+// Displays a Yes/No dialog; returns true if the user selects Yes.
 static bool question(const QString &title, const QString &text)
 {
     // Use a custom dialog instead of QMessageBox::question() because native
@@ -65,9 +61,7 @@ static bool question(const QString &title, const QString &text)
     return msgBox.exec() == QMessageBox::Yes;
 }
 
-// ---------------------------------------------------------------------------
-//  Application entry point.
-// ---------------------------------------------------------------------------
+// Application entry point.
 int main(int argc, char *argv[])
 {
     // Use Qt dialogs for consistent cross-platform styling and to
