@@ -9,6 +9,8 @@
 #include "mainwindow.h"
 #include "serialconnector.h"
 #include <QApplication>
+#include <QColor>
+#include <QIcon>
 #include <QMessageBox>
 #include <QPalette>
 #include <QSerialPort>
