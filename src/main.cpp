@@ -7,79 +7,13 @@
 // ---------------------------------------------------------------------------
 
 #include "mainwindow.h"
+#include "serialconnector.h"
 #include <QApplication>
-#include <QInputDialog>
 #include <QMessageBox>
 #include <QPalette>
 #include <QSerialPort>
-#include <QSerialPortInfo>
 #include <QStyleFactory>
 #include <cstdlib>
-
-// ---------------------------------------------------------------------------
-//  DiodeScoutSerialConnector:
-//  Utility class for detecting and opening the DiodeScout serial connection.
-// ---------------------------------------------------------------------------
-class DiodeScoutSerialConnector
-{
-  public:
-    // Opens a DiodeScout serial connection via auto-detection
-    // or by prompting the user to select a serial port.
-    static bool findAndOpen(QSerialPort &serial)
-    {
-        const QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
-        if (ports.isEmpty())
-            return false;
-
-        // 1) Try automatic device identification
-        for (const QSerialPortInfo &p : ports)
-        {
-            QString identification = p.description() + ' ' + p.manufacturer();
-            identification += ' ' + p.serialNumber() + ' ' + p.systemLocation();
-
-            if (identification.contains("DIODESCOUT", Qt::CaseInsensitive))
-                return open(serial, p);
-        }
-
-        // 2) Let the user choose a serial port
-        QStringList portNames;
-        for (const QSerialPortInfo &p : ports)
-        {
-            QString prettyName = p.systemLocation();
-            prettyName.remove("\\\\.\\");
-            portNames << prettyName + "   (" + p.description() + ")";
-        }
-
-        bool ok = false;
-        const QString choice = QInputDialog::getItem(nullptr, "DiodeScoutUI",
-            "Select the serial port DiodeScout is connected to:", portNames, 0, false, &ok);
-
-        if (ok && !choice.isEmpty())
-        {
-            int index = portNames.indexOf(choice);
-            if (index >= 0)
-                return open(serial, ports.at(index));
-        }
-
-        return false;
-    }
-
-  private:
-    // Configures and opens the serial port.
-    static bool open(QSerialPort &serial, const QSerialPortInfo &info)
-    {
-        serial.setPortName(info.portName());
-
-        // Serial parameters are defined by the DiodeScout firmware;
-        // do not modify unless the device protocol changes.
-        serial.setBaudRate(QSerialPort::Baud9600);
-        serial.setDataBits(QSerialPort::Data8);
-        serial.setParity(QSerialPort::NoParity);
-        serial.setStopBits(QSerialPort::OneStop);
-        serial.setFlowControl(QSerialPort::NoFlowControl);
-        return serial.open(QIODevice::ReadWrite);
-    }
-};
 
 // ---------------------------------------------------------------------------
 //  Populates a QPalette with the application's dark Fusion color scheme.

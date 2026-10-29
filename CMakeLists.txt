@@ -25,6 +25,8 @@ qt_add_executable(DiodeScoutUI WIN32 MACOSX_BUNDLE
     src/serialparser.cpp
     src/mychartview.cpp
     src/mychartview.h
+    src/serialconnector.cpp
+    src/serialconnector.h
 )
 
 target_compile_features(DiodeScoutUI PRIVATE cxx_std_20)
